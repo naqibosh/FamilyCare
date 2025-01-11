@@ -14,23 +14,18 @@
     <body>
         <%
             if ("POST".equalsIgnoreCase(request.getMethod())) {
-                String username = request.getParameter("username");
+                String email = request.getParameter("email");
                 String password = request.getParameter("password");
 
-                if (username != null && password != null) {
-                    // Debugging
-                    System.out.println("Username: " + username);
-                    System.out.println("Password: " + password);
-
+                if (email == null || password == null) {
+                    // Redirect to login.html with error code
+                    response.sendRedirect("login.html?error=1");
+                } else {
                     // Forward the request to the servlet
                     RequestDispatcher dispatcher = request.getRequestDispatcher("../StaffLoginServlet");
                     dispatcher.forward(request, response);
-                } else {
-                    out.println("<p>Missing username or password. Please try again.</p>");
                 }
-            } else {
-                out.println("<p>Invalid request method. Please submit the form properly.</p>");
-            }
+            } 
         %>
     </body>
 </html>
