@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="description" content="">
+        <meta name="author" content="">
+
+        <title>Staff Register</title>
+
+        <!-- Custom fonts for this template-->
+        <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+        <link
+            href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+            rel="stylesheet">
+
+        <!-- Custom styles for this template-->
+        <link href="css/sb-admin-2.min.css" rel="stylesheet">
+
+    </head>
+
+    <body class="bg-gradient-primary">
+
+        <div class="container">
+
+            <div class="card o-hidden border-0 shadow-lg my-5">
+                <div class="card-body p-0">
+                    <!-- Nested Row within Card Body -->
+                    <div class="row">
+                        <div class="col-lg-5 d-none d-lg-block bg-register-image"></div>
+                        <div class="col-lg-7">
+                            <div class="p-5">
+                                <div class="text-center">
+                                    <h1 class="h4 text-gray-900 mb-4">Create an Account!</h1>
+                                </div>
+                                <form class="user" id="registerForm" action="staff_registerProcess.jsp" method="post">
+                                    <div class="form-group row">
+                                        <div class="col-sm-6 mb-3 mb-sm-0">
+                                            <input type="text" class="form-control form-control-user" id="name" name="name"
+                                                   placeholder="Staff Name" autocomplete="off">
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <select id="role" name="role" class="form-control form-control-lg">
+                                                <option value="">Select Role</option>
+                                                <option value="Administrator">Administrator</option>
+                                                <option value="Manager">Manager</option>
+                                                <option value="Supervisor">Supervisor</option>
+                                                <option value="Executive">Executive</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col-sm-6 mb-3 mb-sm-0">
+                                            <input type="email" class="form-control form-control-user" name="email" id="email"
+                                                   placeholder="Email Address" autocomplete="off">
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <input type="tel" pattern="[0-9]{10,11}" name="phoneNumber" id="phoneNumber"
+                                                   class="form-control form-control-user" placeholder="Mobile Phone" required title="Mobile number must be 10-11 digits" autocomplete="off">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col-sm-6 mb-3 mb-sm-0">
+                                            <input type="password" class="form-control form-control-user"
+                                                   name="password" id="password" placeholder="Password" autocomplete="off">
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <input type="password" class="form-control form-control-user"
+                                                   name="RepeatPassword" id="repeatPassword" placeholder="Repeat Password" autocomplete="off">
+                                        </div>
+                                        <span id="passwordError"></span> <br> 
+                                    </div>
+                                    <hr>
+                                    <button type="submit" id="submit" class="btn btn-primary btn-user btn-block">Register Account</button>
+
+                                </form>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Show Error JavaScript-->
+        <script>
+            // Get the error code from the URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const errorCode = urlParams.get('error');
+
+            // Check if there is an error code
+            const errorMessage = document.createElement('p');
+            if (errorCode === '1') { // Display an error message
+                errorMessage.textContent = 'Please enter both email and password.';
+            } else if (errorCode === '2'){
+                errorMessage.textContent = 'An error occur! Please submit again.';
+            }
+            
+            // Insert the error message before the form
+            errorMessage.style.color = 'red';
+            const form = document.querySelector('registerForm');
+            form.parentNode.insertBefore(errorMessage, form);
+            
+        </script>
+        <script>         
+            <!-- Clear Page JavaScript-->
+            window.onload = function () {
+                document.getElementById("email").value = "";
+                document.getElementById("name").value = "";
+                document.getElementById("phoneNumber").value = "";
+                document.getElementById("password").value = "";
+                document.getElementById("repeatPassword").value = "";
+            };
+        </script>
+        
+        <!-- Password Confirmation JavaScript-->
+        <script>
+            function checkPasswords() {
+                const password = document.getElementById("password").value;
+                const confirmPassword = document.getElementById("repeatPassword").value;
+
+                const errorElement = document.getElementById("passwordError");
+
+                if (password !== confirmPassword) {
+                    errorElement.textContent = "Passwords do not match.";
+                    errorElement.style.color = "red";
+                    return false; // Prevent form submission
+                } else {
+                    errorElement.textContent = ""; // Clear any previous error message
+                    return true; // Allow form submission
+                }
+            }
+            // Get the form element
+            const form = document.getElementById("registerForm");
+            // Add an event listener to the form submit event
+            form.addEventListener("submit", function (event) {
+                if (!checkPasswords()) {
+                    event.preventDefault(); // Prevent the default form submission behavior
+                }
+            });
+        </script>
+
+        <!-- Bootstrap core JavaScript-->
+        <script src="vendor/jquery/jquery.min.js"></script>
+        <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+        <!-- Core plugin JavaScript-->
+        <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+
+        <!-- Custom scripts for all pages-->
+        <script src="js/sb-admin-2.min.js"></script>
+
+    </body>
+
+</html>

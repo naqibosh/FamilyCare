@@ -1,0 +1,22 @@
+{
+    "elements": {
+        "div": {
+            "attributes": {
+                "id": {}
+            }
+        },
+        "a": {
+            "attributes": {
+                "data-target": {},
+                "data-toggle": {}
+            }
+        },
+        "i": {},
+        "hr": {},
+        "sup": {}
+    },
+    "attributes": {
+        "href": {},
+        "class": {}
+    }
+}

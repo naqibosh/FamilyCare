@@ -18,25 +18,26 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.Base64;
+import jbcrypt.BCrypt; //import from hashing package
 
 //@WebServlet("/StaffLoginServlet")
 public class StaffLoginServlet extends HttpServlet {
 
     // Database connection details
-    private static final String DB_URL = "jdbc:oracle:thin:@//localhost:1521/XEPDB1"; 
-    private static final String DB_USER = "CareGiver"; 
-    private static final String DB_PASSWORD = "CareGiver"; 
+    private static final String DB_URL = "jdbc:oracle:thin:@//localhost:1521/XEPDB1";
+    private static final String DB_USER = "CareGiver";
+    private static final String DB_PASSWORD = "CareGiver";
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
 
-        String staff_name = request.getParameter("username");
+        String staff_email = request.getParameter("email");
         String staff_password = request.getParameter("password");
 
         try (PrintWriter out = response.getWriter()) {
-            if (staff_name == null || staff_password == null || staff_name.isEmpty() || staff_password.isEmpty()) {
-                out.println("<p>Username or password cannot be empty. Please try again.</p>");
+            if (staff_email == null || staff_password == null || staff_email.isEmpty() || staff_password.isEmpty()) {
+                out.println("<p>Username or password cannot be empty. Please try again.</p>"); //debug
                 return;
             }
 
@@ -48,18 +49,18 @@ public class StaffLoginServlet extends HttpServlet {
 
                 try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
                      PreparedStatement statement = connection.prepareStatement(
-                         "SELECT COUNT(*) FROM staff WHERE staff_name = ? AND staff_password = ?")) {
+                             "SELECT staff_password FROM staff WHERE staff_email = ?")) {
 
-                    statement.setString(1, staff_name);
-                    statement.setString(2, staff_password);
+                    statement.setString(1, staff_email);
 
-                    System.out.println("Executing query with username: " + staff_name + " and password: " + staff_password); // Debug
+                    System.out.println("Executing query with email: " + staff_email); // Debug
 
                     try (ResultSet resultSet = statement.executeQuery()) {
                         if (resultSet.next()) {
-                            int count = resultSet.getInt(1);
-                            System.out.println("Query returned count: " + count); // Debug
-                            isValidUser = count > 0;
+                            String hashedPasswordFromDB = resultSet.getString("staff_password");
+
+                            // Validate entered password with hashed password
+                            isValidUser = BCrypt.checkpw(staff_password, hashedPasswordFromDB);
                         }
                     }
                 }
@@ -72,7 +73,7 @@ public class StaffLoginServlet extends HttpServlet {
             if (isValidUser) {
                 // Generate a session and encrypted session ID
                 HttpSession session = request.getSession();
-                session.setAttribute("username", staff_name);
+                session.setAttribute("email", staff_email);
 
                 String sessionId = session.getId();
                 String encryptedSessionId = Base64.getEncoder().encodeToString(sessionId.getBytes());
@@ -81,7 +82,7 @@ public class StaffLoginServlet extends HttpServlet {
                 response.sendRedirect("staff_dashboard.jsp?sessionId=" + encryptedSessionId);
             } else {
                 // Redirect back to the login page on failure
-                response.sendRedirect("staff_login.html?error=Invalid+username+or+password");
+                response.sendRedirect("login.html?error=Invalid+email+or+password");
             }
         }
     }
@@ -91,4 +92,3 @@ public class StaffLoginServlet extends HttpServlet {
         response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED, "GET method is not supported.");
     }
 }
-
