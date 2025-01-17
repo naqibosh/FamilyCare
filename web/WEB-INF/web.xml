@@ -2,14 +2,18 @@
 <web-app version="3.1" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
     <display-name>Family Care Application</display-name>
     <!-- Welcome file -->
-    <servlet-mapping>
-        <servlet-name>StaffRegisterServlet</servlet-name>
-        <url-pattern>/StaffRegisterServlet</url-pattern>
-    </servlet-mapping>
     <welcome-file-list>
         <welcome-file>index.html</welcome-file>
     </welcome-file-list>
-    <!-- Servlet mapping -->
+    <!-- Servlet name -->
+    <servlet>
+        <servlet-name>StaffServlet</servlet-name>
+        <servlet-class>staff.servlet.StaffServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>StaffLogoutServlet</servlet-name>
+        <servlet-class>staff.servlet.StaffLogoutServlet</servlet-class>
+    </servlet>
     <servlet>
         <servlet-name>StaffLoginServlet</servlet-name>
         <servlet-class>staff.servlet.StaffLoginServlet</servlet-class>
@@ -18,8 +22,38 @@
         <servlet-name>StaffRegisterServlet</servlet-name>
         <servlet-class>staff.servlet.StaffRegisterServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>SessionUtils</servlet-name>
+        <servlet-class>utils.SessionUtils</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>StaffManageServlet</servlet-name>
+        <servlet-class>staff.servlet.StaffManageServlet</servlet-class>
+    </servlet>
+    <!-- Servlet mapping -->
+    <servlet-mapping>
+        <servlet-name>StaffServlet</servlet-name>
+        <url-pattern>/StaffServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>StaffLogoutServlet</servlet-name>
+        <url-pattern>/StaffLogoutServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>StaffRegisterServlet</servlet-name>
+        <url-pattern>/StaffRegisterServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SessionUtils</servlet-name>
+        <url-pattern>/SessionUtils</url-pattern>
+    </servlet-mapping>
     <servlet-mapping>
         <servlet-name>StaffLoginServlet</servlet-name>
         <url-pattern>/StaffLoginServlet</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>StaffManageServlet</servlet-name>
+        <url-pattern>/StaffManageServlet</url-pattern>
+    </servlet-mapping>
+
 </web-app>

@@ -20,7 +20,7 @@
         <meta name="description" content="">
         <meta name="author" content="">
 
-        <title>Staff Dashboard</title>
+        <title>Family Care</title>
 
         <!-- Custom fonts for this template-->
         <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -30,73 +30,159 @@
 
         <!-- Custom styles for this template-->
         <link href="css/sb-admin-2.min.css" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     </head>
 
-    <%
-        String url = "jdbc:oracle:thin:@//localhost:1521/XEPDB1"; // Replace with your DB URL
-        String username = "CareGiver"; // Replace with your DB username
-        String password = "CareGiver"; // Replace with your DB password
-        Connection conn = null;
-        Statement stmt = null;
-        ResultSet rs = null;
+<%
+    String url = "jdbc:oracle:thin:@//localhost:1521/XE"; 
+    String username = "CareGiver"; 
+    String password = "system"; 
+    Connection conn = null;
+    Statement stmt = null;
+    ResultSet rs = null;
+    
+    int totalC = 0;
+    int totalB = 0;
+    int noAvailableB = 0;
+    int totalE = 0;
+    int noAvailableE = 0;
+    int pendingBooking = 0;
+    int percentBooking = 0;
+    double monthlyE = 0;
+    double annualE = 0;
+    double[] monthlyEarnings = new double[12];
+    int babysitterCount = 0;
+    int eldercareCount = 0;
+    String currentTime = "";
 
-        int totalCustomer = 0;
-        int totalCaretaker = 0;
-        int newBooking = 0;
-        int recentBooking = 0;
+    try {
+        Class.forName("oracle.jdbc.driver.OracleDriver");
+        conn = DriverManager.getConnection(url, username, password);
+        stmt = conn.createStatement();
+        
+        //Fetch earning value
+        rs = stmt.executeQuery(
+            "SELECT NVL(SUM(CASE WHEN TRUNC(PAYMENT_DATE, 'MM') = TRUNC(SYSDATE, 'MM') THEN PAYMENT_AMOUNT END), 0) AS Monthly_Earnings, " +
+            "NVL(SUM(CASE WHEN TRUNC(PAYMENT_DATE, 'YYYY') = TRUNC(SYSDATE, 'YYYY') THEN PAYMENT_AMOUNT END), 0) AS Annual_Earnings " +
+            "FROM PAYMENT WHERE PAYMENT_STATUS = 'Completed'"
+        );
 
-        try {
-            Class.forName("oracle.jdbc.driver.OracleDriver");
-            conn = DriverManager.getConnection(url, username, password);
-            stmt = conn.createStatement();
+        if (rs.next()) {
+            monthlyE = rs.getInt("Monthly_Earnings");
+            annualE = rs.getInt("Annual_Earnings");
+        if (rs.wasNull()) {
+                monthlyE = 0.00;
+                annualE = 0.00;
+        }}
 
-            // Fetch total users
-            rs = stmt.executeQuery("SELECT COUNT(*) AS count FROM customer");
-            if (rs.next()) {
-                totalCustomer = rs.getInt("count");
-            }
+        // Fetch total customer
+        rs = stmt.executeQuery("SELECT COUNT(*) AS totalCustomer FROM customer");
+        if (rs.next()) {
+            totalC = rs.getInt("totalCustomer");
+        if (rs.wasNull()) {
+                totalC = 0;
+        }}
 
-            // Fetch total caretakers
-            rs = stmt.executeQuery("SELECT COUNT(*) AS count FROM caretaker");
-            if (rs.next()) {
-                totalCaretaker = rs.getInt("count");
-            }
+        // Fetch total babysitter
+        rs = stmt.executeQuery("SELECT COUNT(*) AS totalBabysitter, SUM(CASE WHEN AVAILABILITY_STATUS = 'Available' THEN 1 ELSE 0 END) AS availableBabysitter " +
+                                "FROM CARETAKER WHERE CARETAKER_ID IN (SELECT CARETAKER_ID FROM BABYSITTER)");
+        if (rs.next()) {
+            totalB = rs.getInt("totalBabysitter");
+            noAvailableB = rs.getInt("availableBabysitter");
+        if (rs.wasNull()) {
+                totalB = 0; 
+                noAvailableB = 0;
+        }}
 
-            // Fetch new bookings today
-            rs = stmt.executeQuery("SELECT COUNT(*) AS count FROM booking WHERE booking_time = SYSDATE");
-            if (rs.next()) {
-                newBooking = rs.getInt("count");
-            }
+        // Fetch total eldercaretaker
+        rs = stmt.executeQuery("SELECT COUNT(*) AS totalEldercaretaker, SUM(CASE WHEN AVAILABILITY_STATUS = 'Available' THEN 1 ELSE 0 END) AS availableEldercaretaker " +
+                                "FROM CARETAKER WHERE CARETAKER_ID IN (SELECT CARETAKER_ID FROM ELDERCARETAKER)");
+        if (rs.next()) {
+            totalE = rs.getInt("totalEldercaretaker");
+            noAvailableE = rs.getInt("availableEldercaretaker");
+        if (rs.wasNull()) {
+                totalE = 0; 
+                noAvailableE = 0;
+        }}
 
-            // Fetch recent bookings (last 7 days)
-            rs = stmt.executeQuery("SELECT COUNT(*) AS count FROM booking WHERE booking_time >= SYSDATE - 7");
-            if (rs.next()) {
-                recentBooking = rs.getInt("count");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-            } catch (SQLException e) {
-            }
-            try {
-                if (stmt != null) {
-                    stmt.close();
-                }
-            } catch (SQLException e) {
-            }
-            try {
-                if (conn != null) {
-                    conn.close();
-                }
-            } catch (SQLException e) {
-            }
+        // Fetch pending bookings
+        rs = stmt.executeQuery("SELECT COUNT(*) AS pendingBooking FROM booking WHERE booking_id IN (SELECT BOOKING_ID FROM PAYMENT WHERE PAYMENT_STATUS = 'Pending')");
+        if (rs.next()) {
+            pendingBooking = rs.getInt("pendingBooking");
+        if (rs.wasNull()) {
+            pendingBooking = 0;
+        }}
+
+        // Fetch completed over total bookings
+        rs = stmt.executeQuery(
+            "SELECT ROUND((COUNT(CASE WHEN PAYMENT_STATUS = 'Completed' AND TRUNC(PAYMENT_DATE, 'MM') = TRUNC(SYSDATE, 'MM') THEN 1 END) / " +
+            "NULLIF(COUNT(CASE WHEN PAYMENT_STATUS IN ('Completed', 'Pending') AND TRUNC(PAYMENT_DATE, 'MM') = TRUNC(SYSDATE, 'MM') THEN 1 END), 0)) * 100, 0) AS Completed_Percentage " +
+            "FROM PAYMENT " +
+            "WHERE TRUNC(PAYMENT_DATE, 'MM') = TRUNC(SYSDATE, 'MM') " +
+            "AND BOOKING_ID IN (SELECT BOOKING_ID FROM PAYMENT WHERE PAYMENT_STATUS IN ('Completed', 'Pending'))"
+        );
+        if (rs.next()) {
+            percentBooking = rs.getInt("Completed_Percentage");
+        if (rs.wasNull()) {
+            percentBooking = 0;
+        }}
+        
+        // Fetch monthly earnings for completed payments
+        rs = stmt.executeQuery(
+            "SELECT TO_CHAR(PAYMENT_DATE, 'MM') AS MONTH, SUM(PAYMENT_AMOUNT) AS EARNINGS " +
+            "FROM PAYMENT WHERE PAYMENT_STATUS = 'Completed' " +
+            "GROUP BY TO_CHAR(PAYMENT_DATE, 'MM')"
+        );
+        while (rs.next()) {
+            int monthIndex = Integer.parseInt(rs.getString("MONTH")) - 1; // Convert month to array index
+            monthlyEarnings[monthIndex] = rs.getDouble("EARNINGS");
         }
-    %>
+
+        // SQL Query to get count of Babysitter and Eldercare
+        rs = stmt.executeQuery(
+            "SELECT " +
+            "COUNT(CASE WHEN booking_type = 'Babysitter' THEN 1 END) AS babysitter_count, " +
+            "COUNT(CASE WHEN booking_type = 'Eldercaretaker' THEN 1 END) AS eldercare_count " +
+            "FROM booking b " +
+            "JOIN payment p ON b.booking_id = p.booking_id " +
+            "WHERE p.payment_status = 'Completed'"
+        );
+        if (rs.next()) {
+            babysitterCount = rs.getInt("babysitter_count");
+            eldercareCount = rs.getInt("eldercare_count");
+        }
+        
+        // SQL Query to get the current time in the desired format
+        rs = stmt.executeQuery("SELECT TO_CHAR(SYSDATE, 'DY HH24:MI:SS') AS current_time FROM dual");
+        if (rs.next()) {
+            currentTime = rs.getString("current_time");
+        }
+        
+    } catch (Exception e) {
+        e.printStackTrace();
+    } finally {
+        try {
+            if (rs != null) {
+                rs.close();
+            }
+        } catch (SQLException e) {
+        }
+        try {
+            if (stmt != null) {
+                stmt.close();
+            }
+        } catch (SQLException e) {
+        }
+        try {
+            if (conn != null) {
+                conn.close();
+            }
+        } catch (SQLException e) {
+        }
+    }
+%>
+
     <body id="page-top">
 
         <!-- Page Wrapper -->
@@ -106,11 +192,11 @@
             <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
                 <!-- Sidebar - Brand -->
-                <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+                <a class="sidebar-brand d-flex align-items-center justify-content-center" href="staff_dashboard.jsp">
                     <div class="sidebar-brand-icon rotate-n-15">
                         <i class="fas fa-laugh-wink"></i>
                     </div>
-                    <div class="sidebar-brand-text mx-3">Family Care <sup>2</sup></div>
+                    <div class="sidebar-brand-text mx-3">Family Care</div>
                 </a>
 
                 <!-- Divider -->
@@ -118,7 +204,7 @@
 
                 <!-- Nav Item - Dashboard -->
                 <li class="nav-item active">
-                    <a class="nav-link" href="index.html">
+                    <a class="nav-link" href="staff_dashboard.jsp">
                         <i class="fas fa-fw fa-tachometer-alt"></i>
                         <span>Dashboard</span></a>
                 </li>
@@ -126,52 +212,12 @@
                 <!-- Divider -->
                 <hr class="sidebar-divider">
 
-                <!-- Heading -->
-                <div class="sidebar-heading">
-                    Interface
-                </div>
-
-                <!-- Nav Item - Pages Collapse Menu -->
-                <li class="nav-item">
-                    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
-                       aria-expanded="true" aria-controls="collapseTwo">
-                        <i class="fas fa-fw fa-cog"></i>
-                        <span>Components</span>
-                    </a>
-                    <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-                        <div class="bg-white py-2 collapse-inner rounded">
-                            <h6 class="collapse-header">Custom Components:</h6>
-                            <a class="collapse-item" href="buttons.html">Buttons</a>
-                            <a class="collapse-item" href="cards.html">Cards</a>
-                        </div>
-                    </div>
-                </li>
-
-                <!-- Nav Item - Utilities Collapse Menu -->
-                <li class="nav-item">
-                    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
-                       aria-expanded="true" aria-controls="collapseUtilities">
-                        <i class="fas fa-fw fa-wrench"></i>
-                        <span>Utilities</span>
-                    </a>
-                    <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"
-                         data-parent="#accordionSidebar">
-                        <div class="bg-white py-2 collapse-inner rounded">
-                            <h6 class="collapse-header">Custom Utilities:</h6>
-                            <a class="collapse-item" href="utilities-color.html">Colors</a>
-                            <a class="collapse-item" href="utilities-border.html">Borders</a>
-                            <a class="collapse-item" href="utilities-animation.html">Animations</a>
-                            <a class="collapse-item" href="utilities-other.html">Other</a>
-                        </div>
-                    </div>
-                </li>
-
                 <!-- Divider -->
                 <hr class="sidebar-divider">
 
                 <!-- Heading -->
                 <div class="sidebar-heading">
-                    Addons
+                    Staff Console
                 </div>
 
                 <!-- Nav Item - Pages Collapse Menu -->
@@ -179,18 +225,12 @@
                     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages"
                        aria-expanded="true" aria-controls="collapsePages">
                         <i class="fas fa-fw fa-folder"></i>
-                        <span>Pages</span>
+                        <span>Staff Management</span>
                     </a>
                     <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
                         <div class="bg-white py-2 collapse-inner rounded">
-                            <h6 class="collapse-header">Login Screens:</h6>
-                            <a class="collapse-item" href="login.html">Login</a>
-                            <a class="collapse-item" href="register.html">Register</a>
-                            <a class="collapse-item" href="forgot-password.html">Forgot Password</a>
-                            <div class="collapse-divider"></div>
-                            <h6 class="collapse-header">Other Pages:</h6>
-                            <a class="collapse-item" href="404.html">404 Page</a>
-                            <a class="collapse-item" href="blank.html">Blank Page</a>
+                            <a class="collapse-item" href="staff_manageProcess.jsp">Manage Staff</a>
+                            <a class="collapse-item" href="register.html">Register Staff</a>
                         </div>
                     </div>
                 </li>
@@ -204,9 +244,27 @@
 
                 <!-- Nav Item - Tables -->
                 <li class="nav-item">
-                    <a class="nav-link" href="tables.html">
+                    <a class="nav-link" href="customer_manageProcess.jsp">
                         <i class="fas fa-fw fa-table"></i>
-                        <span>View Bookings</span></a>
+                        <span>Manage Customer</span></a>
+                </li>
+                
+                <li class="nav-item">
+                    <a class="nav-link" href="caretaker_manageProcess.jsp">
+                        <i class="fas fa-fw fa-table"></i>
+                        <span>Manage Caretaker</span></a>
+                </li>
+                
+                <li class="nav-item">
+                    <a class="nav-link" href="booking_manageProcess.jsp">
+                        <i class="fas fa-fw fa-table"></i>
+                        <span>Manage Booking</span></a>
+                </li>
+                
+                <li class="nav-item">
+                    <a class="nav-link" href="payment_manageProcess.jsp">
+                        <i class="fas fa-fw fa-table"></i>
+                        <span>Manage Payment</span></a>
                 </li>
 
                 <!-- Divider -->
@@ -215,13 +273,6 @@
                 <!-- Sidebar Toggler (Sidebar) -->
                 <div class="text-center d-none d-md-inline">
                     <button class="rounded-circle border-0" id="sidebarToggle"></button>
-                </div>
-
-                <!-- Sidebar Message -->
-                <div class="sidebar-card d-none d-lg-flex">
-                    <img class="sidebar-card-illustration mb-2" src="img/undraw_rocket.svg" alt="...">
-                    <p class="text-center mb-2"><strong>SB Admin Pro</strong> is packed with premium features, components, and more!</p>
-                    <a class="btn btn-success btn-sm" href="https://startbootstrap.com/theme/sb-admin-pro">Upgrade to Pro!</a>
                 </div>
 
             </ul>
@@ -458,28 +509,10 @@
                                             <div class="col mr-2">
                                                 <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                                     Earnings (Monthly)</div>
-                                                <div class="h5 mb-0 font-weight-bold text-gray-800">$40,000</div>
+                                                <div class="h5 mb-0 font-weight-bold text-gray-800">RM <%= monthlyE %></div>
                                             </div>
                                             <div class="col-auto">
                                                 <i class="fas fa-calendar fa-2x text-gray-300"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Earnings (Monthly) Card Example -->
-                            <div class="col-xl-3 col-md-6 mb-4">
-                                <div class="card border-left-success shadow h-100 py-2">
-                                    <div class="card-body">
-                                        <div class="row no-gutters align-items-center">
-                                            <div class="col mr-2">
-                                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                                    Earnings (Annual)</div>
-                                                <div class="h5 mb-0 font-weight-bold text-gray-800">$215,000</div>
-                                            </div>
-                                            <div class="col-auto">
-                                                <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
                                             </div>
                                         </div>
                                     </div>
@@ -492,16 +525,34 @@
                                     <div class="card-body">
                                         <div class="row no-gutters align-items-center">
                                             <div class="col mr-2">
-                                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Tasks
+                                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                                    Earnings (Annual)</div>
+                                                <div class="h5 mb-0 font-weight-bold text-gray-800">RM <%= annualE %></div>
+                                            </div>
+                                            <div class="col-auto">
+                                                <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Earnings (Monthly) Card Example -->
+                            <div class="col-xl-3 col-md-6 mb-4">
+                                <div class="card border-left-success shadow h-100 py-2">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Completed Booking (monthly)
                                                 </div>
                                                 <div class="row no-gutters align-items-center">
                                                     <div class="col-auto">
-                                                        <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">50%</div>
+                                                        <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800"><%= percentBooking %>%</div>
                                                     </div>
                                                     <div class="col">
                                                         <div class="progress progress-sm mr-2">
-                                                            <div class="progress-bar bg-info" role="progressbar"
-                                                                 style="width: 50%" aria-valuenow="50" aria-valuemin="0"
+                                                            <div class="progress-bar bg-success" role="progressbar"
+                                                                 style="width: <%= percentBooking %>%" aria-valuenow="<%= percentBooking %>" aria-valuemin="0"
                                                                  aria-valuemax="100"></div>
                                                         </div>
                                                     </div>
@@ -522,8 +573,8 @@
                                         <div class="row no-gutters align-items-center">
                                             <div class="col mr-2">
                                                 <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                                    Pending Requests</div>
-                                                <div class="h5 mb-0 font-weight-bold text-gray-800">18</div>
+                                                    Booking Requests</div>
+                                                <div class="h5 mb-0 font-weight-bold text-gray-800"><%= pendingBooking %></div>
                                             </div>
                                             <div class="col-auto">
                                                 <i class="fas fa-comments fa-2x text-gray-300"></i>
@@ -532,6 +583,79 @@
                                     </div>
                                 </div>
                             </div>
+                            
+                            <!-- Available Staff -->
+                            <div class="col-xl-3 col-md-6 mb-4">
+                                <div class="card border-left-light shadow h-100 py-2">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-xs font-weight-bold text-black text-uppercase mb-1">
+                                                    No. of Customer </div>
+                                                <div class="h5 mb-0 font-weight-bold text-gray-800"><%= totalC %></div>
+                                            </div>
+                                            <div class="col-auto">
+                                                <i class="fas fa-users fa-2x text-gray-300"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Available Staff -->
+                            <div class="col-xl-3 col-md-6 mb-4">
+                                <div class="card border-left-secondary shadow h-100 py-2">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-xs font-weight-bold text-secondary text-uppercase mb-1">
+                                                    No. of Elder-Caretaker</div>
+                                                <div class="h5 mb-0 font-weight-bold text-gray-800"><%= noAvailableE %> / <%= totalE %></div>
+                                            </div>
+                                            <div class="col-auto">
+                                                <i class="fas fa-male fa-2x text-gray-300"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Available Staff -->
+                            <div class="col-xl-3 col-md-6 mb-4">
+                                <div class="card border-left-dark shadow h-100 py-2">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-xs font-weight-bold text-dark text-uppercase mb-1">
+                                                    No. of Babysitter</div>
+                                                <div class="h5 mb-0 font-weight-bold text-gray-800"><%= noAvailableB %> / <%= totalB %></div>
+                                            </div>
+                                            <div class="col-auto">
+                                                <i class="fas fa-child fa-2x text-gray-300"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                                            
+                            <!-- Show Time -->
+                            <div class="col-xl-3 col-md-6 mb-4">
+                                <div class="card border-left-danger shadow h-100 py-2">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                                    Data Time</div>
+                                                <div class="h5 mb-0 font-weight-bold text-gray-800"><%= currentTime %></div> 
+                                            </div>
+                                            <div class="col-auto">
+                                                <i class="fas fa-clock fa-2x text-gray-300"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>                                            
+                            
                         </div>
 
                         <!-- Content Row -->
@@ -545,20 +669,6 @@
                                     <div
                                         class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                                         <h6 class="m-0 font-weight-bold text-primary">Earnings Overview</h6>
-                                        <div class="dropdown no-arrow">
-                                            <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-                                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                                            </a>
-                                            <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
-                                                 aria-labelledby="dropdownMenuLink">
-                                                <div class="dropdown-header">Dropdown Header:</div>
-                                                <a class="dropdown-item" href="#">Action</a>
-                                                <a class="dropdown-item" href="#">Another action</a>
-                                                <div class="dropdown-divider"></div>
-                                                <a class="dropdown-item" href="#">Something else here</a>
-                                            </div>
-                                        </div>
                                     </div>
                                     <!-- Card Body -->
                                     <div class="card-body">
@@ -576,20 +686,6 @@
                                     <div
                                         class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                                         <h6 class="m-0 font-weight-bold text-primary">Revenue Sources</h6>
-                                        <div class="dropdown no-arrow">
-                                            <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-                                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                                            </a>
-                                            <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
-                                                 aria-labelledby="dropdownMenuLink">
-                                                <div class="dropdown-header">Dropdown Header:</div>
-                                                <a class="dropdown-item" href="#">Action</a>
-                                                <a class="dropdown-item" href="#">Another action</a>
-                                                <div class="dropdown-divider"></div>
-                                                <a class="dropdown-item" href="#">Something else here</a>
-                                            </div>
-                                        </div>
                                     </div>
                                     <!-- Card Body -->
                                     <div class="card-body">
@@ -598,170 +694,14 @@
                                         </div>
                                         <div class="mt-4 text-center small">
                                             <span class="mr-2">
-                                                <i class="fas fa-circle text-primary"></i> Direct
+                                                <i class="fas fa-circle text-primary"></i> Elder-Caretaker
                                             </span>
                                             <span class="mr-2">
-                                                <i class="fas fa-circle text-success"></i> Social
-                                            </span>
-                                            <span class="mr-2">
-                                                <i class="fas fa-circle text-info"></i> Referral
+                                                <i class="fas fa-circle text-success"></i> Babysitter
                                             </span>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-
-                        <!-- Content Row -->
-                        <div class="row">
-
-                            <!-- Content Column -->
-                            <div class="col-lg-6 mb-4">
-
-                                <!-- Project Card Example -->
-                                <div class="card shadow mb-4">
-                                    <div class="card-header py-3">
-                                        <h6 class="m-0 font-weight-bold text-primary">Projects</h6>
-                                    </div>
-                                    <div class="card-body">
-                                        <h4 class="small font-weight-bold">Server Migration <span
-                                                class="float-right">20%</span></h4>
-                                        <div class="progress mb-4">
-                                            <div class="progress-bar bg-danger" role="progressbar" style="width: 20%"
-                                                 aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"></div>
-                                        </div>
-                                        <h4 class="small font-weight-bold">Sales Tracking <span
-                                                class="float-right">40%</span></h4>
-                                        <div class="progress mb-4">
-                                            <div class="progress-bar bg-warning" role="progressbar" style="width: 40%"
-                                                 aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"></div>
-                                        </div>
-                                        <h4 class="small font-weight-bold">Customer Database <span
-                                                class="float-right">60%</span></h4>
-                                        <div class="progress mb-4">
-                                            <div class="progress-bar" role="progressbar" style="width: 60%"
-                                                 aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
-                                        </div>
-                                        <h4 class="small font-weight-bold">Payout Details <span
-                                                class="float-right">80%</span></h4>
-                                        <div class="progress mb-4">
-                                            <div class="progress-bar bg-info" role="progressbar" style="width: 80%"
-                                                 aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
-                                        </div>
-                                        <h4 class="small font-weight-bold">Account Setup <span
-                                                class="float-right">Complete!</span></h4>
-                                        <div class="progress">
-                                            <div class="progress-bar bg-success" role="progressbar" style="width: 100%"
-                                                 aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Color System -->
-                                <div class="row">
-                                    <div class="col-lg-6 mb-4">
-                                        <div class="card bg-primary text-white shadow">
-                                            <div class="card-body">
-                                                Primary
-                                                <div class="text-white-50 small">#4e73df</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-6 mb-4">
-                                        <div class="card bg-success text-white shadow">
-                                            <div class="card-body">
-                                                Success
-                                                <div class="text-white-50 small">#1cc88a</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-6 mb-4">
-                                        <div class="card bg-info text-white shadow">
-                                            <div class="card-body">
-                                                Info
-                                                <div class="text-white-50 small">#36b9cc</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-6 mb-4">
-                                        <div class="card bg-warning text-white shadow">
-                                            <div class="card-body">
-                                                Warning
-                                                <div class="text-white-50 small">#f6c23e</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-6 mb-4">
-                                        <div class="card bg-danger text-white shadow">
-                                            <div class="card-body">
-                                                Danger
-                                                <div class="text-white-50 small">#e74a3b</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-6 mb-4">
-                                        <div class="card bg-secondary text-white shadow">
-                                            <div class="card-body">
-                                                Secondary
-                                                <div class="text-white-50 small">#858796</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-6 mb-4">
-                                        <div class="card bg-light text-black shadow">
-                                            <div class="card-body">
-                                                Light
-                                                <div class="text-black-50 small">#f8f9fc</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-6 mb-4">
-                                        <div class="card bg-dark text-white shadow">
-                                            <div class="card-body">
-                                                Dark
-                                                <div class="text-white-50 small">#5a5c69</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </div>
-
-                            <div class="col-lg-6 mb-4">
-
-                                <!-- Illustrations -->
-                                <div class="card shadow mb-4">
-                                    <div class="card-header py-3">
-                                        <h6 class="m-0 font-weight-bold text-primary">Illustrations</h6>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="text-center">
-                                            <img class="img-fluid px-3 px-sm-4 mt-3 mb-4" style="width: 25rem;"
-                                                 src="img/undraw_posting_photo.svg" alt="...">
-                                        </div>
-                                        <p>Add some quality, svg illustrations to your project courtesy of <a
-                                                target="_blank" rel="nofollow" href="https://undraw.co/">unDraw</a>, a
-                                            constantly updated collection of beautiful svg images that you can use
-                                            completely free and without attribution!</p>
-                                        <a target="_blank" rel="nofollow" href="https://undraw.co/">Browse Illustrations on
-                                            unDraw &rarr;</a>
-                                    </div>
-                                </div>
-
-                                <!-- Approach -->
-                                <div class="card shadow mb-4">
-                                    <div class="card-header py-3">
-                                        <h6 class="m-0 font-weight-bold text-primary">Development Approach</h6>
-                                    </div>
-                                    <div class="card-body">
-                                        <p>SB Admin 2 makes extensive use of Bootstrap 4 utility classes in order to reduce
-                                            CSS bloat and poor page performance. Custom CSS classes are used to create
-                                            custom components and custom utility classes.</p>
-                                        <p class="mb-0">Before working with this theme, you should become familiar with the
-                                            Bootstrap framework, especially the utility classes.</p>
-                                    </div>
-                                </div>
-
                             </div>
                         </div>
 
@@ -775,7 +715,7 @@
                 <footer class="sticky-footer bg-white">
                     <div class="container my-auto">
                         <div class="copyright text-center my-auto">
-                            <span>Copyright &copy; Your Website 2021</span>
+                            <span>Copyright &copy; Family Care 2025</span>
                         </div>
                     </div>
                 </footer>
@@ -806,7 +746,7 @@
                     <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
                     <div class="modal-footer">
                         <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                        <a class="btn btn-primary" href="login.html">Logout</a>
+                        <a class="btn btn-primary" href="staff_logoutProcess">Logout</a>
                     </div>
                 </div>
             </div>
@@ -825,10 +765,169 @@
         <!-- Page level plugins -->
         <script src="vendor/chart.js/Chart.min.js"></script>
 
+
+
         <!-- Page level custom scripts -->
-        <script src="js/demo/chart-area-demo.js"></script>
-        <script src="js/demo/chart-pie-demo.js"></script>
+<!--        <script src="js/demo/chart-area-demo.js"></script>-->
+<!--        <script src="js/demo/chart-pie-demo.js"></script>-->
 
     </body>
 
 </html>
+
+<script>
+    // Set new default font family and font color to mimic Bootstrap's default styling
+    Chart.defaults.global.defaultFontFamily = 'Nunito', '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
+    Chart.defaults.global.defaultFontColor = '#858796';
+
+    function number_format(number, decimals, dec_point, thousands_sep) {
+        number = (number + '').replace(',', '').replace(' ', '');
+        var n = !isFinite(+number) ? 0 : +number,
+            prec = !isFinite(+decimals) ? 0 : Math.abs(decimals),
+            sep = (typeof thousands_sep === 'undefined') ? ',' : thousands_sep,
+            dec = (typeof dec_point === 'undefined') ? '.' : dec_point,
+            s = '',
+            toFixedFix = function(n, prec) {
+                var k = Math.pow(10, prec);
+                return '' + Math.round(n * k) / k;
+            };
+        s = (prec ? toFixedFix(n, prec) : '' + Math.round(n)).split('.');
+        if (s[0].length > 3) {
+            s[0] = s[0].replace(/\B(?=(?:\d{3})+(?!\d))/g, sep);
+        }
+        if ((s[1] || '').length < prec) {
+            s[1] = s[1] || '';
+            s[1] += new Array(prec - s[1].length + 1).join('0');
+        }
+        return s.join(dec);
+    }
+
+    // Data for the chart
+    const monthlyEarnings = <%= Arrays.toString(monthlyEarnings) %>;
+
+    // Area Chart 
+    var ctx = document.getElementById("myAreaChart");
+    var myLineChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+            datasets: [{
+                label: "Earnings",
+                lineTension: 0.3,
+                backgroundColor: "rgba(78, 115, 223, 0.05)",
+                borderColor: "rgba(78, 115, 223, 1)",
+                pointRadius: 3,
+                pointBackgroundColor: "rgba(78, 115, 223, 1)",
+                pointBorderColor: "rgba(78, 115, 223, 1)",
+                pointHoverRadius: 3,
+                pointHoverBackgroundColor: "rgba(78, 115, 223, 1)",
+                pointHoverBorderColor: "rgba(78, 115, 223, 1)",
+                pointHitRadius: 10,
+                pointBorderWidth: 2,
+                data: monthlyEarnings, // Use the dynamic data
+            }],
+        },
+        options: {
+            maintainAspectRatio: false,
+            layout: {
+                padding: {
+                    left: 10,
+                    right: 25,
+                    top: 25,
+                    bottom: 0,
+                },
+            },
+            scales: {
+                xAxes: [{
+                    time: {
+                        unit: 'date',
+                    },
+                    gridLines: {
+                        display: false,
+                        drawBorder: false,
+                    },
+                    ticks: {
+                        maxTicksLimit: 7,
+                    },
+                }],
+                yAxes: [{
+                    ticks: {
+                        maxTicksLimit: 5,
+                        padding: 10,
+                        callback: function(value, index, values) {
+                            return 'RM' + number_format(value);
+                        },
+                    },
+                    gridLines: {
+                        color: "rgb(234, 236, 244)",
+                        zeroLineColor: "rgb(234, 236, 244)",
+                        drawBorder: false,
+                        borderDash: [2],
+                        zeroLineBorderDash: [2],
+                    },
+                }],
+            },
+            legend: {
+                display: false,
+            },
+            tooltips: {
+                backgroundColor: "rgb(255,255,255)",
+                bodyFontColor: "#858796",
+                titleMarginBottom: 10,
+                titleFontColor: '#6e707e',
+                titleFontSize: 14,
+                borderColor: '#dddfeb',
+                borderWidth: 1,
+                xPadding: 15,
+                yPadding: 15,
+                displayColors: false,
+                intersect: false,
+                mode: 'index',
+                caretPadding: 10,
+                callbacks: {
+                    label: function(tooltipItem, chart) {
+                        var datasetLabel = chart.datasets[tooltipItem.datasetIndex].label || '';
+                        return datasetLabel + ': RM' + number_format(tooltipItem.yLabel);
+                    },
+                },
+            },
+        },
+    });
+
+    // Fetch counts from the server-side
+    var babysitterCount = <%= babysitterCount %>;
+    var eldercareCount = <%= eldercareCount %>;
+
+    // Pie Chart
+    var ctx = document.getElementById("myPieChart");
+    var myPieChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ["Babysitter", "Eldercaretaker"],  // Labels for the chart
+            datasets: [{
+                data: [babysitterCount, eldercareCount],  // Counts from the database
+                backgroundColor: ['#4e73df', '#1cc88a'],  // Custom colors for each segment
+                hoverBackgroundColor: ['#2e59d9', '#17a673'],
+                hoverBorderColor: "rgba(234, 236, 244, 1)",
+            }],
+        },
+        options: {
+            maintainAspectRatio: false,
+            tooltips: {
+                backgroundColor: "rgb(255,255,255)",
+                bodyFontColor: "#858796",
+                borderColor: '#dddfeb',
+                borderWidth: 1,
+                xPadding: 15,
+                yPadding: 15,
+                displayColors: false,
+                caretPadding: 10,
+            },
+            legend: {
+                display: false
+            },
+            cutoutPercentage: 80,
+        },
+    });
+    
+</script>
