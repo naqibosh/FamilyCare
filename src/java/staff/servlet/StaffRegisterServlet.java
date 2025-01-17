@@ -1,92 +1,85 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package staff.servlet;
 
+import static com.sun.xml.ws.security.addressing.impl.policy.Constants.logger;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import javax.servlet.ServletException;
-//import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import java.util.Base64;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import jbcrypt.BCrypt; //import from hashing package
+import user.*;
+import jbcrypt.BCrypt;
+import utils.SessionUtils;
 
-//@WebServlet("/StaffRegisterServlet")
+/**
+ *
+ * @author hazik
+ */
 public class StaffRegisterServlet extends HttpServlet {
 
-    private static final long serialVersionUID = 1L;
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        response.setContentType("text/html;charset=UTF-8");
 
-    // Database connection details
-    private static final String DB_URL = "jdbc:oracle:thin:@//localhost:1521/XEPDB1";
-    private static final String DB_USER = "CareGiver";
-    private static final String DB_PASSWORD = "CareGiver";
+        try {
+            // Check if user is already logged in
+            Integer userId = SessionUtils.getUserIdFromSession(request);
+            if (userId != null) {
+                // Retrieve Staff object from request
+                Staff staff = (Staff) request.getAttribute("staff");
+                StaffDAO staffDAO = new StaffDAO();
+                String userRole = staffDAO.getUserRole(userId);
+
+                // Only allow Administrators and Managers to register new staff
+                if (!userRole.equals("Administrator") && !userRole.equals("Manager")) {
+                    response.sendRedirect("access-denied.html"); // Redirect to access denied page
+                    return;
+                } else {
+                    // Check if email already exists
+                    if (staffDAO.isStaffEmailExists(staff.getEmail())) {
+                        response.sendRedirect("register.html?error=3"); // Email already exists
+                        return;
+                    }
+
+                    // Hash the password using BCrypt
+                    String hashedPassword = BCrypt.hashpw(staff.getPassword(), BCrypt.gensalt());
+                    staff.setPassword(hashedPassword);
+
+                    // Insert the staff into the database
+                    int rowsInserted = staffDAO.insertStaff(staff);
+
+                    if (rowsInserted > 0) {
+                        // Registration successful
+                        response.sendRedirect("staff_dashboard.jsp?status=success");
+                    } else {
+                        // Registration failed
+                        response.sendRedirect("register.html?error=1");
+                    }
+                }
+            }
+
+        } catch (SQLException ex) {
+            logger.severe("Error registering staff: " + ex.getMessage());
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to register staff.");
+        }
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        processRequest(request, response);
+    }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
-        response.setContentType("text/html");
-        PrintWriter out = response.getWriter();
-
-        String name = request.getParameter("name");
-        String email = request.getParameter("email");
-        String password = (String) request.getParameter("password");
-        String phoneNumber = request.getParameter("phoneNumber");
-        String role = request.getParameter("role");
-
-        // Basic validation (optional)
-        if (name == null || email == null || password == null
-                || phoneNumber == null || role == null) {
-            out.println("Error: Please fill out all required fields.");
-            return;
-        }
-
-        String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());  // Hash the password
-        try {
-            Class.forName("oracle.jdbc.OracleDriver");
-            try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
-                String sql = "INSERT INTO staff (staff_name, staff_password, staff_email, staff_phone_number, staff_role) " + "VALUES (?, ?, ?, ?, ?)";
-                PreparedStatement statement = conn.prepareStatement(sql);
-                statement.setString(1, name);
-                statement.setString(2, hashedPassword);
-                statement.setString(3, email);
-                statement.setString(4, phoneNumber);
-                statement.setString(5, role);
-
-                int rowsInserted = statement.executeUpdate();
-                if (rowsInserted > 0) {
-                    out.println("Registration successful!"); //debug
-                    // Redirect to staff_dashboard.jsp
-                    response.sendRedirect("staff_dashboard.jsp?status=success");
-                } else {
-                    //response.sendRedirect("register.html?error=2+servlet");
-                    out.println("Error: User registration failed."); //debug
-                }
-            } catch (Exception e) {
-                e.printStackTrace(out);
-                out.println("Error: Database connection failed."); //debug
-                // Redirect back to the login page on failure
-                //response.sendRedirect("register.html?error=2+servlet");
-            }
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(StaffRegisterServlet.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        processRequest(request, response);
     }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED, "GET method is not supported.");
-    }
+    public String getServletInfo() {
+        return "Short description";
+    }// </editor-fold>
+
 }

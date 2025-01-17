@@ -4,11 +4,13 @@
     Author     : hazik
 --%>
 
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.io.*, javax.servlet.*, javax.servlet.http.*"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="user.*" %>
 <!DOCTYPE html>
 <html>
     <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Staff Register Processing</title>
     </head>
     <body>
@@ -20,16 +22,34 @@
                 String phoneNumber = request.getParameter("phoneNumber");
                 String role = request.getParameter("role");
 
-                if (email == null || password == null || password == null || phoneNumber == null || role == null) {
-                    // Redirect to login.html with error code
-                    response.sendRedirect("register.html?error=2+null");
-                } else {                 
-                    // Forward the request to the servlet
+                if (name == null || email == null || password == null || phoneNumber == null || role == null) {
+                    // Redirect to register.html with error code
+                    response.sendRedirect("register.html?error=1"); 
+                } else {
+                    try {
+                    // Create a Staff object
+                    Staff staff = new Staff();
+                    staff.setName(name);
+                    staff.setEmail(email);
+                    staff.setPassword(password); // Hash password before storing
+                    staff.setPhoneNumber(phoneNumber);
+                    staff.setRole(role); 
+
+                    // Set attributes in the request 
+                    request.setAttribute("staff", staff); 
+
+                    // Forward the request to the StaffRegisterServlet
                     RequestDispatcher dispatcher = request.getRequestDispatcher("../StaffRegisterServlet");
                     dispatcher.forward(request, response);
-                    //out.println("<p>An error occur1.</p>"); //debug
+                    
+                    } catch (Exception e) {
+                        // Log the error (optional, for debugging purposes)
+                        e.printStackTrace();
+                        // Redirect to an error page
+                        response.sendRedirect("404.html");
+                    }
                 }
-            } 
+            }
         %>
     </body>
 </html>

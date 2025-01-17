@@ -6,89 +6,113 @@
 package staff.servlet;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import javax.servlet.ServletException;
-//import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.util.Base64;
 import jbcrypt.BCrypt; //import from hashing package
+import utils.SessionUtils;
 
-//@WebServlet("/StaffLoginServlet")
 public class StaffLoginServlet extends HttpServlet {
 
     // Database connection details
-    private static final String DB_URL = "jdbc:oracle:thin:@//localhost:1521/XEPDB1";
+    private static final String DB_URL = "jdbc:oracle:thin:@//localhost:1521/XE";
     private static final String DB_USER = "CareGiver";
-    private static final String DB_PASSWORD = "CareGiver";
+    private static final String DB_PASSWORD = "system";
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
 
         String staff_email = request.getParameter("email");
         String staff_password = request.getParameter("password");
 
-        try (PrintWriter out = response.getWriter()) {
+        try {
             if (staff_email == null || staff_password == null || staff_email.isEmpty() || staff_password.isEmpty()) {
-                out.println("<p>Username or password cannot be empty. Please try again.</p>"); //debug
+                System.out.println("Error: Empty fields.");
+                response.sendRedirect("login.html?error=1");
                 return;
             }
 
             boolean isValidUser = false;
+            int userId = 0;
 
-            // Database validation logic
-            try {
-                Class.forName("oracle.jdbc.OracleDriver");
+            // Load Oracle JDBC Driver
+            Class.forName("oracle.jdbc.OracleDriver");
 
-                try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-                     PreparedStatement statement = connection.prepareStatement(
-                             "SELECT staff_password FROM staff WHERE staff_email = ?")) {
+            // Debug: Check if connection details are correct
+            System.out.println("Connecting to database...");
 
+            try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
+                System.out.println("Database connected successfully.");
+
+                // Prepare SQL query
+                String query = "SELECT staff_id, staff_password FROM staff WHERE staff_email = ?";
+                try (PreparedStatement statement = connection.prepareStatement(query)) {
                     statement.setString(1, staff_email);
 
-                    System.out.println("Executing query with email: " + staff_email); // Debug
+                    // Debug: Show the query being executed
+                    System.out.println("Executing query: " + statement);
 
                     try (ResultSet resultSet = statement.executeQuery()) {
                         if (resultSet.next()) {
-                            String hashedPasswordFromDB = resultSet.getString("staff_password");
+                            userId = resultSet.getInt("staff_id");
+                            String hashedPasswordFromDB = resultSet.getString("staff_password").trim();
+
+                            // Debug: Check the retrieved password hash
+                            System.out.println("Retrieved hashed password: " + hashedPasswordFromDB);
 
                             // Validate entered password with hashed password
                             isValidUser = BCrypt.checkpw(staff_password, hashedPasswordFromDB);
+                        } else {
+                            System.out.println("Error: No user found with the given email.");
                         }
                     }
                 }
-            } catch (Exception e) {
-                out.println("<p>Error connecting to the database: " + e.getMessage() + "</p>");
-                e.printStackTrace(); // Log exception to server logs
-                return;
             }
 
             if (isValidUser) {
-                // Generate a session and encrypted session ID
+                // Debug: Valid user login
+                System.out.println("User authenticated successfully. User ID: " + userId);
+
                 HttpSession session = request.getSession();
-                session.setAttribute("email", staff_email);
+                session.setAttribute("userId", userId);
 
+                // Encrypt session ID using BCrypt
                 String sessionId = session.getId();
-                String encryptedSessionId = Base64.getEncoder().encodeToString(sessionId.getBytes());
+                String encryptedSessionId = BCrypt.hashpw(sessionId, BCrypt.gensalt());
 
-                // Redirect to staffhome.html with the encrypted session ID
+                // Redirect to dashboard
                 response.sendRedirect("staff_dashboard.jsp?sessionId=" + encryptedSessionId);
             } else {
-                // Redirect back to the login page on failure
-                response.sendRedirect("login.html?error=Invalid+email+or+password");
+                // Debug: Invalid credentials
+                System.out.println("Error: Invalid credentials.");
+                response.sendRedirect("login.html?error=3");
             }
+        } catch (ClassNotFoundException e) {
+            System.out.println("Error: Oracle JDBC Driver not found.");
+            e.printStackTrace();
+            response.sendRedirect("login.html?error=2");
+        } catch (SQLException e) {
+            System.out.println("Error: Database connection or query execution failed.");
+            e.printStackTrace();
+            response.sendRedirect("login.html?error=2");
+        } catch (Exception e) {
+            System.out.println("Error: Unexpected exception occurred.");
+            e.printStackTrace();
+            response.sendRedirect("login.html?error=2");
         }
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED, "GET method is not supported.");
+        doPost(request, response);
     }
 }
