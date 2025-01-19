@@ -9,7 +9,7 @@
         <meta name="description" content="">
         <meta name="author" content="">
 
-        <title>Staff Login</title>
+        <title>Family Care</title>
 
         <!-- Custom fonts for this template-->
         <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -78,7 +78,7 @@
             </div>
 
         </div>
-        
+
         <!-- Show Error JavaScript-->
         <script>
             // Get the error code from the URL
@@ -86,7 +86,7 @@
             const code = urlParams.get('error');
 
             // Check if there is an error code
-            if (code === '1') {    
+            if (code === '1') {
                 // Display an error message
                 const errorMessage = document.createElement('p');
                 errorMessage.textContent = 'Please enter both email and password.';
@@ -95,7 +95,8 @@
                 // Insert the error message before the form
                 const form = document.querySelector('form');
                 form.parentNode.insertBefore(errorMessage, form);
-            } else if(code === '2'){}
+            } else if (code === '2') {
+            }
 
         </script>
         <script>
@@ -104,7 +105,7 @@
             const logout = urlParams.get('logout');
 
             // Check if there is an error code
-            if (logout === 'success') {    
+            if (logout === 'success') {
                 // Display an error message
                 const errorMessage = document.createElement('p');
                 errorMessage.textContent = 'Logout successful!';
