@@ -6,6 +6,10 @@
         <servlet-name>LoginServlet</servlet-name>
         <servlet-class>customer.servlet.LoginServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>CaretakerServlet</servlet-name>
+        <servlet-class>BookingServlet.CaretakerServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>RegisterServlet</servlet-name>
         <url-pattern>/RegisterServlet</url-pattern>
@@ -13,6 +17,10 @@
     <servlet-mapping>
         <servlet-name>LoginServlet</servlet-name>
         <url-pattern>/LoginServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CaretakerServlet</servlet-name>
+        <url-pattern>/CaretakerServlet</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>index.html</welcome-file>
@@ -71,18 +79,15 @@
         <servlet-name>StaffManageServlet</servlet-name>
         <url-pattern>/StaffManageServlet</url-pattern>
     </servlet-mapping>
-    
     <!-- Error handling -->
     <error-page>
         <!-- Handle HTTP 404 errors -->
         <error-code>404</error-code>
         <location>/staff/404.html</location>
     </error-page>
-
     <error-page>
         <!-- Handle all uncaught exceptions -->
         <exception-type>java.lang.Exception</exception-type>
         <location>/staff/404.html</location>
     </error-page>
-
 </web-app>
