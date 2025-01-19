@@ -9,7 +9,7 @@
         <meta name="description" content="">
         <meta name="author" content="">
 
-        <title>Staff Login</title>
+        <title>Family Care</title>
 
         <!-- Custom fonts for this template-->
         <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -41,7 +41,7 @@
                                         <div class="text-center">
                                             <h1 class="h4 text-gray-900 mb-4">Welcome Back!</h1>
                                         </div>
-                                        <form class="user" action="staff_loginProcess.jsp" method="post">
+                                        <form class="user" id="form" action="staff_loginProcess.jsp" method="post">
                                             <div class="form-group">
                                                 <input type="email" class="form-control form-control-user"
                                                        name="email" aria-describedby="emailHelp"
@@ -78,19 +78,38 @@
             </div>
 
         </div>
-        
+
         <!-- Show Error JavaScript-->
         <script>
             // Get the error code from the URL
             const urlParams = new URLSearchParams(window.location.search);
-            const errorCode = urlParams.get('error');
+            const code = urlParams.get('error');
 
             // Check if there is an error code
-            if (errorCode === '1') {    
+            if (code === '1') {
                 // Display an error message
                 const errorMessage = document.createElement('p');
                 errorMessage.textContent = 'Please enter both email and password.';
                 errorMessage.style.color = 'red';
+
+                // Insert the error message before the form
+                const form = document.querySelector('form');
+                form.parentNode.insertBefore(errorMessage, form);
+            } else if (code === '2') {
+            }
+
+        </script>
+        <script>
+            // Get the logout status from the URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const logout = urlParams.get('logout');
+
+            // Check if there is an error code
+            if (logout === 'success') {
+                // Display an error message
+                const errorMessage = document.createElement('p');
+                errorMessage.textContent = 'Logout successful!';
+                errorMessage.style.color = 'green';
 
                 // Insert the error message before the form
                 const form = document.querySelector('form');

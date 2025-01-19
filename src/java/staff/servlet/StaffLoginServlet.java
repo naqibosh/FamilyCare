@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import jbcrypt.BCrypt; //import from hashing package
+import jbcrypt.BCrypt;
 import utils.SessionUtils;
 
 public class StaffLoginServlet extends HttpServlet {
@@ -82,15 +82,12 @@ public class StaffLoginServlet extends HttpServlet {
                 // Debug: Valid user login
                 System.out.println("User authenticated successfully. User ID: " + userId);
 
-                HttpSession session = request.getSession();
-                session.setAttribute("userId", userId);
+                HttpSession session = SessionUtils.createSession(request, userId);
+                String encryptedSessionId = SessionUtils.getEncryptedSessionId(request);
 
-                // Encrypt session ID using BCrypt
-                String sessionId = session.getId();
-                String encryptedSessionId = BCrypt.hashpw(sessionId, BCrypt.gensalt());
-
-                // Redirect to dashboard
+                // Redirect to dashboard with the encrypted session ID
                 response.sendRedirect("staff_dashboard.jsp?sessionId=" + encryptedSessionId);
+
             } else {
                 // Debug: Invalid credentials
                 System.out.println("Error: Invalid credentials.");

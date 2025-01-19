@@ -21,23 +21,18 @@ public class StaffLogoutServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            // Invalidate the session and redirect
+            SessionUtils.invalidateSession(request);
+            response.sendRedirect("login.html?logout=success");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        doGet(request, response); // Use doGet for consistency
     }
-
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-
-        // Invalidate the current session using SessionUtils
-        SessionUtils.invalidateSession(request); 
-
-        response.sendRedirect("login.html"); 
-    }
-
 }

@@ -13,7 +13,7 @@
     <body>
         <%
             try{
-                RequestDispatcher dispatcher = request.getRequestDispatcher("../StaffLogoutServlet");
+                RequestDispatcher dispatcher = request.getRequestDispatcher("/StaffLogoutServlet");
                 dispatcher.forward(request, response);
             } catch (Exception e) {
                     // Log the error (optional, for debugging purposes)
