@@ -55,5 +55,18 @@
         <servlet-name>StaffManageServlet</servlet-name>
         <url-pattern>/StaffManageServlet</url-pattern>
     </servlet-mapping>
+    
+    <!-- Error handling -->
+    <error-page>
+        <!-- Handle HTTP 404 errors -->
+        <error-code>404</error-code>
+        <location>/staff/404.html</location>
+    </error-page>
+
+    <error-page>
+        <!-- Handle all uncaught exceptions -->
+        <exception-type>java.lang.Exception</exception-type>
+        <location>/staff/404.html</location>
+    </error-page>
 
 </web-app>

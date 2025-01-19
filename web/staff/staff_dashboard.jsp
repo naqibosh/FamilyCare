@@ -8,6 +8,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ page import="java.sql.*, java.util.*" %>
+<%@ page import="utils.SessionUtils" %>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -22,19 +23,26 @@
 
         <title>Family Care</title>
 
-        <!-- Custom fonts for this template-->
+        <!-- Custom fonts -->
         <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
         <link
             href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
             rel="stylesheet">
 
-        <!-- Custom styles for this template-->
+        <!-- Custom styles -->
         <link href="css/sb-admin-2.min.css" rel="stylesheet">
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="js/dashboard.js"> </script>
 
     </head>
 
-<%
+<%  
+    String encryptedSessionId = request.getParameter("sessionId");
+    if (!SessionUtils.validateEncryptedSessionId(request, encryptedSessionId)) {
+        response.sendRedirect("login.jsp?error=invalidSession");
+        return;
+    }
+
     String url = "jdbc:oracle:thin:@//localhost:1521/XE"; 
     String username = "CareGiver"; 
     String password = "system"; 
@@ -54,7 +62,6 @@
     double[] monthlyEarnings = new double[12];
     int babysitterCount = 0;
     int eldercareCount = 0;
-    String currentTime = "";
 
     try {
         Class.forName("oracle.jdbc.driver.OracleDriver");
@@ -151,12 +158,6 @@
         if (rs.next()) {
             babysitterCount = rs.getInt("babysitter_count");
             eldercareCount = rs.getInt("eldercare_count");
-        }
-        
-        // SQL Query to get the current time in the desired format
-        rs = stmt.executeQuery("SELECT TO_CHAR(SYSDATE, 'DY HH24:MI:SS') AS current_time FROM dual");
-        if (rs.next()) {
-            currentTime = rs.getString("current_time");
         }
         
     } catch (Exception e) {
@@ -645,8 +646,8 @@
                                         <div class="row no-gutters align-items-center">
                                             <div class="col mr-2">
                                                 <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
-                                                    Data Time</div>
-                                                <div class="h5 mb-0 font-weight-bold text-gray-800"><%= currentTime %></div> 
+                                                    Current Time</div>
+                                                <div id="current-time" class="h5 mb-0 font-weight-bold text-gray-800"> </div> 
                                             </div>
                                             <div class="col-auto">
                                                 <i class="fas fa-clock fa-2x text-gray-300"></i>
@@ -673,7 +674,7 @@
                                     <!-- Card Body -->
                                     <div class="card-body">
                                         <div class="chart-area">
-                                            <canvas id="myAreaChart"></canvas>
+                                            <canvas id="myAreaChart" data-monthly-earnings="<%= Arrays.toString(monthlyEarnings) %>"></canvas>
                                         </div>
                                     </div>
                                 </div>
@@ -690,7 +691,7 @@
                                     <!-- Card Body -->
                                     <div class="card-body">
                                         <div class="chart-pie pt-4 pb-2">
-                                            <canvas id="myPieChart"></canvas>
+                                            <canvas id="myPieChart" data-babysitter-count="<%= babysitterCount %>" data-eldercare-count="<%= eldercareCount %>"></canvas>
                                         </div>
                                         <div class="mt-4 text-center small">
                                             <span class="mr-2">
@@ -746,7 +747,7 @@
                     <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
                     <div class="modal-footer">
                         <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                        <a class="btn btn-primary" href="staff_logoutProcess">Logout</a>
+                        <a class="btn btn-primary" href="staff_logoutProcess.jsp">Logout</a>
                     </div>
                 </div>
             </div>
@@ -765,169 +766,12 @@
         <!-- Page level plugins -->
         <script src="vendor/chart.js/Chart.min.js"></script>
 
-
-
         <!-- Page level custom scripts -->
-<!--        <script src="js/demo/chart-area-demo.js"></script>-->
-<!--        <script src="js/demo/chart-pie-demo.js"></script>-->
+        <script src="js/graphChart.js"></script>
+        <script src="js/pieChart.js"></script>
 
     </body>
 
 </html>
 
-<script>
-    // Set new default font family and font color to mimic Bootstrap's default styling
-    Chart.defaults.global.defaultFontFamily = 'Nunito', '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
-    Chart.defaults.global.defaultFontColor = '#858796';
 
-    function number_format(number, decimals, dec_point, thousands_sep) {
-        number = (number + '').replace(',', '').replace(' ', '');
-        var n = !isFinite(+number) ? 0 : +number,
-            prec = !isFinite(+decimals) ? 0 : Math.abs(decimals),
-            sep = (typeof thousands_sep === 'undefined') ? ',' : thousands_sep,
-            dec = (typeof dec_point === 'undefined') ? '.' : dec_point,
-            s = '',
-            toFixedFix = function(n, prec) {
-                var k = Math.pow(10, prec);
-                return '' + Math.round(n * k) / k;
-            };
-        s = (prec ? toFixedFix(n, prec) : '' + Math.round(n)).split('.');
-        if (s[0].length > 3) {
-            s[0] = s[0].replace(/\B(?=(?:\d{3})+(?!\d))/g, sep);
-        }
-        if ((s[1] || '').length < prec) {
-            s[1] = s[1] || '';
-            s[1] += new Array(prec - s[1].length + 1).join('0');
-        }
-        return s.join(dec);
-    }
-
-    // Data for the chart
-    const monthlyEarnings = <%= Arrays.toString(monthlyEarnings) %>;
-
-    // Area Chart 
-    var ctx = document.getElementById("myAreaChart");
-    var myLineChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-            datasets: [{
-                label: "Earnings",
-                lineTension: 0.3,
-                backgroundColor: "rgba(78, 115, 223, 0.05)",
-                borderColor: "rgba(78, 115, 223, 1)",
-                pointRadius: 3,
-                pointBackgroundColor: "rgba(78, 115, 223, 1)",
-                pointBorderColor: "rgba(78, 115, 223, 1)",
-                pointHoverRadius: 3,
-                pointHoverBackgroundColor: "rgba(78, 115, 223, 1)",
-                pointHoverBorderColor: "rgba(78, 115, 223, 1)",
-                pointHitRadius: 10,
-                pointBorderWidth: 2,
-                data: monthlyEarnings, // Use the dynamic data
-            }],
-        },
-        options: {
-            maintainAspectRatio: false,
-            layout: {
-                padding: {
-                    left: 10,
-                    right: 25,
-                    top: 25,
-                    bottom: 0,
-                },
-            },
-            scales: {
-                xAxes: [{
-                    time: {
-                        unit: 'date',
-                    },
-                    gridLines: {
-                        display: false,
-                        drawBorder: false,
-                    },
-                    ticks: {
-                        maxTicksLimit: 7,
-                    },
-                }],
-                yAxes: [{
-                    ticks: {
-                        maxTicksLimit: 5,
-                        padding: 10,
-                        callback: function(value, index, values) {
-                            return 'RM' + number_format(value);
-                        },
-                    },
-                    gridLines: {
-                        color: "rgb(234, 236, 244)",
-                        zeroLineColor: "rgb(234, 236, 244)",
-                        drawBorder: false,
-                        borderDash: [2],
-                        zeroLineBorderDash: [2],
-                    },
-                }],
-            },
-            legend: {
-                display: false,
-            },
-            tooltips: {
-                backgroundColor: "rgb(255,255,255)",
-                bodyFontColor: "#858796",
-                titleMarginBottom: 10,
-                titleFontColor: '#6e707e',
-                titleFontSize: 14,
-                borderColor: '#dddfeb',
-                borderWidth: 1,
-                xPadding: 15,
-                yPadding: 15,
-                displayColors: false,
-                intersect: false,
-                mode: 'index',
-                caretPadding: 10,
-                callbacks: {
-                    label: function(tooltipItem, chart) {
-                        var datasetLabel = chart.datasets[tooltipItem.datasetIndex].label || '';
-                        return datasetLabel + ': RM' + number_format(tooltipItem.yLabel);
-                    },
-                },
-            },
-        },
-    });
-
-    // Fetch counts from the server-side
-    var babysitterCount = <%= babysitterCount %>;
-    var eldercareCount = <%= eldercareCount %>;
-
-    // Pie Chart
-    var ctx = document.getElementById("myPieChart");
-    var myPieChart = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: ["Babysitter", "Eldercaretaker"],  // Labels for the chart
-            datasets: [{
-                data: [babysitterCount, eldercareCount],  // Counts from the database
-                backgroundColor: ['#4e73df', '#1cc88a'],  // Custom colors for each segment
-                hoverBackgroundColor: ['#2e59d9', '#17a673'],
-                hoverBorderColor: "rgba(234, 236, 244, 1)",
-            }],
-        },
-        options: {
-            maintainAspectRatio: false,
-            tooltips: {
-                backgroundColor: "rgb(255,255,255)",
-                bodyFontColor: "#858796",
-                borderColor: '#dddfeb',
-                borderWidth: 1,
-                xPadding: 15,
-                yPadding: 15,
-                displayColors: false,
-                caretPadding: 10,
-            },
-            legend: {
-                display: false
-            },
-            cutoutPercentage: 80,
-        },
-    });
-    
-</script>
