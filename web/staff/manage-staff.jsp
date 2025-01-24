@@ -7,10 +7,11 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page import="user.Staff" %> 
+
 <!DOCTYPE html>
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
 <html lang="en">
 
     <head>
@@ -34,7 +35,8 @@
 
         <!-- Custom styles for this page -->
         <link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
-
+        <script src="js/manage-staff.js"> </script>
+        
     </head>
 
     <body id="page-top">
@@ -102,19 +104,19 @@
                         <i class="fas fa-fw fa-table"></i>
                         <span>Manage Customer</span></a>
                 </li>
-                
+
                 <li class="nav-item">
                     <a class="nav-link" href="caretaker_manageProcess.jsp">
                         <i class="fas fa-fw fa-table"></i>
                         <span>Manage Caretaker</span></a>
                 </li>
-                
+
                 <li class="nav-item">
                     <a class="nav-link" href="booking_manageProcess.jsp">
                         <i class="fas fa-fw fa-table"></i>
                         <span>Manage Booking</span></a>
                 </li>
-                
+
                 <li class="nav-item">
                     <a class="nav-link" href="payment_manageProcess.jsp">
                         <i class="fas fa-fw fa-table"></i>
@@ -266,42 +268,6 @@
                                             <div class="small text-gray-500">Emily Fowler · 58m</div>
                                         </div>
                                     </a>
-                                    <a class="dropdown-item d-flex align-items-center" href="#">
-                                        <div class="dropdown-list-image mr-3">
-                                            <img class="rounded-circle" src="img/undraw_profile_2.svg"
-                                                 alt="...">
-                                            <div class="status-indicator"></div>
-                                        </div>
-                                        <div>
-                                            <div class="text-truncate">I have the photos that you ordered last month, how
-                                                would you like them sent to you?</div>
-                                            <div class="small text-gray-500">Jae Chun · 1d</div>
-                                        </div>
-                                    </a>
-                                    <a class="dropdown-item d-flex align-items-center" href="#">
-                                        <div class="dropdown-list-image mr-3">
-                                            <img class="rounded-circle" src="img/undraw_profile_3.svg"
-                                                 alt="...">
-                                            <div class="status-indicator bg-warning"></div>
-                                        </div>
-                                        <div>
-                                            <div class="text-truncate">Last month's report looks great, I am very happy with
-                                                the progress so far, keep up the good work!</div>
-                                            <div class="small text-gray-500">Morgan Alvarez · 2d</div>
-                                        </div>
-                                    </a>
-                                    <a class="dropdown-item d-flex align-items-center" href="#">
-                                        <div class="dropdown-list-image mr-3">
-                                            <img class="rounded-circle" src="https://source.unsplash.com/Mv9hjnEUHR4/60x60"
-                                                 alt="...">
-                                            <div class="status-indicator bg-success"></div>
-                                        </div>
-                                        <div>
-                                            <div class="text-truncate">Am I a good boy? The reason I ask is because someone
-                                                told me that people say this to all dogs, even if they aren't good...</div>
-                                            <div class="small text-gray-500">Chicken the Dog · 2w</div>
-                                        </div>
-                                    </a>
                                     <a class="dropdown-item text-center small text-gray-500" href="#">Read More Messages</a>
                                 </div>
                             </li>
@@ -312,7 +278,7 @@
                             <li class="nav-item dropdown no-arrow">
                                 <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <span class="mr-2 d-none d-lg-inline text-gray-600 small">Douglas McGee</span>
+                                    <span class="mr-2 d-none d-lg-inline text-gray-600 small">${staffLoginInfo.name}</span>
                                     <img class="img-profile rounded-circle"
                                          src="img/undraw_profile.svg">
                                 </a>
@@ -395,48 +361,22 @@
                                                     <td>${staff.role}</td>
                                                     <td>${staff.supervisorName}</td>
                                                     <td>${staff.supervisorId}</td> 
-                                                    <td class="text-center align-middle"> <!-- Centering and vertically aligning buttons -->
-                                                        <div class="d-flex justify-content-center me-3"> <!-- Flex container with gap -->
-                                                            <!-- Edit Button -->
-                                                            <button class="btn btn-success btn-sm" data-toggle="modal" data-target="#editModal" 
-                                                                    onclick="openEditModal('${staff.id}', '${staff.role}', '${staff.supervisorId}')">
-                                                                Edit
-                                                            </button>
-                                                            <!-- Delete Button with Popup -->
-                                                            <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal-${staff.id}">
-                                                                Delete
-                                                            </button>
-                                                        </div>
+                                                    <td class="text-center align-middle">  
+                                                        <div >  
+                                                            <!-- Edit Button with margin-right -->  
+                                                            <button class="btn btn-success btn-sm me-2" data-toggle="modal" data-target="#editModal-${staff.id}"   
+                                                                    onclick="openEditModal('${staff.id}', '${staff.role}', '${staff.supervisorId}')">  
+                                                                Edit  
+                                                            </button>  
+                                                            <!-- Delete Button -->  
+                                                            <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal-${staff.id}">  
+                                                                Delete  
+                                                            </button>  
+                                                        </div>  
                                                     </td>
                                                 </tr> <c:set var="i" value="${i + 1}"/>
-                                            </c:forEach>
-                                                <!-- Modal for Confirming Deletion -->
-                                            <c:forEach items="${staffList}" var="staff">
-                                                <div class="modal fade" id="deleteModal-${staff.id}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
-                                                    <div class="modal-dialog" role="document">
-                                                        <div class="modal-content">
-                                                            <div class="modal-header">
-                                                                <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
-                                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                                    <span aria-hidden="true">&times;</span>
-                                                                </button>
-                                                            </div>
-                                                            <div class="modal-body">
-                                                                <p>Are you sure you want to delete this staff member?</p>
-                                                                <p>Type 'confirm' to proceed.</p>
-                                                                <input type="text" id="confirmText-${staff.id}" class="form-control" placeholder="Type 'confirm'">
-                                                            </div>
-                                                            <div class="modal-footer">
-                                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                                                                <button type="button" class="btn btn-danger" onclick="confirmDelete('${staff.id}')">Delete</button>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </c:forEach>
-                                        
-                                            <!-- Edit Modal -->
-                                            <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+                                                <!-- Edit Modal -->
+                                            <div class="modal fade" id="editModal-${staff.id}" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
                                                 <div class="modal-dialog" role="document">
                                                     <div class="modal-content">
                                                         <div class="modal-header">
@@ -446,20 +386,20 @@
                                                             </button>
                                                         </div>
                                                         <div class="modal-body">
-                                                           <form action="staff_editProccess.jsp" method="post"> <!-- redirect to jsp-->
-                                                                <input type="hidden" id="staffId" name="staffId">
+                                                            <!-- Form for editing staff -->
+                                                            <form action="staff_manageProcess.jsp?action=editStaff&staffId=${staff.id}" method="post"> 
                                                                 <div class="form-group">
                                                                     <label for="role">Role</label>
-                                                                    <select class="form-control" id="role" name="role">
-                                                                        <option value="Administrator">Administrator</option>
-                                                                        <option value="Manager">Manager</option>
-                                                                        <option value="Supervisor">Supervisor</option>
-                                                                        <option value="Executive">Executive</option>
+                                                                    <select class="form-control" id="role" name="staffRole">
+                                                                        <option value="Administrator" ${staff.role == 'Administrator' ? 'selected' : ''}>Administrator</option>
+                                                                        <option value="Manager" ${staff.role == 'Manager' ? 'selected' : ''}>Manager</option>
+                                                                        <option value="Supervisor" ${staff.role == 'Supervisor' ? 'selected' : ''}>Supervisor</option>
+                                                                        <option value="Executive" ${staff.role == 'Executive' ? 'selected' : ''}>Executive</option>
                                                                     </select>
                                                                 </div>
                                                                 <div class="form-group">
                                                                     <label for="supervisor">Supervisor ID</label>
-                                                                    <input type="text" class="form-control" id="supervisor" name="supervisor" placeholder="Enter Supervisor ID">
+                                                                    <input type="text" class="form-control" id="supervisor" name="supervisorId" value="${staff.supervisorId}" placeholder="Enter Supervisor ID">
                                                                 </div>
                                                                 <div class="form-group">
                                                                     <button type="submit" class="btn btn-success">Confirm</button>
@@ -469,7 +409,32 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            
+                                        </c:forEach>
+                                        <!-- Modal for Confirming Deletion -->
+                                        <c:forEach items="${staffList}" var="staff">
+                                            <div class="modal fade" id="deleteModal-${staff.id}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog" role="document">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
+                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <p>Are you sure you want to delete this staff member?</p>
+                                                            <p>Type 'confirm' to proceed.</p>
+                                                            <input type="text" id="confirmText-${staff.id}" class="form-control" placeholder="Type 'confirm'">
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                                            <button type="button" class="btn btn-danger" onclick="confirmDelete('${staff.id}')">Delete</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </c:forEach>
+
                                         </tbody>
                                     </table>
                                 </div>
@@ -522,35 +487,13 @@
                 </div>
             </div>
         </div>
-        
-        <!-- DataTables Initialization Script -->
-        <script>
-            $(document).ready(function() {
-                $('#dataTable').DataTable();
-            });
-        </script>
-        
-        <script>
-            function openEditModal(staffId, role, supervisorId) {
-                // Set the values of the fields in the modal
-                document.getElementById('staffId').value = staffId;
-                document.getElementById('role').value = role; // Set the role dropdown
-                document.getElementById('supervisor').value = supervisorId; // Set the supervisor ID field
-            }
 
-            function confirmDelete(staffId) {
-                var inputText = document.getElementById("confirmText-" + staffId).value;
-                if (inputText.toLowerCase() === 'confirm') {
-                    window.location.href = 'staff_deleteProcess.jsp?id=' + staffId; // Redirect to delete action
-                } else {
-                    alert("You must type 'confirm' to delete.");
-                }
-            }
-        </script>
-         
         <!-- Bootstrap core JavaScript-->
         <script src="vendor/jquery/jquery.min.js"></script>
         <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+        <!-- SweetAlert2 CDN -->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
         <!-- Core plugin JavaScript-->
         <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
@@ -564,7 +507,7 @@
 
         <!-- Page level custom scripts -->
         <script src="js/demo/datatables-demo.js"></script>
-        
+
     </body>
 
 </html>

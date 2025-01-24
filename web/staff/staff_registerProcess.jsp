@@ -43,10 +43,7 @@
                     dispatcher.forward(request, response);
                     
                     } catch (Exception e) {
-                        // Log the error (optional, for debugging purposes)
                         e.printStackTrace();
-                        // Redirect to an error page
-                        response.sendRedirect("404.html");
                     }
                 }
             }
