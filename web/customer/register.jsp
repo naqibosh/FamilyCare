@@ -107,7 +107,7 @@
                 <input type="password" name="confirm_password" placeholder="Confirm Password" required>
                 <button type="submit">Register</button>
             </form>
-            <a href="login.html" class="back-link">Back to Login</a>
+            <a href="login.jsp" class="back-link">Back to Login</a>
         </div>
 
     </body>

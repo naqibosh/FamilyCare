@@ -1,9 +1,8 @@
 package staff.servlet;
 
-import static com.sun.xml.ws.security.addressing.impl.policy.Constants.logger;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.List;
+import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -18,50 +17,67 @@ import utils.SessionUtils;
  */
 public class StaffRegisterServlet extends HttpServlet {
 
+    private static final Logger logger = Logger.getLogger(StaffRegisterServlet.class.getName());
+
+    private static final String ACCESS_DENIED = "staff_dashboard.jsp?success=false&errcode=5";
+    private static final String REGISTER_PAGE = "register.html";
+    private static final String SUCCESS_REDIRECT = "staff_dashboard.jsp?status=success";
+
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
 
         try {
-            // Check if user is already logged in
             Integer userId = SessionUtils.getUserIdFromSession(request);
-            if (userId != null) {
-                // Retrieve Staff object from request
-                Staff staff = (Staff) request.getAttribute("staff");
-                StaffDAO staffDAO = new StaffDAO();
-                String userRole = staffDAO.getUserRole(userId);
-
-                // Only allow Administrators and Managers to register new staff
-                if (!userRole.equals("Administrator") && !userRole.equals("Manager")) {
-                    response.sendRedirect("access-denied.html"); // Redirect to access denied page
-                    return;
-                } else {
-                    // Check if email already exists
-                    if (staffDAO.isStaffEmailExists(staff.getEmail())) {
-                        response.sendRedirect("register.html?error=3"); // Email already exists
-                        return;
-                    }
-
-                    // Hash the password using BCrypt
-                    String hashedPassword = BCrypt.hashpw(staff.getPassword(), BCrypt.gensalt());
-                    staff.setPassword(hashedPassword);
-
-                    // Insert the staff into the database
-                    int rowsInserted = staffDAO.insertStaff(staff);
-
-                    if (rowsInserted > 0) {
-                        // Registration successful
-                        response.sendRedirect("staff_dashboard.jsp?status=success");
-                    } else {
-                        // Registration failed
-                        response.sendRedirect("register.html?error=1");
-                    }
-                }
+            if (userId == null) {
+                response.sendRedirect(ACCESS_DENIED);
+                return;
             }
+
+            if (!hasPermissionToRegister(userId)) {
+                response.sendRedirect(ACCESS_DENIED);
+                return;
+            }
+
+            Staff staff = (Staff) request.getAttribute("staff");
+            if (staff == null) {
+                // Handle the case where staff is not present  
+                response.sendRedirect(REGISTER_PAGE + "?error=invalid_data");
+                return;
+            }
+
+            if (isEmailExists(staff.getEmail())) {
+                response.sendRedirect(REGISTER_PAGE + "?error=3"); // Email already exists  
+                return;
+            }
+
+            registerStaff(staff);
+            response.sendRedirect(SUCCESS_REDIRECT);
 
         } catch (SQLException ex) {
             logger.severe("Error registering staff: " + ex.getMessage());
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to register staff.");
+        }
+    }
+
+    private boolean hasPermissionToRegister(Integer userId) throws SQLException {
+        StaffDAO staffDAO = new StaffDAO();
+        String userRole = staffDAO.getUserRole(userId);
+        return userRole.equals("Administrator") || userRole.equals("Manager") || userRole.equals("Supervisor");
+    }
+
+    private boolean isEmailExists(String email) throws SQLException {
+        StaffDAO staffDAO = new StaffDAO();
+        return staffDAO.isStaffEmailExists(email);
+    }
+
+    private void registerStaff(Staff staff) throws SQLException {
+        String hashedPassword = BCrypt.hashpw(staff.getPassword(), BCrypt.gensalt());
+        staff.setPassword(hashedPassword);
+        StaffDAO staffDAO = new StaffDAO();
+        int rowsInserted = staffDAO.insertStaff(staff);
+        if (rowsInserted <= 0) {
+            throw new SQLException("Failed to insert staff record.");
         }
     }
 

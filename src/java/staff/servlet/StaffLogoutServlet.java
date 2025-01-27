@@ -24,7 +24,7 @@ public class StaffLogoutServlet extends HttpServlet {
         try {
             // Invalidate the session and redirect
             SessionUtils.invalidateSession(request);
-            response.sendRedirect("login.html?logout=success");
+            response.sendRedirect("login.html?success=true");
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -134,7 +134,7 @@
             <div class="avatar">C</div>
             <h2>Customer Login</h2>
             <p>Please enter your login details below.</p>
-            <form action="LoginServlet.jsp" method="post">
+            <form action="../LoginServlet" method="post">
                 <input type="text" name="username" placeholder="Username" required>
                 <input type="password" name="password" placeholder="Password" required>
                 <div class="button-container">

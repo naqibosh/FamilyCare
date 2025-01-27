@@ -29,6 +29,10 @@
     <servlet>
         <servlet-name>UpdateStatusServlet</servlet-name>
         <servlet-class>caretaker.servlet.UpdateStatusServlet</servlet-class>
+      </servlet>
+  <servlet>
+        <servlet-name>CaretakerServlet</servlet-name>
+        <servlet-class>BookingServlet.CaretakerServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>RegisterServlet</servlet-name>
@@ -61,6 +65,10 @@
     <servlet-mapping>
         <servlet-name>UpdateStatusServlet</servlet-name>
         <url-pattern>/UpdateStatusServlet</url-pattern>
+      </servlet-mapping>
+  <servlet-mapping>
+        <servlet-name>CaretakerServlet</servlet-name>
+        <url-pattern>/CaretakerServlet</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>index.html</welcome-file>
