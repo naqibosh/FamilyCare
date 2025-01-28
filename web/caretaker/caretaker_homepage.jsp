@@ -139,8 +139,6 @@
             <span>FamilyCare Dashboard</span>
             <div>
                 <a href="../caretakerProfileServlet">Profile</a>
-                <a href="schedule.jsp">Schedule</a>
-                <a href="bookings.jsp">Bookings</a>
                 <a href="../caretakerLogoutServlet">Logout</a>
             </div>
         </div>

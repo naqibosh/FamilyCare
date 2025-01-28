@@ -9,46 +9,40 @@
         <style>
             /* Basic styling for the page */
             body {
-                font-family: Arial, sans-serif;
-                background-color: #f9f9f9;
+                font-family: 'Arial', sans-serif;
                 margin: 0;
                 padding: 0;
+                background-color: #f4f7fa;
             }
 
+            /* Navbar styling */
+            .navbar {
+                background-color: #007bff; /* Blue color */
+                overflow: hidden;
+                color: white;
+                padding: 10px 0;
+                text-align: center;
+            }
+
+            .navbar h1 {
+                margin: 0;
+                font-size: 24px;
+                font-weight: normal;
+            }
+
+            /* Container styling */
             .container {
                 width: 80%;
                 margin: 50px auto;
                 background-color: #fff;
-                padding: 20px;
+                padding: 30px;
                 border-radius: 8px;
-                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             }
 
             h2 {
                 text-align: center;
                 color: #333;
-            }
-
-            table {
-                width: 100%;
-                border-collapse: collapse;
-                margin: 20px 0;
-            }
-
-            th, td {
-                padding: 12px;
-                text-align: left;
-                border: 1px solid #ddd;
-                font-size: 14px;
-            }
-
-            th {
-                background-color: #f4f4f4;
-                color: #555;
-            }
-
-            td {
-                background-color: #fafafa;
             }
 
             /* Message and error styling */
@@ -59,52 +53,85 @@
             }
 
             .message {
-                background-color: #dff0d8;
-                color: #3c763d;
+                background-color: #d4edda;
+                color: #155724;
             }
 
             .error {
-                background-color: #f2dede;
-                color: #a94442;
+                background-color: #f8d7da;
+                color: #721c24;
             }
 
-            /* Button styles */
-            .back-btn {
+            /* Table styling */
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 20px;
+                border-radius: 8px;
+                overflow: hidden;
+            }
+
+            th, td {
+                padding: 15px;
+                text-align: left;
+                border: 1px solid #ddd;
+                font-size: 14px;
+            }
+
+            th {
+                background-color: #f8f9fa;
+                color: #495057;
+            }
+
+            td {
+                background-color: #fdfdfd;
+            }
+
+            /* Button styling */
+            .back-btn, .update-btn {
                 display: inline-block;
-                padding: 10px 15px;
+                padding: 12px 20px;
                 background-color: #5bc0de;
                 color: white;
                 text-decoration: none;
-                border-radius: 5px;
+                border-radius: 4px;
                 font-weight: bold;
-                margin: 10px 0;
+                margin-top: 10px;
                 text-align: center;
             }
 
-            .back-btn:hover {
+            .back-btn:hover, .update-btn:hover {
                 background-color: #31b0d5;
             }
 
             .status-select {
-                padding: 5px;
-            }
-
-            .update-btn {
-                padding: 5px 10px;
-                background-color: #5cb85c;
-                color: white;
-                border: none;
+                padding: 6px 12px;
+                font-size: 14px;
                 border-radius: 4px;
-                cursor: pointer;
+                border: 1px solid #ddd;
             }
 
-            .update-btn:hover {
-                background-color: #4cae4c;
+            /* Responsive table */
+            @media screen and (max-width: 768px) {
+                table, th, td {
+                    display: block;
+                    width: 100%;
+                    box-sizing: border-box;
+                }
+
+                th, td {
+                    text-align: left;
+                }
             }
         </style>
     </head>
 
     <body>
+        <!-- Navbar -->
+        <div class="navbar">
+            <h1>Caretaker Dashboard</h1>
+        </div>
+
         <div class="container">
             <h2>Assigned Jobs</h2>
 
@@ -173,6 +200,7 @@
                                 <select name="status" class="status-select">
                                     <option value="Pending" <%= "Pending".equals(bookingStatus) ? "selected" : "" %>>Pending</option>
                                     <option value="Completed" <%= "Completed".equals(bookingStatus) ? "selected" : "" %>>Completed</option>
+                                    <option value="Canceled" <%= "Canceled".equals(bookingStatus) ? "selected" : "" %>>Canceled</option>
                                 </select>
                         </td>
                         <td>

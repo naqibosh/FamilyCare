@@ -38,7 +38,7 @@ public class JobListServlet extends HttpServlet {
         try (Connection connection = DatabaseConnection.getConnection()) {
             // Updated query to include payment_status by joining the PAYMENT table
             String query = "SELECT c.cust_username, c.cust_phone_number, b.booking_time, b.booking_duration, " +
-                           "b.booking_price, p.payment_status " +
+                           "b.booking_price, p.payment_status, b.booking_id " +
                            "FROM CUSTOMER c " +
                            "JOIN BOOKING b ON c.cust_id = b.cust_id " +
                            "LEFT JOIN PAYMENT p ON b.booking_id = p.booking_id " +
@@ -84,6 +84,7 @@ public class JobListServlet extends HttpServlet {
             job.put("bookingDuration", rs.getString("booking_duration"));
             job.put("bookingPrice", rs.getDouble("booking_price"));
             job.put("bookingStatus", rs.getString("payment_status")); // Fetch payment_status
+            job.put("bookingId", rs.getInt("booking_id"));  // Include bookingId for status update
             jobList.add(job);
         }
 

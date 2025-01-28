@@ -6,12 +6,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
 
 public class caretakerLoginServlet extends HttpServlet {
 
@@ -25,8 +23,8 @@ public class caretakerLoginServlet extends HttpServlet {
 
         try (Connection connection = DatabaseConnection.getConnection()) {
 
-            // Query to check credentials
-            String sql = "SELECT * FROM CARETAKER WHERE CARETAKER_IC_NUMBER = ? AND CARETAKER_PASSWORD = ?";
+            // Query to check credentials, STATUS_ID = 1, and IS_ACTIVE = 'y'
+            String sql = "SELECT * FROM CARETAKER WHERE CARETAKER_IC_NUMBER = ? AND CARETAKER_PASSWORD = ? AND STATUS_ID = 1 AND IS_ACTIVE = 'Y'";
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setString(1, caretakerIC);
             statement.setString(2, password);
@@ -34,20 +32,19 @@ public class caretakerLoginServlet extends HttpServlet {
             ResultSet resultSet = statement.executeQuery();
 
             if (resultSet.next()) {
-                // Credentials are correct
+                // Credentials are correct, STATUS_ID = 1, and IS_ACTIVE = 'y'
                 HttpSession session = request.getSession();
 
-                // Store caretakerName and caretakerId in the session
+                // Store caretakerName, caretakerId, and caretakerStatus in the session
                 session.setAttribute("caretakerName", resultSet.getString("CARETAKER_NAME"));
                 session.setAttribute("caretakerId", resultSet.getInt("CARETAKER_ID"));
                 session.setAttribute("caretakerStatus", resultSet.getString("AVAILABILITY_STATUS"));
-                
-                
+
                 // Redirect to caretaker homepage
                 response.sendRedirect("caretaker/caretaker_homepage.jsp");
             } else {
-                // Credentials are incorrect, redirect with an error message
-                response.sendRedirect("caretaker/login.jsp?errorMessage=Invalid IC number or password.");
+                // Either credentials are incorrect, STATUS_ID is not 1, or IS_ACTIVE is not 'y'
+                response.sendRedirect("caretaker/login.jsp?errorMessage=Invalid IC number, password, or account status.");
             }
 
             connection.close();

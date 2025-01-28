@@ -1,4 +1,5 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page import="java.io.*, java.sql.*, javax.servlet.*, javax.servlet.http.*, dbconn.DatabaseConnection" %>
+<%@ page contentType="text/html; charset=UTF-8" %>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -183,6 +184,34 @@
                 scroll-behavior: smooth;
             }
         </style>
+        <script>
+            function fetchCaretakers() {
+                var type = document.getElementById("type").value; // Get the selected caretaker type (baby or elder)
+                var caretakerDropdown = document.getElementById("caretaker"); // Get the caretaker dropdown element
+                caretakerDropdown.innerHTML = "<option value='' selected>Select a Caretaker</option>"; // Reset the dropdown
+
+                // If no type is selected, return immediately
+                if (!type) {
+                    caretakerDropdown.disabled = true;
+                    return;
+                }
+
+                caretakerDropdown.disabled = true; // Disable dropdown while fetching
+
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function () {
+                    if (this.readyState === 4 && this.status === 200) {
+                        // On successful response, populate the dropdown with caretaker options
+                        caretakerDropdown.innerHTML = "<option value='' selected>Select a Caretaker</option>" + this.responseText;
+                        caretakerDropdown.disabled = false; // Enable dropdown after populating
+                    }
+                };
+                // Send a GET request to the CaretakerServlet with the selected type (baby or elder)
+                xhttp.open("GET", "../CaretakerServlet?type=" + type, true);
+                xhttp.send();
+            }
+        </script>
+
     </head>
     <body>
         <!-- Sidebar Navbar -->
@@ -233,12 +262,17 @@
             <!-- Booking Section -->
             <div class="booking-container" id="booking">
                 <h2>Book a Caretaker</h2>
-                <form action="BookingServlet" method="post">
+                <form action="../BookingServlet" method="post">
                     <label for="type">Booking Type</label>
-                    <select id="type" name="type" required>
+                    <select id="type" name="type" required onchange="fetchCaretakers()">
                         <option value="" disabled selected>Select Caretaker Type</option>
                         <option value="baby">Baby Home Care Package</option>
                         <option value="elder">Elder Home Care Package</option>
+                    </select>
+
+                    <label for="caretaker">Caretaker Name</label>
+                    <select id="caretaker" name="caretaker" required>
+                        <option value="" selected>Select a Caretaker</option>
                     </select>
 
                     <label for="time">Booking Time</label>
@@ -247,34 +281,11 @@
                     <label for="duration">Duration (hours)</label>
                     <input type="number" id="duration" name="duration" min="1" max="12" placeholder="Enter duration" required>
 
-                    <div id="price" style="margin-top: 1rem; font-weight: bold; color: #2575fc;"></div>
-
                     <button type="submit">Book Now</button>
                 </form>
+
+
             </div>
         </div>
-
-        <script>
-            function calculatePrice() {
-                const type = document.getElementById('type').value;
-                const duration = parseInt(document.getElementById('duration').value);
-                const priceDisplay = document.getElementById('price');
-
-                if (!type || !duration) {
-                    priceDisplay.textContent = "Please select type and duration.";
-                    return;
-                }
-
-                // Harga baru
-                const rates = {
-                    baby: 10, // RM 10 per hour
-                    elder: 12 // RM 12 per hour
-                };
-
-                const price = rates[type] * duration;
-                priceDisplay.textContent = `Total Price: RM ${price}`;
-            }
-
-        </script>
     </body>
 </html>

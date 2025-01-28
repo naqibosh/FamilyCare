@@ -31,18 +31,19 @@
 
         <!-- Custom styles -->
         <link href="css/sb-admin-2.min.css" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <script src="js/dashboard.js"> </script>
+        <script src="js/staff_dashboard.js"> </script>
 
     </head>
 
-<%  
-    String encryptedSessionId = request.getParameter("sessionId");
-    if (!SessionUtils.validateEncryptedSessionId(request, encryptedSessionId)) {
-        response.sendRedirect("login.jsp?error=invalidSession");
+<%      
+    Integer staffId = SessionUtils.getUserIdFromSession(request);
+    if (staffId == null) {
+        response.sendRedirect("login.html?error=invalidSession");
         return;
     }
-
+    
     String url = "jdbc:oracle:thin:@//localhost:1521/XE"; 
     String username = "CareGiver"; 
     String password = "system"; 
@@ -50,6 +51,7 @@
     Statement stmt = null;
     ResultSet rs = null;
     
+    String staffName = null;
     int totalC = 0;
     int totalB = 0;
     int noAvailableB = 0;
@@ -67,14 +69,19 @@
         Class.forName("oracle.jdbc.driver.OracleDriver");
         conn = DriverManager.getConnection(url, username, password);
         stmt = conn.createStatement();
-        
+
+        // Fetch staff details 
+        rs = stmt.executeQuery("SELECT staff_name FROM staff WHERE staff_id = " + staffId);
+        if (rs.next()) {
+            staffName = rs.getString("staff_name");
+        } 
+       
         //Fetch earning value
         rs = stmt.executeQuery(
             "SELECT NVL(SUM(CASE WHEN TRUNC(PAYMENT_DATE, 'MM') = TRUNC(SYSDATE, 'MM') THEN PAYMENT_AMOUNT END), 0) AS Monthly_Earnings, " +
             "NVL(SUM(CASE WHEN TRUNC(PAYMENT_DATE, 'YYYY') = TRUNC(SYSDATE, 'YYYY') THEN PAYMENT_AMOUNT END), 0) AS Annual_Earnings " +
             "FROM PAYMENT WHERE PAYMENT_STATUS = 'Completed'"
         );
-
         if (rs.next()) {
             monthlyE = rs.getInt("Monthly_Earnings");
             annualE = rs.getInt("Annual_Earnings");
@@ -230,7 +237,7 @@
                     </a>
                     <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
                         <div class="bg-white py-2 collapse-inner rounded">
-                            <a class="collapse-item" href="staff_manageProcess.jsp">Manage Staff</a>
+                            <a class="collapse-item" href="staff_manageProcess.jsp?action=staffList">Manage Staff</a>
                             <a class="collapse-item" href="register.html">Register Staff</a>
                         </div>
                     </div>
@@ -457,7 +464,7 @@
                             <li class="nav-item dropdown no-arrow">
                                 <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <span class="mr-2 d-none d-lg-inline text-gray-600 small">Douglas McGee</span>
+                                    <span class="mr-2 d-none d-lg-inline text-gray-600 small"><%= staffName %></span>
                                     <img class="img-profile rounded-circle"
                                          src="img/undraw_profile.svg">
                                 </a>
@@ -769,7 +776,7 @@
         <!-- Page level custom scripts -->
         <script src="js/graphChart.js"></script>
         <script src="js/pieChart.js"></script>
-
+        
     </body>
 
 </html>
