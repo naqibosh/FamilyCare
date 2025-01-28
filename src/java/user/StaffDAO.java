@@ -134,22 +134,6 @@ public class StaffDAO {
     public boolean editStaff(int staffId, String staffRole, int supervisorId) {
         boolean isUpdated = false;
         try (Connection connection = getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(EDIT_STAFF_SQL)) {
-
-            preparedStatement.setString(1, staffRole);
-            preparedStatement.setInt(2, supervisorId);
-            preparedStatement.setInt(3, staffId);
-
-            int rowsUpdated = preparedStatement.executeUpdate();
-            isUpdated = rowsUpdated > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return isUpdated;
-    }
-
-    public boolean updateStaff(Staff staff) {
-        try (Connection connection = getConnection();
                 PreparedStatement ps = connection.prepareStatement(EDIT_STAFF_SQL)) {
 
             ps.setString(1, staffRole);
@@ -191,40 +175,6 @@ public class StaffDAO {
         } catch (SQLException e) {
             throw e; // Re-throw the exception for handling
         }
-    }
-
-    public Optional<Integer> authenticateUser(String email, String password) throws SQLException {
-        try (Connection connection = getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(AUTHENTICATE_SQL)) {
-            preparedStatement.setString(1, email);
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            // If email exists, check the password  
-            if (resultSet.next()) {
-                String storedPasswordHash = resultSet.getString("staff_password");
-                if (BCrypt.checkpw(password, storedPasswordHash)) {
-                    int userId = resultSet.getInt("staff_id"); 
-                    return Optional.of(userId); 
-                }
-            }
-            // Email not found or password does not match  
-            return Optional.empty();
-        } catch (SQLException e) {
-            throw e;
-        }
-    }
-
-    public boolean isSupervisorExists(int supervisorId) throws SQLException {
-        boolean isSvExist = false;
-        try (Connection connection = getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(CHECK_SVID_SQL)) {
-            preparedStatement.setInt(1, supervisorId);
-            int rowsExist = preparedStatement.executeUpdate();
-            isSvExist = rowsExist > 0;
-        } catch (SQLException e) {
-            throw e;
-        }
-        return isSvExist;
     }
 
     public Optional<Integer> authenticateUser(String email, String password) throws SQLException {
@@ -322,5 +272,4 @@ public class StaffDAO {
         }
         return staff;
     }
-
 }

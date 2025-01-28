@@ -15,15 +15,16 @@ public class Customer {
     private String custEmail;
     private String custIC;
     private String banDate;
-    private String statusId;
+    private int statusId;
+    private String status;
+    private String is_active;
     
     //constructors
     public Customer(){}
 
-    public Customer(int custId, String custUsername, String custPass, String custFName, String custLName, String custPhone, String custEmail, String custIC, String banDate, String statusId) {
+    public Customer(int custId, String custUsername, String custFName, String custLName, String custPhone, String custEmail, String custIC, String banDate, int statusId, String status, String is_active) {
         this.custId = custId;
         this.custUsername = custUsername;
-        this.custPass = custPass;
         this.custFName = custFName;
         this.custLName = custLName;
         this.custPhone = custPhone;
@@ -31,11 +32,22 @@ public class Customer {
         this.custIC = custIC;
         this.banDate = banDate;
         this.statusId = statusId;
+        this.status = status;
+        this.is_active = is_active;
     }
 
     public Customer(String custUsername, String custPass, String custFName, String custLName, String custPhone, String custEmail, String custIC) {
         this.custUsername = custUsername;
         this.custPass = custPass;
+        this.custFName = custFName;
+        this.custLName = custLName;
+        this.custPhone = custPhone;
+        this.custEmail = custEmail;
+        this.custIC = custIC;
+    }
+    
+    public Customer(String custUsername, String custFName, String custLName, String custPhone, String custEmail, String custIC) {
+        this.custUsername = custUsername;
         this.custFName = custFName;
         this.custLName = custLName;
         this.custPhone = custPhone;
@@ -80,8 +92,16 @@ public class Customer {
         this.banDate = banDate;
     }
 
-    public void setStatusId(String statusId) {
+    public void setStatusId(int statusId) {
         this.statusId = statusId;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public void setIs_active(String is_active) {
+        this.is_active = is_active;
     }
     
         
@@ -122,10 +142,16 @@ public class Customer {
         return banDate;
     }
 
-    public String getStatusId() {
+    public int getStatusId() {
         return statusId;
     }
     
-    //additional method
+    public String getStatus() {
+        return status;
+    }
+
+    public String getIs_active() {
+        return is_active;
+    }
 
 }
