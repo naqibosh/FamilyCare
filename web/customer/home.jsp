@@ -1,4 +1,17 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"  %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%
+    // Check if the session exists and retrieve customerId
+    Integer customerId = (Integer) session.getAttribute("customerId");
+
+    if (customerId == null) {
+        // Redirect to the login page if not logged in
+        response.sendRedirect("login.jsp?error=Please log in to access the home page.");
+        return;
+    }
+
+    // Retrieve customerName from the session
+    String customerName = (String) session.getAttribute("customerName");
+%>
 
 <!DOCTYPE html>
 <html lang="en">

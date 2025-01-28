@@ -1,12 +1,12 @@
 <%-- 
-    Document   : manage-staff
-    Created on : Jan 11, 2025, 5:55:36 PM
+    Document   : manage-caretaker
+    Created on : Jan 28, 2025, 4:30:22 AM
     Author     : hazik
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ page import="user.Staff" %> 
+<%@ page import="user.Caretaker" %> 
 
 <!DOCTYPE html>
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
@@ -35,8 +35,8 @@
 
         <!-- Custom styles for this page -->
         <link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
-        <script src="js/manage-staff.js"> </script>
-        
+        <script src="js/manage-caretaker.js"></script>
+
     </head>
 
     <body id="page-top">
@@ -77,7 +77,7 @@
                 </div>
 
                 <!-- Nav Item - Pages Collapse Menu -->
-                <li class="nav-item active">
+                <li class="nav-item ">
                     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages"
                        aria-expanded="true" aria-controls="collapsePages">
                         <i class="fas fa-fw fa-folder"></i>
@@ -92,13 +92,13 @@
                 </li>
 
                 <!-- Nav Item - Tables -->
-                <li class="nav-item ">
+                <li class="nav-item">
                     <a class="nav-link" href="customer_manageProcess.jsp?action=custList">
                         <i class="fas fa-fw fa-table"></i>
                         <span>Manage Customer</span></a>
                 </li>
 
-                <li class="nav-item">
+                <li class="nav-item active">
                     <a class="nav-link" href="caretaker_manageProcess.jsp?action=caretakerList">
                         <i class="fas fa-fw fa-table"></i>
                         <span>Manage Caretaker</span></a>
@@ -307,7 +307,7 @@
                     <div class="container-fluid">
 
                         <!-- Page Heading -->
-                        <h1 class="h3 mb-2 text-gray-800">List of Staff</h1>
+                        <h1 class="h3 mb-2 text-gray-800">List of Caretaker</h1>
 
                         <!-- Data Tables -->
                         <div class="card shadow mb-4">
@@ -322,11 +322,12 @@
                                                 <th>No.</th>
                                                 <th>ID</th>
                                                 <th>Name</th>
-                                                <th>Email</th>
                                                 <th>Phone</th>
-                                                <th>Role</th>
-                                                <th>Supervisor</th>
-                                                <th>SV ID</th>
+                                                <th>Availability</th>
+                                                <th>IC Number</th>
+                                                <th>Ban Date</th>
+                                                <th>Status</th>
+                                                <th>Staff ID</th>
                                                 <th> </th>
                                             </tr>
                                         </thead>
@@ -335,99 +336,88 @@
                                                 <th>No.</th>
                                                 <th>ID</th>
                                                 <th>Name</th>
-                                                <th>Email</th>
                                                 <th>Phone</th>
-                                                <th>Role</th>
-                                                <th>Supervisor</th>
-                                                <th>SV ID</th>
+                                                <th>Availability</th>
+                                                <th>IC Number</th>
+                                                <th>Ban Date</th>
+                                                <th>Status</th>
+                                                <th>Staff ID</th>
                                                 <th> </th>
                                             </tr>
                                         </tfoot>
-                                        <tbody> <c:set var="i" value="1"/> <!-- Initialize counter variable -->
-                                            <c:forEach items="${staffList}" var="staff">
-                                                <tr>
-                                                    <td>${i}</td> 
-                                                    <td>${staff.id}</td>
-                                                    <td>${staff.name}</td>
-                                                    <td>${staff.email}</td>
-                                                    <td>${staff.phoneNumber}</td>
-                                                    <td>${staff.role}</td>
-                                                    <td>${staff.supervisorName}</td>
-                                                    <td>${staff.supervisorId}</td> 
+                                        <tbody>  
+                                            <c:set var="i" value="1"/> <!-- Initialize counter variable -->  
+                                            <c:forEach items="${caretakerList}" var="caretaker">  
+                                                <tr>  
+                                                    <td>${i}</td>   
+                                                    <td>${caretaker.caretakerId}</td>  
+                                                    <td>${caretaker.name}</td>  
+                                                    <td>${caretaker.phone}</td>  
+                                                    <td>${caretaker.availabilityStatus}</td>  
+                                                    <td>${caretaker.IC}</td>  
+                                                    <td>${caretaker.banDate}</td>  
+                                                    <td>${caretaker.status}</td>   
+                                                    <td>${caretaker.staffId}</td> 
                                                     <td class="text-center align-middle">  
-                                                        <div >  
+                                                        <div>  
                                                             <!-- Edit Button with margin-right -->  
-                                                            <button class="btn btn-success btn-sm me-2" data-toggle="modal" data-target="#editModal-${staff.id}"   
-                                                                    onclick="openEditModal('${staff.id}', '${staff.role}', '${staff.supervisorId}')">  
+                                                            <button class="btn btn-success btn-sm me-2" data-toggle="modal" data-target="#editModal-${caretaker.caretakerId}"   
+                                                                    onclick="openEditModal('${caretaker.staffId}', '${caretaker.caretakerId}', '${caretaker.statusId}')">  
                                                                 Edit  
                                                             </button>  
-                                                            <!-- Delete Button -->  
-                                                            <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal-${staff.id}">  
-                                                                Delete  
+
+                                                            <!-- Enable/Disable Button -->  
+                                                            <c:choose>  
+                                                                <c:when test="${caretaker.is_active == 'Y'}">  
+                                                                    <button type="button" class="btn btn-warning btn-sm" onclick="disableCaretaker('${caretaker.caretakerId}')">  
+                                                                        Disable  
+                                                                    </button>  
+                                                                </c:when>  
+                                                                <c:otherwise>  
+                                                                    <button type="button" class="btn btn-primary btn-sm" onclick="enableCaretaker('${caretaker.caretakerId}')">  
+                                                                        Enable  
+                                                                    </button>  
+                                                                </c:otherwise>  
+                                                            </c:choose>  
+                                                        </div>  
+                                                    </td>  
+                                                </tr>  
+                                                <c:set var="i" value="${i + 1}"/>  
+
+                                                <!-- Edit Modal -->  
+                                            <div class="modal fade" id="editModal-${caretaker.caretakerId}" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">  
+                                                <div class="modal-dialog" role="document">  
+                                                    <div class="modal-content">  
+                                                        <div class="modal-header">  
+                                                            <h5 class="modal-title" id="editModalLabel">Edit Caretaker Info</h5>  
+                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">  
+                                                                <span aria-hidden="true">&times;</span>  
                                                             </button>  
                                                         </div>  
-                                                    </td>
-                                                </tr> <c:set var="i" value="${i + 1}"/>
-                                                <!-- Edit Modal -->
-                                            <div class="modal fade" id="editModal-${staff.id}" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
-                                                <div class="modal-dialog" role="document">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title" id="editModalLabel">Edit Staff Information</h5>
-                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                                <span aria-hidden="true">&times;</span>
-                                                            </button>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            <!-- Form for editing staff -->
-                                                            <form action="staff_manageProcess.jsp?action=editStaff&staffId=${staff.id}" method="post"> 
+                                                        <div class="modal-body">  
+                                                            <!-- Form for editing caretaker -->  
+                                                            <form action="caretaker_manageProcess.jsp?action=editCaretaker&caretakerId=${caretaker.caretakerId}" method="post">   
                                                                 <div class="form-group">
-                                                                    <label for="role">Role</label>
-                                                                    <select class="form-control" id="role" name="staffRole">
-                                                                        <option value="Administrator" ${staff.role == 'Administrator' ? 'selected' : ''}>Administrator</option>
-                                                                        <option value="Manager" ${staff.role == 'Manager' ? 'selected' : ''}>Manager</option>
-                                                                        <option value="Supervisor" ${staff.role == 'Supervisor' ? 'selected' : ''}>Supervisor</option>
-                                                                        <option value="Executive" ${staff.role == 'Executive' ? 'selected' : ''}>Executive</option>
-                                                                    </select>
+                                                                    <label for="staff">Staff ID</label>
+                                                                    <input type="text" class="form-control" id="staff" name="staffId" value="${caretaker.staffId}" placeholder="Enter Staff ID">
                                                                 </div>
-                                                                <div class="form-group">
-                                                                    <label for="supervisor">Supervisor ID</label>
-                                                                    <input type="text" class="form-control" id="supervisor" name="supervisorId" value="${staff.supervisorId}" placeholder="Enter Supervisor ID">
-                                                                </div>
-                                                                <div class="form-group">
-                                                                    <button type="submit" class="btn btn-success">Confirm</button>
-                                                                </div>
-                                                            </form>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </c:forEach>
-                                        <!-- Modal for Confirming Deletion -->
-                                        <c:forEach items="${staffList}" var="staff">
-                                            <div class="modal fade" id="deleteModal-${staff.id}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
-                                                <div class="modal-dialog" role="document">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
-                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                                <span aria-hidden="true">&times;</span>
-                                                            </button>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            <p>Are you sure you want to delete this staff member?</p>
-                                                            <p>Type 'confirm' to proceed.</p>
-                                                            <input type="text" id="confirmText-${staff.id}" class="form-control" placeholder="Type 'confirm'">
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                                                            <button type="button" class="btn btn-danger" onclick="confirmDelete('${staff.id}')">Delete</button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </c:forEach>
-
+                                                                <div class="form-group">  
+                                                                    <label for="role">Status ID</label>  
+                                                                    <select class="form-control" id="statusId" name="statusId">  
+                                                                        <option value="1" ${caretaker.statusId == 1 ? 'selected' : ''}>Good</option>  
+                                                                        <option value="2" ${caretaker.statusId == 2 ? 'selected' : ''}>Banned</option>  
+                                                                        <option value="3" ${caretaker.statusId == 3 ? 'selected' : ''}>Suspended</option>  
+                                                                    </select>  
+                                                                </div>       
+                                                                <div class="form-group">  
+                                                                    <button type="submit" class="btn btn-success">Confirm</button>  
+                                                                </div>  
+                                                            </form>  
+                                                        </div>  
+                                                    </div>  
+                                                </div>  
+                                            </div>  
+                                        </c:forEach>  
                                         </tbody>
                                     </table>
                                 </div>
@@ -504,3 +494,4 @@
     </body>
 
 </html>
+

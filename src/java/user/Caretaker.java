@@ -10,35 +10,54 @@ public class Caretaker {
     private int caretakerId;
     private String name;
     private String phone;
+    private String password;
     private String availabilityStatus;
     private String profileDescription;
     private String IC;
     private String banDate;
+    private String status;
+    private String is_active;
     private int staffId;
     private int statusId;
     
     //constructors
     public Caretaker() {}
+    //for insert
+    public Caretaker(String name, String phone, String password, String profileDescription, String IC, int staffId) {
+        this.name = name;
+        this.phone = phone;
+        this.password = password;
+        this.profileDescription = profileDescription;
+        this.IC = IC;
+        this.staffId = staffId;
+    }
 
-    public Caretaker(int caretakerId, String name, String phone, String availabilityStatus, String profileDescription, String IC, String banDate, int staffId, int statusId) {
+    //for list
+    public Caretaker(int caretakerId, String name, String phone, String availabilityStatus, String IC, String banDate, String status, int staffId, int statusId, String is_active) {
         this.caretakerId = caretakerId;
         this.name = name;
         this.phone = phone;
         this.availabilityStatus = availabilityStatus;
-        this.profileDescription = profileDescription;
         this.IC = IC;
         this.banDate = banDate;
+        this.status = status;
         this.staffId = staffId;
         this.statusId = statusId;
+        this.is_active = is_active;
     }
-    //for new caretaker
-    public Caretaker(String name, String phone, String profileDescription, String IC, int staffId) {
+    
+    //for update caretaker
+    public Caretaker(int caretakerId, String name, String phone, String password, String availabilityStatus, String profileDescription, String IC, String status) {
+        this.caretakerId = caretakerId;
         this.name = name;
         this.phone = phone;
+        this.password = password;
+        this.availabilityStatus = availabilityStatus;
         this.profileDescription = profileDescription;
         this.IC = IC;
-        this.staffId = staffId;
+        this.status = status;
     }
+    
     
     //setter
     public void setCaretakerId(int caretakerId) {
@@ -76,6 +95,18 @@ public class Caretaker {
     public void setStatusId(int statusId) {
         this.statusId = statusId;
     }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public void setIs_active(String is_active) {
+        this.is_active = is_active;
+    }
     
     //getter
     public int getCaretakerId() {
@@ -112,6 +143,18 @@ public class Caretaker {
 
     public int getStatusId() {
         return statusId;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public String getIs_active() {
+        return is_active;
     }
     
     //additional method

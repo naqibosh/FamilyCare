@@ -276,7 +276,11 @@
                     </select>
 
                     <label for="time">Booking Time</label>
-                    <input type="time" id="time" name="time" required>
+                    <!-- Combine Date and Time Input -->
+                    <input type="datetime-local" id="time" name="time" required 
+                           pattern="\d{4}-\d{2}-\d{2}T\d{2}:\d{2}" 
+                           title="Format: YYYY-MM-DDTHH:MM">
+                    <!-- Example format: 2025-01-17T05:23 -->
 
                     <label for="duration">Duration (hours)</label>
                     <input type="number" id="duration" name="duration" min="1" max="12" placeholder="Enter duration" required>
@@ -288,4 +292,3 @@
             </div>
         </div>
     </body>
-</html>
