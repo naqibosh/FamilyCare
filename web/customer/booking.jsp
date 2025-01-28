@@ -229,6 +229,7 @@
             <a href="home.jsp"><span>🏠</span> Home</a>
             <a href="#packages"><span>📦</span> Packages</a>
             <a href="#booking"><span>📅</span> Booking</a>
+            <a href="bookingDetails.jsp"><span>📖</span> My Booking</a> <!-- Added new icon for My Booking -->
         </div>
 
         <!-- Content Wrapper -->
