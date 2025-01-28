@@ -65,6 +65,20 @@
             .button:hover {
                 background-color: #5a9bd3;
             }
+            .back-button {
+                background-color: #f0f4f8;
+                color: #4682b4;
+                padding: 10px 20px;
+                border: 1px solid #4682b4;
+                border-radius: 5px;
+                font-weight: 500;
+                cursor: pointer;
+                text-decoration: none;
+                display: inline-block;
+            }
+            .back-button:hover {
+                background-color: #e0e8f1;
+            }
         </style>
     </head>
     <body>
@@ -83,28 +97,21 @@
                 <p style="color: green;">${param.successMessage}</p>
             </c:if>
 
-            <!-- Display Current Status -->
-            <p>Current Status: 
-                <c:choose>
-                    <c:when test="${not empty caretakerStatus}">
-                        <c:out value="${caretakerStatus}" />
-                    </c:when>
-                    <c:otherwise>
-                        Not Set
-                    </c:otherwise>
-                </c:choose>
-            </p>
-
             <!-- Form to Update Status -->
             <form action="../UpdateStatusServlet" method="POST">
-                <label for="availabilityStatus">Change Status: </label>
+                <label for="availabilityStatus">Current Status: </label>
                 <select name="availabilityStatus" id="availabilityStatus">
-                    <option value="available" <c:if test="${caretakerStatus == 'Available'}">selected</c:if>>Available</option>
-                    <option value="not_available" <c:if test="${caretakerStatus == 'Not Available'}">selected</c:if>>Not Available</option>
+                    <option value="Available" <c:if test="${sessionScope.caretakerStatus == 'Available'}">selected</c:if>>Available</option>
+                    <option value="Not Available" <c:if test="${sessionScope.caretakerStatus == 'Not Available'}">selected</c:if>>Not Available</option>
                 </select>
+
                 <br><br>
                 <button type="submit" class="button">Update Status</button>
             </form>
+
+            <!-- Back Button -->
+            <br><br>
+            <a href="caretaker_homepage.jsp" class="back-button">Back to Homepage</a>
         </div>
     </body>
 </html>
