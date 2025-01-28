@@ -19,10 +19,10 @@ public class Staff {
     private String role;
     private int supervisorId;
     private String supervisorName;
+    private String isActive;
 
     // Default Constructor
-    public Staff() {
-    }
+    public Staff() {}
 
     //for update
     public Staff(int id, String name, String password, String email, String phoneNumber, String role, int supervisorId) {
@@ -45,7 +45,8 @@ public class Staff {
     }
 
     //for get staff with sv name
-    public Staff(int id, String name, String email, String phoneNumber, String role, int supervisorId, String supervisorName) {
+
+    public Staff(int id, String name, String email, String phoneNumber, String role, int supervisorId, String supervisorName, String isActive) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -53,6 +54,7 @@ public class Staff {
         this.role = role;
         this.supervisorId = supervisorId;
         this.supervisorName = supervisorName;
+        this.isActive = isActive;
     }
 
     //setter
@@ -88,6 +90,10 @@ public class Staff {
         this.supervisorName = supervisorName;
     }
 
+    public void setIsActive(String isActive) {
+        this.isActive = isActive;
+    }
+
     //getter
     public int getId() {
         return id;
@@ -119,6 +125,10 @@ public class Staff {
 
     public String getSupervisorName() {
         return supervisorName;
+    }
+
+    public String getIsActive() {
+        return isActive;
     }
 
     @Override

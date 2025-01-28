@@ -20,6 +20,15 @@ function confirmDelete(staffId) {
     }
 }
 
+function enableStaff(staffId) {
+    window.location.href = 'staff_manageProcess.jsp?action=enableStaff&staffId=' + staffId; // Redirect to the enable action  
+
+}
+function disableStaff(staffId) {
+    window.location.href = 'staff_manageProcess.jsp?action=disableStaff&staffId=' + staffId; // Redirect to the enable action  
+
+}
+
 // Get the URL parameters  
 const urlParams = new URLSearchParams(window.location.search);
 const success = urlParams.get('success');

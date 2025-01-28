@@ -13,9 +13,11 @@ public class CaretakerBabysitter extends Caretaker{
     //constructors
     public CaretakerBabysitter() {}
 
-    public CaretakerBabysitter(int experienceYears, String name, String phone, String password, String profileDescription, String IC, int staffId) {
+    public CaretakerBabysitter(int experienceYears, String name, String phone, String password, String profileDescription, String IC, int staffId, double hourlyRate, double rating) {
         super(name, phone, password, profileDescription, IC, staffId);
         this.experienceYears = experienceYears;
+        this.hourlyRate = hourlyRate;
+        this.rating = rating;
     }
     
     //setter

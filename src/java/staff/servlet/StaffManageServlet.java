@@ -50,6 +50,12 @@ public class StaffManageServlet extends HttpServlet {
                 case "editStaff":
                     handleEditStaff(request, response, staffDAO);
                     break;
+                case "disableStaff":
+                    handleDisableStaff(request, response, staffDAO);
+                    break;
+                case "enableStaff":
+                    handleEnableStaff(request, response, staffDAO);
+                    break;
                 default:
                     sendError(response, HttpServletResponse.SC_BAD_REQUEST, "Invalid action: " + action);
             }
@@ -66,7 +72,7 @@ public class StaffManageServlet extends HttpServlet {
         // Check if user role is neither Administrator nor Manager  
         if (!"Administrator".equals(userRole) && !"Manager".equals(userRole)) {
             response.sendRedirect("staff_dashboard.jsp?success=false&errcode=4");
-            return; 
+            return;
         }
 
         // Proceed to get staff list if authorized  
@@ -145,6 +151,38 @@ public class StaffManageServlet extends HttpServlet {
                 response.sendRedirect("staff_manageProcess.jsp?action=staffList&success=true");
             } else {
                 sendError(response, HttpServletResponse.SC_BAD_REQUEST, "Failed to delete staff with ID " + staffId);
+            }
+        } catch (NumberFormatException ex) {
+            sendError(response, HttpServletResponse.SC_BAD_REQUEST, "Invalid staff ID.");
+        } catch (Exception ex) {
+            handleException(response, ex);
+        }
+    }
+
+    private void handleDisableStaff(HttpServletRequest request, HttpServletResponse response, StaffDAO staffDAO)
+            throws ServletException, IOException {
+        try {
+            int staffId = parseStaffId(request);
+            if (staffDAO.disableStaff(staffId)) {
+                response.sendRedirect("staff_manageProcess.jsp?action=staffList&success=true");
+            } else {
+                sendError(response, HttpServletResponse.SC_BAD_REQUEST, "Failed to disable staff with ID " + staffId);
+            }
+        } catch (NumberFormatException ex) {
+            sendError(response, HttpServletResponse.SC_BAD_REQUEST, "Invalid staff ID.");
+        } catch (Exception ex) {
+            handleException(response, ex);
+        }
+    }
+
+    private void handleEnableStaff(HttpServletRequest request, HttpServletResponse response, StaffDAO staffDAO)
+            throws ServletException, IOException {
+        try {
+            int staffId = parseStaffId(request);
+            if (staffDAO.enableStaff(staffId)) {
+                response.sendRedirect("staff_manageProcess.jsp?action=staffList&success=true");
+            } else {
+                sendError(response, HttpServletResponse.SC_BAD_REQUEST, "Failed to enable staff with ID " + staffId);
             }
         } catch (NumberFormatException ex) {
             sendError(response, HttpServletResponse.SC_BAD_REQUEST, "Invalid staff ID.");

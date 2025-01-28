@@ -21,7 +21,7 @@ import jbcrypt.BCrypt;
 public class StaffDAO {
 
     private static final String INSERT_STAFF_SQL = "INSERT INTO staff (staff_name, staff_email, staff_password, staff_phone_number, staff_role) VALUES (?, ?, ?, ?, ?)";
-    private static final String SELECT_ALL_STAFF = "SELECT s.staff_id, s.staff_name, s.staff_email, s.staff_phone_number, s.staff_role, s.supervisor_id, sup.staff_name AS supervisor_name FROM staff s LEFT JOIN staff sup ON s.supervisor_id = sup.staff_id WHERE s.is_active = 'Y' ORDER BY s.staff_id";
+    private static final String SELECT_ALL_STAFF = "SELECT s.staff_id, s.staff_name, s.staff_email, s.staff_phone_number, s.staff_role, s.supervisor_id,  s.is_active, sup.staff_name AS supervisor_name FROM staff s LEFT JOIN staff sup ON s.supervisor_id = sup.staff_id ORDER BY s.staff_id";
     private static final String DELETE_STAFF_SQL = "UPDATE staff SET is_active = 'N' WHERE staff_id = ?";
     private static final String UPDATE_STAFF_SQL = "UPDATE staff SET staff_name = ?, staff_email = ?, staff_password = ?, staff_phone_number = ?, staff_role = ? WHERE staff_id = ?";
     private static final String EDIT_STAFF_SQL = "UPDATE staff SET staff_role = ?, supervisor_id = ? WHERE staff_id = ?";
@@ -30,9 +30,10 @@ public class StaffDAO {
     private static final String GET_STAFF_INFO = "SELECT s.staff_id AS staff_id, s.staff_name AS staff_name, s.staff_email AS staff_email, s.staff_phone_number AS staff_phone_number, s.staff_role AS staff_role, s.supervisor_id AS supervisor_id, sup.staff_name AS supervisor_name FROM staff s LEFT JOIN staff sup ON s.supervisor_id = sup.staff_id WHERE s.staff_id = ? ORDER BY s.staff_id";
     private static final String CHECK_SVID_SQL = "SELECT staff_id FROM staff WHERE staff_id = ?";
     private static final String AUTHENTICATE_SQL = "SELECT staff_id, staff_password FROM staff WHERE staff_email = ?";
+    private static final String DISABLE_STAFF_SQL = "UPDATE staff SET is_active = 'N' WHERE staff_id = ?";
+    private static final String ENABLE_STAFF_SQL = "UPDATE staff SET is_active = 'Y' WHERE staff_id = ?";
 
-    public StaffDAO() {
-    }
+    public StaffDAO() {}
 
     public Connection getConnection() throws SQLException {
         final String DB_URL = "jdbc:oracle:thin:@//localhost:1521/XE";
@@ -110,7 +111,8 @@ public class StaffDAO {
                 String role = rs.getString("staff_role");
                 int supervisorId = rs.getInt("supervisor_id");
                 String supervisorName = rs.getString("supervisor_name");
-                staffList.add(new Staff(id, name, email, phoneNumber, role, supervisorId, supervisorName));
+                String isActive = rs.getString("is_active");
+                staffList.add(new Staff(id, name, email, phoneNumber, role, supervisorId, supervisorName, isActive));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -129,6 +131,34 @@ public class StaffDAO {
             e.printStackTrace();
         }
         return isDeleted;
+    }
+
+    public boolean disableStaff(int staffId) {
+        boolean isDisable = false;
+
+        try (Connection connection = getConnection();
+                PreparedStatement ps = connection.prepareStatement(DISABLE_STAFF_SQL)) {
+            ps.setInt(1, staffId);
+            int rowsUpdated = ps.executeUpdate();
+            isDisable = rowsUpdated > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return isDisable;
+    }
+
+    public boolean enableStaff(int staffId) {
+        boolean isEnabled = false;
+
+        try (Connection connection = getConnection();
+                PreparedStatement ps = connection.prepareStatement(ENABLE_STAFF_SQL)) {
+            ps.setInt(1, staffId);
+            int rowsUpdated = ps.executeUpdate();
+            isEnabled = rowsUpdated > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return isEnabled;
     }
 
     public boolean editStaff(int staffId, String staffRole, int supervisorId) {
@@ -187,8 +217,8 @@ public class StaffDAO {
             if (rs.next()) {
                 String storedPasswordHash = rs.getString("staff_password");
                 if (BCrypt.checkpw(password, storedPasswordHash)) {
-                    int userId = rs.getInt("staff_id"); 
-                    return Optional.of(userId); 
+                    int userId = rs.getInt("staff_id");
+                    return Optional.of(userId);
                 }
             }
             // Email not found or password does not match  
