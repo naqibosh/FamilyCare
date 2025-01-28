@@ -1,5 +1,26 @@
-<%@ page import="java.io.*, java.sql.*, javax.servlet.*, javax.servlet.http.*, dbconn.DatabaseConnection" %>
-<%@ page contentType="text/html; charset=UTF-8" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<% 
+String successMessage = request.getParameter("success");
+if (successMessage != null) {
+%>
+    <div class="alert alert-success">
+        <%= successMessage %>
+    </div>
+<%
+}
+%>
+
+<%
+    
+    // Check if the session exists and retrieve customerId
+    Integer customerId = (Integer) session.getAttribute("customerId");
+
+    if (customerId == null) {
+        // Redirect to the login page if not logged in
+        response.sendRedirect("login.jsp?error=Please log in to access the booking page.");
+        return;
+    }
+%>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -263,11 +284,14 @@
             <div class="booking-container" id="booking">
                 <h2>Book a Caretaker</h2>
                 <form action="../BookingServlet" method="post">
+                    <!-- Hidden Field for Customer ID -->
+                    <input type="hidden" name="cust_id" value="<%= session.getAttribute("customerId")%>">
+
                     <label for="type">Booking Type</label>
                     <select id="type" name="type" required onchange="fetchCaretakers()">
                         <option value="" disabled selected>Select Caretaker Type</option>
-                        <option value="baby">Baby Home Care Package</option>
-                        <option value="elder">Elder Home Care Package</option>
+                        <option value="Babycaretaker">Baby Home Care Package</option>
+                        <option value="Eldercaretaker">Elder Home Care Package</option>
                     </select>
 
                     <label for="caretaker">Caretaker Name</label>
@@ -276,14 +300,17 @@
                     </select>
 
                     <label for="time">Booking Time</label>
-                    <input type="time" id="time" name="time" required>
+                    <!-- Combine Date and Time Input -->
+                    <input type="datetime-local" id="time" name="time" required 
+                           pattern="\d{4}-\d{2}-\d{2}T\d{2}:\d{2}" 
+                           title="Format: YYYY-MM-DDTHH:MM">
+                    <!-- Example format: 2025-01-17T05:23 -->
 
                     <label for="duration">Duration (hours)</label>
                     <input type="number" id="duration" name="duration" min="1" max="12" placeholder="Enter duration" required>
 
                     <button type="submit">Book Now</button>
                 </form>
-
 
             </div>
         </div>

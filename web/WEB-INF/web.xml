@@ -7,8 +7,44 @@
         <servlet-class>customer.servlet.LoginServlet</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>caretakerLoginServlet</servlet-name>
+        <servlet-class>caretaker.servlet.caretakerLoginServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>caretakerLogoutServlet</servlet-name>
+        <servlet-class>caretaker.servlet.caretakerLogoutServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>caretakerProfileServlet</servlet-name>
+        <servlet-class>caretaker.servlet.caretakerProfileServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>caretakerUpdateProfileServlet</servlet-name>
+        <servlet-class>caretaker.servlet.caretakerUpdateProfileServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>JobServlet</servlet-name>
+        <servlet-class>caretaker.servlet.JobServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>UpdateStatusServlet</servlet-name>
+        <servlet-class>caretaker.servlet.UpdateStatusServlet</servlet-class>
+      </servlet>
+  <servlet>
         <servlet-name>CaretakerServlet</servlet-name>
         <servlet-class>BookingServlet.CaretakerServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ProfileServlet</servlet-name>
+        <servlet-class>customer.servlet.ProfileServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>UpdateProfileServlet</servlet-name>
+        <servlet-class>customer.servlet.UpdateProfileServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>BookingServlet</servlet-name>
+        <servlet-class>BookingServlet.BookingServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>CustomerManageServlet</servlet-name>
@@ -35,6 +71,30 @@
         <url-pattern>/LoginServlet</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>caretakerLoginServlet</servlet-name>
+        <url-pattern>/caretakerLoginServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>caretakerLogoutServlet</servlet-name>
+        <url-pattern>/caretakerLogoutServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>caretakerProfileServlet</servlet-name>
+        <url-pattern>/caretakerProfileServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>caretakerUpdateProfileServlet</servlet-name>
+        <url-pattern>/caretakerUpdateProfileServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>JobServlet</servlet-name>
+        <url-pattern>/JobServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UpdateStatusServlet</servlet-name>
+        <url-pattern>/UpdateStatusServlet</url-pattern>
+      </servlet-mapping>
+  <servlet-mapping>
         <servlet-name>CaretakerServlet</servlet-name>
         <url-pattern>/CaretakerServlet</url-pattern>
     </servlet-mapping>
@@ -53,6 +113,18 @@
     <servlet-mapping>
         <servlet-name>PaymentManageServlet</servlet-name>
         <url-pattern>/PaymentManageServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ProfileServlet</servlet-name>
+        <url-pattern>/ProfileServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UpdateProfileServlet</servlet-name>
+        <url-pattern>/UpdateProfileServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>BookingServlet</servlet-name>
+        <url-pattern>/BookingServlet</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>index.html</welcome-file>
