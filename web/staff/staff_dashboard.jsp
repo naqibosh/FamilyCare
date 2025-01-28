@@ -243,34 +243,27 @@
                     </div>
                 </li>
 
-                <!-- Nav Item - Charts -->
-                <li class="nav-item">
-                    <a class="nav-link" href="charts.html">
-                        <i class="fas fa-fw fa-chart-area"></i>
-                        <span>Charts</span></a>
-                </li>
-
                 <!-- Nav Item - Tables -->
                 <li class="nav-item">
-                    <a class="nav-link" href="customer_manageProcess.jsp">
+                    <a class="nav-link" href="customer_manageProcess.jsp?action=custList">
                         <i class="fas fa-fw fa-table"></i>
                         <span>Manage Customer</span></a>
                 </li>
-                
+
                 <li class="nav-item">
-                    <a class="nav-link" href="caretaker_manageProcess.jsp">
+                    <a class="nav-link" href="caretaker_manageProcess.jsp?action=caretakerList">
                         <i class="fas fa-fw fa-table"></i>
                         <span>Manage Caretaker</span></a>
                 </li>
-                
+
                 <li class="nav-item">
-                    <a class="nav-link" href="booking_manageProcess.jsp">
+                    <a class="nav-link" href="booking_manageProcess.jsp?action=bookingList">
                         <i class="fas fa-fw fa-table"></i>
                         <span>Manage Booking</span></a>
                 </li>
-                
+
                 <li class="nav-item">
-                    <a class="nav-link" href="payment_manageProcess.jsp">
+                    <a class="nav-link" href="payment_manageProcess.jsp?action=paymentList">
                         <i class="fas fa-fw fa-table"></i>
                         <span>Manage Payment</span></a>
                 </li>

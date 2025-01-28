@@ -14,14 +14,25 @@ public class Booking {
     private int caretakerId;
     private int custId;
     private int staffId;
+    private String custName;
+    private String staffName;
+    private String caretakerName;
     
     //constructors
-    public Booking(String bookingType, String bookingTime, String bookingDuration, double bookingPrice, int caretakerId) {
+    public Booking() {}
+
+    public Booking(int bookingId, String bookingType, String bookingTime, String bookingDuration, double bookingPrice, int caretakerId, int custId, int staffId, String custName, String staffName, String caretakerName) {
+        this.bookingId = bookingId;
         this.bookingType = bookingType;
         this.bookingTime = bookingTime;
         this.bookingDuration = bookingDuration;
         this.bookingPrice = bookingPrice;
         this.caretakerId = caretakerId;
+        this.custId = custId;
+        this.staffId = staffId;
+        this.custName = custName;
+        this.staffName = staffName;
+        this.caretakerName = caretakerName;
     }
     
     //setter
@@ -56,6 +67,18 @@ public class Booking {
     public void setStaffId(int staffId) {
         this.staffId = staffId;
     }
+
+    public void setCustName(String custName) {
+        this.custName = custName;
+    }
+
+    public void setStaffName(String staffName) {
+        this.staffName = staffName;
+    }
+
+    public void setCaretakerName(String caretakerName) {
+        this.caretakerName = caretakerName;
+    }
     
     //getter
     public int getBookingId() {
@@ -88,6 +111,18 @@ public class Booking {
 
     public int getStaffId() {
         return staffId;
+    }
+
+    public String getCustName() {
+        return custName;
+    }
+
+    public String getStaffName() {
+        return staffName;
+    }
+
+    public String getCaretakerName() {
+        return caretakerName;
     }
 
     @Override

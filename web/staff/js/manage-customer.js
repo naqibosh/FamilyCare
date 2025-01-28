@@ -4,20 +4,29 @@ $(document).ready(function () {
     $('#dataTable').DataTable();
 });
 
-function openEditModal(staffId, role, supervisorId) {
+function openEditModal(custId, statusId) {
     // Set the values of the fields in the modal
-    document.getElementById('staffId').value = staffId;
-    document.getElementById('role').value = role; 
-    document.getElementById('supervisor').value = supervisorId; 
+    document.getElementById('custId').value = custId;
+    document.getElementById('statusId').value = statusId;
 }
 
-function confirmDelete(staffId) {
-    var inputText = document.getElementById("confirmText-" + staffId).value;
+function confirmDelete(custId) {
+    var inputText = document.getElementById("confirmText-" + custId).value;
     if (inputText.toLowerCase() === 'confirm') {
-        window.location.href = 'staff_manageProcess.jsp?action=deleteStaff&staffId=' + staffId;// Redirect to delete action
+        window.location.href = 'customer_manageProcess.jsp?action=deleteCust&custId=' + custId;// Redirect to delete action
     } else {
         alert("You must type 'confirm' to delete.");
     }
+}
+
+function enableCustomer(custId) {
+    window.location.href = 'customer_manageProcess.jsp?action=enableCust&custId=' + custId; // Redirect to the enable action  
+
+}
+
+function disableCustomer(custId) {
+    window.location.href = 'customer_manageProcess.jsp?action=disableCust&custId=' + custId; // Redirect to the disable action  
+
 }
 
 // Get the URL parameters  
@@ -42,7 +51,7 @@ if (success === 'true') {
         // Show the SweetAlert with countdown  
         Swal.fire({
             title: 'Success!',
-            text: 'Staff updated successfully!',
+            text: 'Customer updated successfully!',
             icon: 'success',
             showConfirmButton: false, // Hide the confirm button  
             timer: countdown * 1000, // Set timer for 3 seconds  
@@ -55,7 +64,7 @@ if (success === 'true') {
         // Optional: If you want to show the countdown dynamically (on the SweetAlert popup)  
         let interval = setInterval(function () {
             if (countdown > 0) {
-                Swal.getContent().innerHTML = `<p>Staff updated successfully! Closing in ${countdown} seconds...</p>`;
+                Swal.getContent().innerHTML = `<p>Customer updated successfully! Closing in ${countdown} seconds...</p>`;
                 countdown--;
             } else {
                 clearInterval(interval);  // Clear the interval when the countdown ends  
@@ -69,7 +78,7 @@ if (success === 'true') {
     // Determine the error message based on the error code  
     switch (errorCode) {
         case '1':
-            errorMessage = 'Failed to update staff. Please try again.';
+            errorMessage = 'Failed to update customer. Please try again.';
             break;
         case '2':
             errorMessage = 'Supervisor not found. Please check the supervisor ID.';
