@@ -139,8 +139,6 @@
             <span>FamilyCare Dashboard</span>
             <div>
                 <a href="../caretakerProfileServlet">Profile</a>
-                <a href="schedule.jsp">Schedule</a>
-                <a href="bookings.jsp">Bookings</a>
                 <a href="../caretakerLogoutServlet">Logout</a>
             </div>
         </div>
@@ -156,7 +154,7 @@
             <div class="card">
                 <h3>Incoming Job</h3>
                 <p>View your upcoming job .</p>
-                <a href="view_jobs.jsp" class="btn btn-primary">View Jobs</a>
+                <a href="../JobListServlet" class="btn btn-primary">View Jobs</a>
             </div>
             <div class="card">
                 <h3>Your Status</h3>
