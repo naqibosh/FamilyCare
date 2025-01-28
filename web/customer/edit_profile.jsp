@@ -1,4 +1,48 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page import="java.sql.*" %>
+<%@ page import="dbconn.DatabaseConnection" %>
+<%
+    // Check if the user is logged in
+    Integer customerId = (Integer) session.getAttribute("customerId");
+    if (customerId == null) {
+        // Redirect to login if not logged in
+        response.sendRedirect("login.jsp?error=Please log in to edit your profile.");
+        return;
+    }
+
+    // Initialize customer details
+    String firstName = "", lastName = "", username = "", email = "", phone = "";
+
+    try {
+        // Retrieve customer data from the database
+        Connection conn = DatabaseConnection.getConnection();
+        String sql = "SELECT CUST_FIRST_NAME, CUST_LAST_NAME, CUST_USERNAME, CUST_EMAIL, CUST_PHONE_NUMBER FROM CUSTOMER WHERE CUST_ID = ?";
+        PreparedStatement stmt = conn.prepareStatement(sql);
+        stmt.setInt(1, customerId);
+        ResultSet rs = stmt.executeQuery();
+
+        if (rs.next()) {
+            firstName = rs.getString("CUST_FIRST_NAME");
+            lastName = rs.getString("CUST_LAST_NAME");
+            username = rs.getString("CUST_USERNAME");
+            email = rs.getString("CUST_EMAIL");
+            phone = rs.getString("CUST_PHONE_NUMBER");
+        } else {
+            response.sendRedirect("login.jsp?error=Profile not found.");
+            return;
+        }
+
+        // Close resources
+        rs.close();
+        stmt.close();
+        conn.close();
+    } catch (Exception e) {
+        e.printStackTrace();
+        response.sendRedirect("error.jsp?message=Unable to load profile.");
+        return;
+    }
+%>
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -121,7 +165,18 @@
         </style>
     </head>
     <body>
+        <script>
+            function validateForm() {
+                const fullName = document.getElementById('fullName').value.trim();
+                const nameParts = fullName.split(' ');
 
+                if (nameParts.length < 2) {
+                    alert("Please enter both first and last names.");
+                    return false;
+                }
+                return true;
+            }
+        </script>
         <!-- Header -->
         <header>
             <div class="logo">Care Giver</div>
@@ -138,18 +193,18 @@
             <h1>Edit Your Profile</h1>
 
             <!-- Edit Profile Form -->
-            <form action="UpdateProfileServlet" method="POST">
-                <label for="name">Full Name:</label>
-                <input type="text" id="name" name="name" value="<%= request.getAttribute("name") != null ? request.getAttribute("name") : "" %>" required>
+            <form action="../UpdateProfileServlet" method="POST" onsubmit="return validateForm()">
+                <label for="fullName">Full Name:</label>
+                <input type="text" id="fullName" name="fullName" value="<%= firstName + " " + lastName%>" required>
+
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" value="<%= username%>" required>
 
                 <label for="email">Email Address:</label>
-                <input type="email" id="email" name="email" value="<%= request.getAttribute("email") != null ? request.getAttribute("email") : "" %>" required>
+                <input type="email" id="email" name="email" value="<%= email%>" required>
 
                 <label for="phone">Phone Number:</label>
-                <input type="tel" id="phone" name="phone" value="<%= request.getAttribute("phone") != null ? request.getAttribute("phone") : "" %>" required>
-
-                <label for="address">Address:</label>
-                <input type="text" id="address" name="address" value="<%= request.getAttribute("address") != null ? request.getAttribute("address") : "" %>" required>
+                <input type="text" id="phone" name="phone" value="<%= phone%>" required>
 
                 <button type="submit" class="save-btn">Save Changes</button>
             </form>
