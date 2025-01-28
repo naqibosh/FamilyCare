@@ -60,26 +60,26 @@ public class StaffDAO {
 
     public int insertStaff(Staff staff) throws SQLException {
         Connection connection = null;
-        PreparedStatement statement = null;
+        PreparedStatement ps = null;
         int rowsInserted = 0;
 
         try {
             connection = getConnection();
-            statement = connection.prepareStatement(INSERT_STAFF_SQL);
+            ps = connection.prepareStatement(INSERT_STAFF_SQL);
 
-            statement.setString(1, staff.getName());
-            statement.setString(2, staff.getEmail());
-            statement.setString(3, staff.getPassword());
-            statement.setString(4, staff.getPhoneNumber());
-            statement.setString(5, staff.getRole());
+            ps.setString(1, staff.getName());
+            ps.setString(2, staff.getEmail());
+            ps.setString(3, staff.getPassword());
+            ps.setString(4, staff.getPhoneNumber());
+            ps.setString(5, staff.getRole());
 
-            rowsInserted = statement.executeUpdate();
+            rowsInserted = ps.executeUpdate();
 
         } finally {
             // Close resources
             try {
-                if (statement != null) {
-                    statement.close();
+                if (ps != null) {
+                    ps.close();
                 }
             } catch (SQLException e) {
                 logger.log(Level.SEVERE, "Error closing PreparedStatement: " + e.getMessage(), e);
@@ -99,8 +99,8 @@ public class StaffDAO {
     public List<Staff> getAllStaff() {
         List<Staff> staffList = new ArrayList<>();
         try (Connection connection = getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(SELECT_ALL_STAFF)) {
-            ResultSet rs = preparedStatement.executeQuery();
+                PreparedStatement ps = connection.prepareStatement(SELECT_ALL_STAFF)) {
+            ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
                 int id = rs.getInt("staff_id");
@@ -121,9 +121,9 @@ public class StaffDAO {
     public boolean deleteStaff(int id) {
         boolean isDeleted = false;
         try (Connection connection = getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(DELETE_STAFF_SQL)) {
-            preparedStatement.setInt(1, id);
-            int rowsDeleted = preparedStatement.executeUpdate();
+                PreparedStatement ps = connection.prepareStatement(DELETE_STAFF_SQL)) {
+            ps.setInt(1, id);
+            int rowsDeleted = ps.executeUpdate();
             isDeleted = rowsDeleted > 0;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -134,13 +134,13 @@ public class StaffDAO {
     public boolean editStaff(int staffId, String staffRole, int supervisorId) {
         boolean isUpdated = false;
         try (Connection connection = getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(EDIT_STAFF_SQL)) {
+                PreparedStatement ps = connection.prepareStatement(EDIT_STAFF_SQL)) {
 
-            preparedStatement.setString(1, staffRole);
-            preparedStatement.setInt(2, supervisorId);
-            preparedStatement.setInt(3, staffId);
+            ps.setString(1, staffRole);
+            ps.setInt(2, supervisorId);
+            ps.setInt(3, staffId);
 
-            int rowsUpdated = preparedStatement.executeUpdate();
+            int rowsUpdated = ps.executeUpdate();
             isUpdated = rowsUpdated > 0;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -150,15 +150,15 @@ public class StaffDAO {
 
     public boolean updateStaff(Staff staff) {
         try (Connection connection = getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_STAFF_SQL)) {
-            preparedStatement.setString(1, staff.getName());
-            preparedStatement.setString(2, staff.getEmail());
-            preparedStatement.setString(3, staff.getPassword());
-            preparedStatement.setString(4, staff.getPhoneNumber());
-            preparedStatement.setString(5, staff.getRole());
-            preparedStatement.setInt(6, staff.getSupervisorId());
-            preparedStatement.setInt(7, staff.getId());
-            int rowsUpdated = preparedStatement.executeUpdate();
+                PreparedStatement ps = connection.prepareStatement(UPDATE_STAFF_SQL)) {
+            ps.setString(1, staff.getName());
+            ps.setString(2, staff.getEmail());
+            ps.setString(3, staff.getPassword());
+            ps.setString(4, staff.getPhoneNumber());
+            ps.setString(5, staff.getRole());
+            ps.setInt(6, staff.getSupervisorId());
+            ps.setInt(7, staff.getId());
+            int rowsUpdated = ps.executeUpdate();
             return rowsUpdated > 0;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -168,9 +168,9 @@ public class StaffDAO {
 
     public boolean isStaffEmailExists(String email) throws SQLException {
         try (Connection connection = getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(CHECK_EMAIL_SQL)) {
-            preparedStatement.setString(1, email);
-            ResultSet rs = preparedStatement.executeQuery();
+                PreparedStatement ps = connection.prepareStatement(CHECK_EMAIL_SQL)) {
+            ps.setString(1, email);
+            ResultSet rs = ps.executeQuery();
             return rs.next(); // Check if any result is returned
         } catch (SQLException e) {
             throw e; // Re-throw the exception for handling
@@ -179,15 +179,15 @@ public class StaffDAO {
 
     public Optional<Integer> authenticateUser(String email, String password) throws SQLException {
         try (Connection connection = getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(AUTHENTICATE_SQL)) {
-            preparedStatement.setString(1, email);
-            ResultSet resultSet = preparedStatement.executeQuery();
+                PreparedStatement ps = connection.prepareStatement(AUTHENTICATE_SQL)) {
+            ps.setString(1, email);
+            ResultSet rs = ps.executeQuery();
 
             // If email exists, check the password  
-            if (resultSet.next()) {
-                String storedPasswordHash = resultSet.getString("staff_password");
+            if (rs.next()) {
+                String storedPasswordHash = rs.getString("staff_password");
                 if (BCrypt.checkpw(password, storedPasswordHash)) {
-                    int userId = resultSet.getInt("staff_id"); 
+                    int userId = rs.getInt("staff_id"); 
                     return Optional.of(userId); 
                 }
             }
@@ -201,9 +201,9 @@ public class StaffDAO {
     public boolean isSupervisorExists(int supervisorId) throws SQLException {
         boolean isSvExist = false;
         try (Connection connection = getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(CHECK_SVID_SQL)) {
-            preparedStatement.setInt(1, supervisorId);
-            int rowsExist = preparedStatement.executeUpdate();
+                PreparedStatement ps = connection.prepareStatement(CHECK_SVID_SQL)) {
+            ps.setInt(1, supervisorId);
+            int rowsExist = ps.executeUpdate();
             isSvExist = rowsExist > 0;
         } catch (SQLException e) {
             throw e;
@@ -213,25 +213,25 @@ public class StaffDAO {
 
     public String getUserRole(int userId) throws SQLException {
         Connection connection = null;
-        PreparedStatement statement = null;
-        ResultSet resultSet = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
         String role = null;
 
         try {
             connection = getConnection();
-            statement = connection.prepareStatement(CHECK_ROLE_SQL);
-            statement.setInt(1, userId);
-            resultSet = statement.executeQuery();
+            ps = connection.prepareStatement(CHECK_ROLE_SQL);
+            ps.setInt(1, userId);
+            rs = ps.executeQuery();
 
-            if (resultSet.next()) {
-                role = resultSet.getString("staff_role");
+            if (rs.next()) {
+                role = rs.getString("staff_role");
             }
 
         } finally {
             // Close resources
             try {
-                if (statement != null) {
-                    statement.close();
+                if (ps != null) {
+                    ps.close();
                 }
             } catch (SQLException e) {
                 logger.log(Level.SEVERE, "Error closing PreparedStatement: " + e.getMessage(), e);
@@ -251,20 +251,20 @@ public class StaffDAO {
     public Staff getStaffInfo(int staffId) throws SQLException {
         Staff staff = null;
         try (Connection connection = getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(GET_STAFF_INFO)) {
+                PreparedStatement ps = connection.prepareStatement(GET_STAFF_INFO)) {
 
-            preparedStatement.setInt(1, staffId);
+            ps.setInt(1, staffId);
 
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                if (resultSet.next()) {
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
                     staff = new Staff();
-                    staff.setId(resultSet.getInt("staff_id"));
-                    staff.setName(resultSet.getString("staff_name"));
-                    staff.setEmail(resultSet.getString("staff_email"));
-                    staff.setPhoneNumber(resultSet.getString("staff_phone_number"));
-                    staff.setRole(resultSet.getString("staff_role"));
-                    staff.setSupervisorId(resultSet.getInt("supervisor_id"));
-                    staff.setSupervisorName(resultSet.getString("supervisor_name"));
+                    staff.setId(rs.getInt("staff_id"));
+                    staff.setName(rs.getString("staff_name"));
+                    staff.setEmail(rs.getString("staff_email"));
+                    staff.setPhoneNumber(rs.getString("staff_phone_number"));
+                    staff.setRole(rs.getString("staff_role"));
+                    staff.setSupervisorId(rs.getInt("supervisor_id"));
+                    staff.setSupervisorName(rs.getString("supervisor_name"));
                 }
             }
         } catch (SQLException e) {

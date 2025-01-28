@@ -46,6 +46,22 @@
         <servlet-name>BookingServlet</servlet-name>
         <servlet-class>BookingServlet.BookingServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>CustomerManageServlet</servlet-name>
+        <servlet-class>staff.servlet.CustomerManageServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>CaretakerManageServlet</servlet-name>
+        <servlet-class>staff.servlet.CaretakerManageServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>BookingManageServlet</servlet-name>
+        <servlet-class>staff.servlet.BookingManageServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>PaymentManageServlet</servlet-name>
+        <servlet-class>staff.servlet.PaymentManageServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>RegisterServlet</servlet-name>
         <url-pattern>/RegisterServlet</url-pattern>
@@ -81,6 +97,22 @@
   <servlet-mapping>
         <servlet-name>CaretakerServlet</servlet-name>
         <url-pattern>/CaretakerServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CustomerManageServlet</servlet-name>
+        <url-pattern>/CustomerManageServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CaretakerManageServlet</servlet-name>
+        <url-pattern>/CaretakerManageServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>BookingManageServlet</servlet-name>
+        <url-pattern>/BookingManageServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>PaymentManageServlet</servlet-name>
+        <url-pattern>/PaymentManageServlet</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ProfileServlet</servlet-name>
@@ -155,11 +187,11 @@
     <error-page>
         <!-- Handle HTTP 404 errors -->
         <error-code>404</error-code>
-        <location>/staff/404.html</location>
+        <location>/404.html</location>
     </error-page>
     <error-page>
         <!-- Handle all uncaught exceptions -->
         <exception-type>java.lang.Exception</exception-type>
-        <location>/staff/404.html</location>
+        <location>/404.html</location>
     </error-page>
 </web-app>
