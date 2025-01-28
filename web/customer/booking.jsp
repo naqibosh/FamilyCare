@@ -273,14 +273,11 @@
             <div class="booking-container" id="booking">
                 <h2>Book a Caretaker</h2>
                 <form action="../BookingServlet" method="post">
-                    <!-- Hidden Field for Customer ID -->
-                    <input type="hidden" name="cust_id" value="<%= session.getAttribute("customerId")%>">
-
                     <label for="type">Booking Type</label>
                     <select id="type" name="type" required onchange="fetchCaretakers()">
                         <option value="" disabled selected>Select Caretaker Type</option>
-                        <option value="Babycaretaker">Baby Home Care Package</option>
-                        <option value="Eldercaretaker">Elder Home Care Package</option>
+                        <option value="baby">Baby Home Care Package</option>
+                        <option value="elder">Elder Home Care Package</option>
                     </select>
 
                     <label for="caretaker">Caretaker Name</label>
@@ -301,7 +298,7 @@
                     <button type="submit">Book Now</button>
                 </form>
 
+
             </div>
         </div>
     </body>
-</html>

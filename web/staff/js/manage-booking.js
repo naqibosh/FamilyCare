@@ -4,29 +4,19 @@ $(document).ready(function () {
     $('#dataTable').DataTable();
 });
 
-function openEditModal(staffId, role, supervisorId) {
+function openEditModal(bookingId, staffId) {
     // Set the values of the fields in the modal
-    document.getElementById('staffId').value = staffId;
-    document.getElementById('role').value = role; 
-    document.getElementById('supervisor').value = supervisorId; 
+    document.getElementById('bookingId').value = bookingId;
+    document.getElementById('staffId').value = staffId; 
 }
 
-function confirmDelete(staffId) {
-    var inputText = document.getElementById("confirmText-" + staffId).value;
+function confirmDelete(bookingId) {
+    var inputText = document.getElementById("confirmText-" + bookingId).value;
     if (inputText.toLowerCase() === 'confirm') {
-        window.location.href = 'staff_manageProcess.jsp?action=deleteStaff&staffId=' + staffId;// Redirect to delete action
+        window.location.href = 'booking_manageProcess.jsp?action=deleteBooking&bookingId=' + bookingId;// Redirect to delete action
     } else {
         alert("You must type 'confirm' to delete.");
     }
-}
-
-function enableStaff(staffId) {
-    window.location.href = 'staff_manageProcess.jsp?action=enableStaff&staffId=' + staffId; // Redirect to the enable action  
-
-}
-function disableStaff(staffId) {
-    window.location.href = 'staff_manageProcess.jsp?action=disableStaff&staffId=' + staffId; // Redirect to the enable action  
-
 }
 
 // Get the URL parameters  
@@ -51,7 +41,7 @@ if (success === 'true') {
         // Show the SweetAlert with countdown  
         Swal.fire({
             title: 'Success!',
-            text: 'Staff updated successfully!',
+            text: 'Booking updated successfully!',
             icon: 'success',
             showConfirmButton: false, // Hide the confirm button  
             timer: countdown * 1000, // Set timer for 3 seconds  
@@ -64,7 +54,7 @@ if (success === 'true') {
         // Optional: If you want to show the countdown dynamically (on the SweetAlert popup)  
         let interval = setInterval(function () {
             if (countdown > 0) {
-                Swal.getContent().innerHTML = `<p>Staff updated successfully! Closing in ${countdown} seconds...</p>`;
+                Swal.getContent().innerHTML = `<p>Booking updated successfully! Closing in ${countdown} seconds...</p>`;
                 countdown--;
             } else {
                 clearInterval(interval);  // Clear the interval when the countdown ends  
@@ -78,7 +68,7 @@ if (success === 'true') {
     // Determine the error message based on the error code  
     switch (errorCode) {
         case '1':
-            errorMessage = 'Failed to update staff. Please try again.';
+            errorMessage = 'Failed to update booking. Please try again.';
             break;
         case '2':
             errorMessage = 'Supervisor not found. Please check the supervisor ID.';

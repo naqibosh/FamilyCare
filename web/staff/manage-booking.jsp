@@ -1,12 +1,12 @@
 <%-- 
-    Document   : manage-staff
-    Created on : Jan 11, 2025, 5:55:36 PM
+    Document   : manage-booking
+    Created on : Jan 28, 2025, 7:04:13 AM
     Author     : hazik
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ page import="user.Staff" %> 
+<%@ page import="user.Booking" %> 
 
 <!DOCTYPE html>
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
@@ -35,7 +35,7 @@
 
         <!-- Custom styles for this page -->
         <link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
-        <script src="js/manage-staff.js"></script>
+        <script src="js/manage-booking.js"></script>
 
     </head>
 
@@ -77,7 +77,7 @@
                 </div>
 
                 <!-- Nav Item - Pages Collapse Menu -->
-                <li class="nav-item active">
+                <li class="nav-item ">
                     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages"
                        aria-expanded="true" aria-controls="collapsePages">
                         <i class="fas fa-fw fa-folder"></i>
@@ -92,19 +92,19 @@
                 </li>
 
                 <!-- Nav Item - Tables -->
-                <li class="nav-item ">
+                <li class="nav-item">
                     <a class="nav-link" href="customer_manageProcess.jsp?action=custList">
                         <i class="fas fa-fw fa-table"></i>
                         <span>Manage Customer</span></a>
                 </li>
 
-                <li class="nav-item">
+                <li class="nav-item ">
                     <a class="nav-link" href="caretaker_manageProcess.jsp?action=caretakerList">
                         <i class="fas fa-fw fa-table"></i>
                         <span>Manage Caretaker</span></a>
                 </li>
 
-                <li class="nav-item">
+                <li class="nav-item active">
                     <a class="nav-link" href="booking_manageProcess.jsp?action=bookingList">
                         <i class="fas fa-fw fa-table"></i>
                         <span>Manage Booking</span></a>
@@ -307,7 +307,7 @@
                     <div class="container-fluid">
 
                         <!-- Page Heading -->
-                        <h1 class="h3 mb-2 text-gray-800">List of Staff</h1>
+                        <h1 class="h3 mb-2 text-gray-800">List of Booking</h1>
 
                         <!-- Data Tables -->
                         <div class="card shadow mb-4">
@@ -316,105 +316,114 @@
                             </div>
                             <div class="card-body">
                                 <div class="table-responsive">
-                                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">  
-                                        <thead>  
-                                            <tr>  
-                                                <th>No.</th>  
-                                                <th>ID</th>  
-                                                <th>Name</th>  
-                                                <th>Email</th>  
-                                                <th>Phone</th>  
-                                                <th>Role</th>  
-                                                <th>Supervisor</th>  
-                                                <th>SV ID</th>  
-                                                <th>Actions</th>  
-                                            </tr>  
-                                        </thead>  
-                                        <tfoot>  
-                                            <tr>  
-                                                <th>No.</th>  
-                                                <th>ID</th>  
-                                                <th>Name</th>  
-                                                <th>Email</th>  
-                                                <th>Phone</th>  
-                                                <th>Role</th>  
-                                                <th>Supervisor</th>  
-                                                <th>SV ID</th>  
-                                                <th>Actions</th>  
-                                            </tr>  
-                                        </tfoot>  
-                                        <tbody>  
-                                            <c:set var="i" value="1"/> <!-- Initialize counter variable -->  
-                                            <c:forEach items="${staffList}" var="staff">  
-                                                <tr>  
-                                                    <td>${i}</td>   
-                                                    <td>${staff.id}</td>  
-                                                    <td>${staff.name}</td>  
-                                                    <td>${staff.email}</td>  
-                                                    <td>${staff.phoneNumber}</td>  
-                                                    <td>${staff.role}</td>  
-                                                    <td>${staff.supervisorName}</td>  
-                                                    <td>${staff.supervisorId}</td>   
+                                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                        <thead>
+                                            <tr>
+                                                <th>No.</th>
+                                                <th>ID</th>
+                                                <th>Type</th>
+                                                <th>Booking Time</th>
+                                                <th>Duration</th>
+                                                <th>Price</th>
+                                                <th>Customer</th>
+                                                <th>Staff</th>
+                                                <th>Caretaker</th>
+                                                <th> </th>
+                                            </tr>
+                                        </thead>
+                                        <tfoot>
+                                            <tr>
+                                                <th>No.</th>
+                                                <th>ID</th>
+                                                <th>Type</th>
+                                                <th>Booking Time</th>
+                                                <th>Duration</th>
+                                                <th>Price</th>
+                                                <th>Customer</th>
+                                                <th>Staff</th>
+                                                <th>Caretaker</th>
+                                                <th> </th>
+                                            </tr>
+                                        </tfoot>
+                                        <tbody> <c:set var="i" value="1"/> <!-- Initialize counter variable -->
+                                            <c:forEach items="${bookingList}" var="book">
+                                                <tr>
+                                                    <td>${i}</td> 
+                                                    <td>${book.bookingId}</td>
+                                                    <td>${book.bookingType}</td>
+                                                    <td>${book.bookingTime}</td>
+                                                    <td>${book.bookingDuration}</td>
+                                                    <td>RM ${book.bookingPrice}</td>
+                                                    <td>${book.custName}</td>
+                                                    <td>${book.staffName}</td> 
+                                                    <td>${book.caretakerName}</td> 
                                                     <td class="text-center align-middle">  
-                                                        <div>  
+                                                        <div >  
                                                             <!-- Edit Button with margin-right -->  
-                                                            <button class="btn btn-success btn-sm me-2" data-toggle="modal" data-target="#editModal-${staff.id}"   
-                                                                    onclick="openEditModal('${staff.id}', '${staff.role}', '${staff.supervisorId}')">  
+                                                            <button class="btn btn-success btn-sm me-2" data-toggle="modal" data-target="#editModal-${book.bookingId}"   
+                                                                    onclick="openEditModal('${book.bookingId}', '${book.staffId}')">  
                                                                 Edit  
                                                             </button>  
-                                                            <!-- Enable/Disable Button -->  
-                                                            <c:choose>  
-                                                                <c:when test="${staff.isActive == 'Y'}">  
-                                                                    <button type="button" class="btn btn-warning btn-sm" onclick="disableStaff('${staff.id}')">  
-                                                                        Disable  
-                                                                    </button>  
-                                                                </c:when>  
-                                                                <c:otherwise>  
-                                                                    <button type="button" class="btn btn-primary btn-sm" onclick="enableStaff('${staff.id}')">  
-                                                                        Enable  
-                                                                    </button>  
-                                                                </c:otherwise>  
-                                                            </c:choose>  
-                                                        </div>   
-                                                    </td>  
-                                                </tr>   
-                                                <c:set var="i" value="${i + 1}"/>  
-                                                <!-- Edit Modal -->  
-                                            <div class="modal fade" id="editModal-${staff.id}" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">  
-                                                <div class="modal-dialog" role="document">  
-                                                    <div class="modal-content">  
-                                                        <div class="modal-header">  
-                                                            <h5 class="modal-title" id="editModalLabel">Edit Staff Information</h5>  
-                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">  
-                                                                <span aria-hidden="true">&times;</span>  
+                                                            <!-- Delete Button -->  
+                                                            <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal-${book.bookingId}">  
+                                                                Delete  
                                                             </button>  
                                                         </div>  
-                                                        <div class="modal-body">  
-                                                            <!-- Form for editing staff -->  
-                                                            <form action="staff_manageProcess.jsp?action=editStaff&staffId=${staff.id}" method="post">   
-                                                                <div class="form-group">  
-                                                                    <label for="role">Role</label>  
-                                                                    <select class="form-control" id="role" name="staffRole">  
-                                                                        <option value="Administrator" ${staff.role == 'Administrator' ? 'selected' : ''}>Administrator</option>  
-                                                                        <option value="Manager" ${staff.role == 'Manager' ? 'selected' : ''}>Manager</option>  
-                                                                        <option value="Supervisor" ${staff.role == 'Supervisor' ? 'selected' : ''}>Supervisor</option>  
-                                                                        <option value="Executive" ${staff.role == 'Executive' ? 'selected' : ''}>Executive</option>  
-                                                                    </select>  
-                                                                </div>  
-                                                                <div class="form-group">  
-                                                                    <label for="supervisor">Supervisor ID</label>  
-                                                                    <input type="text" class="form-control" id="supervisor" name="supervisorId" value="${staff.supervisorId}" placeholder="Enter Supervisor ID">  
-                                                                </div>  
-                                                                <div class="form-group">  
-                                                                    <button type="submit" class="btn btn-success">Confirm</button>  
-                                                                </div>  
-                                                            </form>  
-                                                        </div>  
-                                                    </div>  
-                                                </div>  
-                                            </div>  
-                                        </c:forEach>  
-                                        </tbody>  
+                                                    </td>
+                                                </tr> <c:set var="i" value="${i + 1}"/>
+                                                <!-- Edit Modal -->
+                                            <div class="modal fade" id="editModal-${book.bookingId}" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog" role="document">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="editModalLabel">Edit Booking Information</h5>
+                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <!-- Form for editing book -->
+                                                            <form action="booking_manageProcess.jsp?action=editBooking&bookingId=${book.bookingId}" method="post"> 
+                                                        
+                                                                <div class="form-group">
+                                                                    <label for="staff">Assign New Staff ID</label>
+                                                                    <input type="number" class="form-control" id="supervisor" name="staffId" value="${book.staffId}" placeholder="Enter Staff ID">
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <button type="submit" class="btn btn-success">Confirm</button>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </c:forEach>
+                                        <!-- Modal for Confirming Deletion -->
+                                        <c:forEach items="${bookingList}" var="book">
+                                            <div class="modal fade" id="deleteModal-${book.bookingId}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog" role="document">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
+                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <p>Are you sure you want to delete this booking?</p>
+                                                            <p>Type 'confirm' to proceed.</p>
+                                                            <input type="text" id="confirmText-${book.bookingId}" class="form-control" placeholder="Type 'confirm'">
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                                            <button type="button" class="btn btn-danger" onclick="confirmDelete('${book.bookingId}')">Delete</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </c:forEach>
+
+                                        </tbody>
                                     </table>
                                 </div>
                             </div>
@@ -490,3 +499,5 @@
     </body>
 
 </html>
+
+
