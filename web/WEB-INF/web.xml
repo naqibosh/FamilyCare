@@ -142,6 +142,10 @@
         <servlet-name>UpdateBookingStatusServlet</servlet-name>
         <url-pattern>/UpdateBookingStatusServlet</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>BookingDetailsServlet</servlet-name>
+        <url-pattern>/BookingDetailsServlet</url-pattern>
+    </servlet-mapping>
     <welcome-file-list>
         <welcome-file>index.html</welcome-file>
     </welcome-file-list>

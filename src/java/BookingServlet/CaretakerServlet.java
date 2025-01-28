@@ -22,11 +22,11 @@ public class CaretakerServlet extends HttpServlet {
         PrintWriter out = response.getWriter();
 
         String query = "";
-        if ("baby".equals(type)) {
+        if ("Babycaretaker".equals(type)) {
             query = "SELECT c.caretaker_id, c.caretaker_name "
                     + "FROM caretaker c "
                     + "JOIN babysitter b ON c.caretaker_id = b.caretaker_id";
-        } else if ("elder".equals(type)) {
+        } else if ("Eldercaretaker".equals(type)) {
             query = "SELECT c.caretaker_id, c.caretaker_name "
                     + "FROM caretaker c "
                     + "JOIN eldercaretaker e ON c.caretaker_id = e.caretaker_id";

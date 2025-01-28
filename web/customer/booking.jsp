@@ -1,5 +1,14 @@
-<%@ page import="java.io.*, java.sql.*, javax.servlet.*, javax.servlet.http.*, dbconn.DatabaseConnection" %>
-<%@ page contentType="text/html; charset=UTF-8" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%
+    // Check if the session exists and retrieve customerId
+    Integer customerId = (Integer) session.getAttribute("customerId");
+
+    if (customerId == null) {
+        // Redirect to the login page if not logged in
+        response.sendRedirect("login.jsp?error=Please log in to access the booking page.");
+        return;
+    }
+%>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -220,6 +229,7 @@
             <a href="home.jsp"><span>🏠</span> Home</a>
             <a href="#packages"><span>📦</span> Packages</a>
             <a href="#booking"><span>📅</span> Booking</a>
+            <a href="bookingDetails.jsp"><span>📖</span> My Booking</a> <!-- Added new icon for My Booking -->
         </div>
 
         <!-- Content Wrapper -->
