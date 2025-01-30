@@ -229,7 +229,7 @@
             <a href="home.jsp"><span>🏠</span> Home</a>
             <a href="#packages"><span>📦</span> Packages</a>
             <a href="#booking"><span>📅</span> Booking</a>
-            <a href="bookingDetails.jsp"><span>📖</span> My Booking</a> <!-- Added new icon for My Booking -->
+            <!--<a href="bookingDetails.jsp"><span>📖</span> My Booking</a>  Added new icon for My Booking -->
         </div>
 
         <!-- Content Wrapper -->
@@ -253,7 +253,7 @@
                         <li>Sleeping supervision</li>
                         <li>Bonding activities</li>
                     </ul>
-                    <p class="price">RM 10 per hour</p>
+<!--                    <p class="price">RM 10 per hour</p>-->
                 </div>
                 <div class="package">
                     <h3>Elder Home Care Package</h3>
@@ -265,40 +265,39 @@
                         <li>Outdoor Exercise/Activity</li>
                         <li>Mind Wellness Activities</li>
                     </ul>
-                    <p class="price">RM 12 per hour</p>
+<!--                    <p class="price">RM 12 per hour</p>-->
                 </div>
             </section>
 
             <!-- Booking Section -->
-            <div class="booking-container" id="booking">
-                <h2>Book a Caretaker</h2>
-                <form action="../BookingServlet" method="post">
-                    <label for="type">Booking Type</label>
-                    <select id="type" name="type" required onchange="fetchCaretakers()">
-                        <option value="" disabled selected>Select Caretaker Type</option>
-                        <option value="baby">Baby Home Care Package</option>
-                        <option value="elder">Elder Home Care Package</option>
-                    </select>
+            <div class="booking-container" id="booking">  
+                <h2>Book a Caretaker</h2>  
+                <form action="../BookingServlet" method="post">  
+                    <input type="hidden" name="cust_id" value="<%= customerId%>"/> <!-- Hidden field for customerId -->  
 
-                    <label for="caretaker">Caretaker Name</label>
-                    <select id="caretaker" name="caretaker" required>
-                        <option value="" selected>Select a Caretaker</option>
-                    </select>
+                    <label for="type">Booking Type</label>  
+                    <select id="type" name="type" required onchange="fetchCaretakers()">  
+                        <option value="" disabled selected>Select Caretaker Type</option>  
+                        <option value="Babycaretaker">Baby Home Care Package</option>  
+                        <option value="Eldercaretaker">Elder Home Care Package</option>  
+                    </select>  
 
-                    <label for="time">Booking Time</label>
-                    <!-- Combine Date and Time Input -->
-                    <input type="datetime-local" id="time" name="time" required 
-                           pattern="\d{4}-\d{2}-\d{2}T\d{2}:\d{2}" 
-                           title="Format: YYYY-MM-DDTHH:MM">
-                    <!-- Example format: 2025-01-17T05:23 -->
+                    <label for="caretaker">Caretaker Name</label>  
+                    <select id="caretaker" name="caretaker" required>  
+                        <option value="" selected>Select a Caretaker</option>  
+                    </select>  
 
-                    <label for="duration">Duration (hours)</label>
-                    <input type="number" id="duration" name="duration" min="1" max="12" placeholder="Enter duration" required>
+                    <label for="time">Booking Time</label>  
+                    <!-- Combine Date and Time Input -->  
+                    <input type="datetime-local" id="time" name="time" required   
+                           pattern="\d{4}-\d{2}-\d{2}T\d{2}:\d{2}"   
+                           title="Format: YYYY-MM-DDTHH:MM">  
+                    <!-- Example format: 2025-01-17T05:23 -->  
 
-                    <button type="submit">Book Now</button>
-                </form>
+                    <label for="duration">Duration (hours)</label>  
+                    <input type="number" id="duration" name="duration" min="1" max="12" placeholder="Enter duration" required>  
 
-
-            </div>
-        </div>
+                    <button type="submit">Book Now</button>  
+                </form>  
+            </div> 
     </body>
