@@ -18,12 +18,12 @@ public class CaretakerElder extends Caretaker{
     //constructors
     public CaretakerElder() {}
     
-    public CaretakerElder(int experienceYears, String certification, double hourlyRate, String name, String phone, String profileDescription, String IC, int staffId) {
-        super(name, phone, profileDescription, IC, staffId);
-        this.experienceYears = experienceYears;
-        this.certification = certification;
-        this.hourlyRate = hourlyRate;
-    }
+//    public CaretakerElder(int experienceYears, String certification, double hourlyRate, String name, String phone, String profileDescription, String IC, int staffId) {
+//        super(name, phone, profileDescription, IC, staffId);
+//        this.experienceYears = experienceYears;
+//        this.certification = certification;
+//        this.hourlyRate = hourlyRate;
+//    }
     
     //setter
     public void setExperienceYears(int experienceYears) {

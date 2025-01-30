@@ -192,7 +192,7 @@
                     <li>Sleeping supervision</li>
                     <li>Bonding activities</li>
                 </ul>
-                <p class="price">RM 10 per hour</p>
+<!--                <p class="price">RM 10 per hour</p>-->
             </div>
 
             <div class="service-card">
@@ -205,7 +205,7 @@
                     <li>Outdoor Exercise/Activity</li>
                     <li>Mind Wellness Activities</li>
                 </ul>
-                <p class="price">RM 12 per hour</p>
+<!--                <p class="price">RM 12 per hour</p>-->
             </div>
         </section>
 
