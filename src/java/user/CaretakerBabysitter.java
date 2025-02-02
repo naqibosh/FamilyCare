@@ -20,6 +20,11 @@ public class CaretakerBabysitter extends Caretaker{
         this.rating = rating;
     }
     
+    public CaretakerBabysitter(int experienceYears, double hourlyRate){
+        this.experienceYears = experienceYears;
+        this.hourlyRate = hourlyRate;
+    }
+    
     //setter
     public void setExperienceYears(int experienceYears) {
         this.experienceYears = experienceYears;

@@ -1,7 +1,6 @@
-package user;
+package userDAO;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -10,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import user.Booking;
+import dbconn.DatabaseConnection;
 
 /**
  *
@@ -26,28 +27,6 @@ public class BookingDAO {
     private static final String GET_BOOKING_INFO = "#";
     private static final String EDIT_BOOKING_SQL = "UPDATE booking SET staff_id = ? WHERE booking_id = ?";
 
-    public Connection getConnection() throws SQLException {
-        final String DB_URL = "jdbc:oracle:thin:@//localhost:1521/XE";
-        final String DB_USER = "CareGiver";
-        final String DB_PASSWORD = "system";
-
-        Connection connection = null;
-        try {
-            Class.forName("oracle.jdbc.OracleDriver");
-
-            connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-        } catch (ClassNotFoundException ex) {
-
-            Logger.getLogger(StaffDAO.class.getName()).log(Level.SEVERE, "Oracle JDBC Driver not found", ex);
-            throw new SQLException("Unable to load the Oracle JDBC Driver", ex);
-        } catch (SQLException ex) {
-
-            Logger.getLogger(StaffDAO.class.getName()).log(Level.SEVERE, "Database connection failed", ex);
-            throw ex; // Re-throw exception for caller to handle
-        }
-        return connection;
-    }
-
     public void deleteBooking(int bookingId) throws SQLException {
         Connection connection = null;
         PreparedStatement deletePaymentStmt = null;
@@ -55,7 +34,7 @@ public class BookingDAO {
         PreparedStatement deleteBookingStmt = null;
 
         try {
-            connection = getConnection();
+            connection = DatabaseConnection.getConnection();
             connection.setAutoCommit(false); // Start transaction  
 
             // Delete payment related to the booking  
@@ -106,7 +85,7 @@ public class BookingDAO {
     }
 
     public void insertBooking(Booking booking) throws SQLException {
-        try (Connection connection = getConnection();
+        try (Connection connection = DatabaseConnection.getConnection();
                 PreparedStatement ps = connection.prepareStatement(INSERT_BOOKING_SQL, Statement.RETURN_GENERATED_KEYS)) {
 
             ps.setString(1, booking.getBookingType());
@@ -129,7 +108,7 @@ public class BookingDAO {
     }
 
     public void updateBooking(Booking booking) throws SQLException {
-        try (Connection connection = getConnection();
+        try (Connection connection = DatabaseConnection.getConnection();
                 PreparedStatement ps = connection.prepareStatement(UPDATE_BOOKING_SQL)) {
 
             ps.setString(1, booking.getBookingType());
@@ -147,7 +126,7 @@ public class BookingDAO {
 
     public List<Booking> selectAllBookings() throws SQLException {
         List<Booking> bookings = new ArrayList<>();
-        try (Connection connection = getConnection();
+        try (Connection connection = DatabaseConnection.getConnection();
                 PreparedStatement ps = connection.prepareStatement(SELECT_ALL_BOOKING);
                 ResultSet rs = ps.executeQuery()) {
 
@@ -172,7 +151,7 @@ public class BookingDAO {
     }
 
     public boolean editBooking(int bookingId, int staffId) throws SQLException {
-        try (Connection connection = getConnection();
+        try (Connection connection = DatabaseConnection.getConnection();
                 PreparedStatement ps = connection.prepareStatement(EDIT_BOOKING_SQL)) {
 
             ps.setInt(1, staffId); // Set the new staff ID

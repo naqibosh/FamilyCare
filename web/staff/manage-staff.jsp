@@ -77,7 +77,7 @@
                 </div>
 
                 <!-- Nav Item - Pages Collapse Menu -->
-                <li class="nav-item active">
+                <li class="nav-item">
                     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages"
                        aria-expanded="true" aria-controls="collapsePages">
                         <i class="fas fa-fw fa-folder"></i>
@@ -87,6 +87,7 @@
                         <div class="bg-white py-2 collapse-inner rounded">
                             <a class="collapse-item" href="staff_manageProcess.jsp?action=staffList">Manage Staff</a>
                             <a class="collapse-item" href="register.html">Register Staff</a>
+                            <a class="collapse-item" href="caretaker_register.jsp">Register Caretaker</a>
                         </div>
                     </div>
                 </li>

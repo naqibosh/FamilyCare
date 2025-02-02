@@ -29,8 +29,8 @@
     <servlet>
         <servlet-name>UpdateStatusServlet</servlet-name>
         <servlet-class>caretaker.servlet.UpdateStatusServlet</servlet-class>
-      </servlet>
-  <servlet>
+    </servlet>
+    <servlet>
         <servlet-name>CaretakerServlet</servlet-name>
         <servlet-class>BookingServlet.CaretakerServlet</servlet-class>
     </servlet>
@@ -53,6 +53,11 @@
     <servlet>
         <servlet-name>CaretakerManageServlet</servlet-name>
         <servlet-class>staff.servlet.CaretakerManageServlet</servlet-class>
+        <multipart-config>
+            <max-file-size>10485760</max-file-size> <!-- 10 MB -->
+            <max-request-size>20971520</max-request-size> <!-- 20 MB -->
+            <file-size-threshold>0</file-size-threshold>
+        </multipart-config>
     </servlet>
     <servlet>
         <servlet-name>BookingManageServlet</servlet-name>
@@ -101,8 +106,8 @@
     <servlet-mapping>
         <servlet-name>UpdateStatusServlet</servlet-name>
         <url-pattern>/UpdateStatusServlet</url-pattern>
-      </servlet-mapping>
-  <servlet-mapping>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>CaretakerServlet</servlet-name>
         <url-pattern>/CaretakerServlet</url-pattern>
     </servlet-mapping>
@@ -210,4 +215,5 @@
         <exception-type>java.lang.Exception</exception-type>
         <location>/404.html</location>
     </error-page>
+
 </web-app>

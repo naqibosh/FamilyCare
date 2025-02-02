@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import user.Customer;
-import user.CustomerDAO;
+import userDAO.CustomerDAO;
 import utils.SessionUtils;
 
 /**

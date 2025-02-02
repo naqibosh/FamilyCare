@@ -1,9 +1,5 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-package user;
+
+package userDAO;
 
 import static com.sun.xml.ws.security.addressing.impl.policy.Constants.logger;
 import java.sql.*;
@@ -11,8 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import jbcrypt.BCrypt;
+import user.Staff;
+import dbconn.DatabaseConnection;
 
 /**
  *
@@ -35,37 +32,13 @@ public class StaffDAO {
 
     public StaffDAO() {}
 
-    public Connection getConnection() throws SQLException {
-        final String DB_URL = "jdbc:oracle:thin:@//localhost:1521/XE";
-        final String DB_USER = "CareGiver";
-        final String DB_PASSWORD = "system";
-
-        Connection connection = null;
-        try {
-            // Load the Oracle JDBC driver
-            Class.forName("oracle.jdbc.OracleDriver");
-
-            // Establish the connection
-            connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-        } catch (ClassNotFoundException ex) {
-            // Log error if the driver is not found
-            Logger.getLogger(StaffDAO.class.getName()).log(Level.SEVERE, "Oracle JDBC Driver not found", ex);
-            throw new SQLException("Unable to load the Oracle JDBC Driver", ex);
-        } catch (SQLException ex) {
-            // Log error for database connection issues
-            Logger.getLogger(StaffDAO.class.getName()).log(Level.SEVERE, "Database connection failed", ex);
-            throw ex; // Re-throw exception for caller to handle
-        }
-        return connection;
-    }
-
     public int insertStaff(Staff staff) throws SQLException {
         Connection connection = null;
         PreparedStatement ps = null;
         int rowsInserted = 0;
 
         try {
-            connection = getConnection();
+            connection = DatabaseConnection.getConnection();
             ps = connection.prepareStatement(INSERT_STAFF_SQL);
 
             ps.setString(1, staff.getName());
@@ -99,7 +72,7 @@ public class StaffDAO {
 
     public List<Staff> getAllStaff() {
         List<Staff> staffList = new ArrayList<>();
-        try (Connection connection = getConnection();
+        try (Connection connection = DatabaseConnection.getConnection();
                 PreparedStatement ps = connection.prepareStatement(SELECT_ALL_STAFF)) {
             ResultSet rs = ps.executeQuery();
 
@@ -122,7 +95,7 @@ public class StaffDAO {
 
     public boolean deleteStaff(int id) {
         boolean isDeleted = false;
-        try (Connection connection = getConnection();
+        try (Connection connection = DatabaseConnection.getConnection();
                 PreparedStatement ps = connection.prepareStatement(DELETE_STAFF_SQL)) {
             ps.setInt(1, id);
             int rowsDeleted = ps.executeUpdate();
@@ -136,7 +109,7 @@ public class StaffDAO {
     public boolean disableStaff(int staffId) {
         boolean isDisable = false;
 
-        try (Connection connection = getConnection();
+        try (Connection connection = DatabaseConnection.getConnection();
                 PreparedStatement ps = connection.prepareStatement(DISABLE_STAFF_SQL)) {
             ps.setInt(1, staffId);
             int rowsUpdated = ps.executeUpdate();
@@ -150,7 +123,7 @@ public class StaffDAO {
     public boolean enableStaff(int staffId) {
         boolean isEnabled = false;
 
-        try (Connection connection = getConnection();
+        try (Connection connection = DatabaseConnection.getConnection();
                 PreparedStatement ps = connection.prepareStatement(ENABLE_STAFF_SQL)) {
             ps.setInt(1, staffId);
             int rowsUpdated = ps.executeUpdate();
@@ -163,7 +136,7 @@ public class StaffDAO {
 
     public boolean editStaff(int staffId, String staffRole, int supervisorId) {
         boolean isUpdated = false;
-        try (Connection connection = getConnection();
+        try (Connection connection = DatabaseConnection.getConnection();
                 PreparedStatement ps = connection.prepareStatement(EDIT_STAFF_SQL)) {
 
             ps.setString(1, staffRole);
@@ -179,7 +152,7 @@ public class StaffDAO {
     }
 
     public boolean updateStaff(Staff staff) {
-        try (Connection connection = getConnection();
+        try (Connection connection = DatabaseConnection.getConnection();
                 PreparedStatement ps = connection.prepareStatement(UPDATE_STAFF_SQL)) {
             ps.setString(1, staff.getName());
             ps.setString(2, staff.getEmail());
@@ -197,7 +170,7 @@ public class StaffDAO {
     }
 
     public boolean isStaffEmailExists(String email) throws SQLException {
-        try (Connection connection = getConnection();
+        try (Connection connection = DatabaseConnection.getConnection();
                 PreparedStatement ps = connection.prepareStatement(CHECK_EMAIL_SQL)) {
             ps.setString(1, email);
             ResultSet rs = ps.executeQuery();
@@ -208,7 +181,7 @@ public class StaffDAO {
     }
 
     public Optional<Integer> authenticateUser(String email, String password) throws SQLException {
-        try (Connection connection = getConnection();
+        try (Connection connection = DatabaseConnection.getConnection();
                 PreparedStatement ps = connection.prepareStatement(AUTHENTICATE_SQL)) {
             ps.setString(1, email);
             ResultSet rs = ps.executeQuery();
@@ -230,7 +203,7 @@ public class StaffDAO {
 
     public boolean isSupervisorExists(int supervisorId) throws SQLException {
         boolean isSvExist = false;
-        try (Connection connection = getConnection();
+        try (Connection connection = DatabaseConnection.getConnection();
                 PreparedStatement ps = connection.prepareStatement(CHECK_SVID_SQL)) {
             ps.setInt(1, supervisorId);
             int rowsExist = ps.executeUpdate();
@@ -248,7 +221,7 @@ public class StaffDAO {
         String role = null;
 
         try {
-            connection = getConnection();
+            connection = DatabaseConnection.getConnection();
             ps = connection.prepareStatement(CHECK_ROLE_SQL);
             ps.setInt(1, userId);
             rs = ps.executeQuery();
@@ -280,7 +253,7 @@ public class StaffDAO {
 
     public Staff getStaffInfo(int staffId) throws SQLException {
         Staff staff = null;
-        try (Connection connection = getConnection();
+        try (Connection connection = DatabaseConnection.getConnection();
                 PreparedStatement ps = connection.prepareStatement(GET_STAFF_INFO)) {
 
             ps.setInt(1, staffId);
