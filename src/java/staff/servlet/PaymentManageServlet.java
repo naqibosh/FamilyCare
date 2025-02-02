@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import user.Payment;
-import user.PaymentDAO;
+import userDAO.PaymentDAO;
 import utils.SessionUtils;
 
 /**

@@ -16,8 +16,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import user.Booking;
-import user.BookingDAO;
-import user.CaretakerDAO;
+import userDAO.BookingDAO;
+import userDAO.CaretakerDAO;
 import utils.SessionUtils;
 
 /**

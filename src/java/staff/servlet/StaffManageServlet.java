@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import user.Staff;
-import user.StaffDAO;
+import userDAO.StaffDAO;
 import utils.SessionUtils;
 
 /**

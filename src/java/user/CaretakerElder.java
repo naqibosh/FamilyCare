@@ -1,9 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package user;
+
+import java.io.InputStream;
 
 /**
  *
@@ -14,16 +12,15 @@ public class CaretakerElder extends Caretaker{
     private int experienceYears;
     private String certification;
     private double hourlyRate = 0.00;
+    private InputStream certificationStream;
     
     //constructors
     public CaretakerElder() {}
     
-//    public CaretakerElder(int experienceYears, String certification, double hourlyRate, String name, String phone, String profileDescription, String IC, int staffId) {
-//        super(name, phone, profileDescription, IC, staffId);
-//        this.experienceYears = experienceYears;
-//        this.certification = certification;
-//        this.hourlyRate = hourlyRate;
-//    }
+    public CaretakerElder(int experienceYears, String certification) {
+        this.experienceYears = experienceYears;
+        this.certification = certification;
+    }
     
     //setter
     public void setExperienceYears(int experienceYears) {
@@ -34,8 +31,12 @@ public class CaretakerElder extends Caretaker{
         this.certification = certification;
     }
 
-    public void setHourlyRate(int hourlyRate) {
+    public void setHourlyRate(double hourlyRate) {
         this.hourlyRate = hourlyRate;
+    }
+
+    public void setCertificationStream(InputStream certificationStream) {
+        this.certificationStream = certificationStream;
     }
     
     //getter
@@ -50,6 +51,10 @@ public class CaretakerElder extends Caretaker{
     public double getHourlyRate() {
         return hourlyRate;
     }   
+
+    public InputStream getCertificationStream() {
+        return certificationStream;
+    }
 
     @Override
     public String toString() {

@@ -1,5 +1,6 @@
-package user;
+package userDAO;
 
+import userDAO.StaffDAO;
 import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -11,6 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import user.Payment;
+import dbconn.DatabaseConnection;
 
 /**
  *
@@ -25,30 +28,9 @@ public class PaymentDAO {
     private static final String SELECT_PAYMENT_BY_ID_SQL = "SELECT p.*, c.cust_username, b.booking_type, s.staff_name FROM payment p LEFT JOIN customer c ON p.cust_id = c.cust_id LEFT JOIN booking b ON p.booking_id = b.booking_id LEFT JOIN staff s ON p.staff_id = s.staff_id WHERE p.payment_id = ?";
     private static final String EDIT_PAYMENT_SQL = "UPDATE payment SET payment_status = ? WHERE payment_id = ?";
 
-    public Connection getConnection() throws SQLException {
-        final String DB_URL = "jdbc:oracle:thin:@//localhost:1521/XE";
-        final String DB_USER = "CareGiver";
-        final String DB_PASSWORD = "system";
-
-        Connection connection = null;
-        try {
-            Class.forName("oracle.jdbc.OracleDriver");
-
-            connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-        } catch (ClassNotFoundException ex) {
-
-            Logger.getLogger(StaffDAO.class.getName()).log(Level.SEVERE, "Oracle JDBC Driver not found", ex);
-            throw new SQLException("Unable to load the Oracle JDBC Driver", ex);
-        } catch (SQLException ex) {
-
-            Logger.getLogger(StaffDAO.class.getName()).log(Level.SEVERE, "Database connection failed", ex);
-            throw ex; // Re-throw exception for caller to handle
-        }
-        return connection;
-    }
 
     public void insertPayment(Payment payment) throws SQLException {
-        try (Connection connection = getConnection();
+        try (Connection connection = DatabaseConnection.getConnection();
                 PreparedStatement ps = connection.prepareStatement(INSERT_PAYMENT_SQL, Statement.RETURN_GENERATED_KEYS)) {
 
             ps.setString(1, payment.getDate());
@@ -79,7 +61,7 @@ public class PaymentDAO {
     }
 
     public void updatePayment(Payment payment) throws SQLException {
-        try (Connection connection = getConnection();
+        try (Connection connection = DatabaseConnection.getConnection();
                 PreparedStatement ps = connection.prepareStatement(UPDATE_PAYMENT_SQL)) {
 
             ps.setString(1, payment.getDate());
@@ -104,7 +86,7 @@ public class PaymentDAO {
     }
 
     public void deletePayment(int paymentId) throws SQLException {
-        try (Connection connection = getConnection();
+        try (Connection connection = DatabaseConnection.getConnection();
                 PreparedStatement ps = connection.prepareStatement(DELETE_PAYMENT_SQL)) {
 
             ps.setInt(1, paymentId);
@@ -113,7 +95,7 @@ public class PaymentDAO {
     }
 
     public List<Payment> selectAllPayments() throws SQLException {
-        try (Connection connection = getConnection();
+        try (Connection connection = DatabaseConnection.getConnection();
                 PreparedStatement ps = connection.prepareStatement(SELECT_ALL_PAYMENTS_SQL);
                 ResultSet rs = ps.executeQuery()) {
 
@@ -150,7 +132,7 @@ public class PaymentDAO {
 
     public Payment selectPaymentById(int paymentId) throws SQLException {
         Payment payment = null;
-        try (Connection connection = getConnection();
+        try (Connection connection = DatabaseConnection.getConnection();
                 PreparedStatement ps = connection.prepareStatement(SELECT_PAYMENT_BY_ID_SQL)) {
 
             ps.setInt(1, paymentId);
@@ -186,7 +168,7 @@ public class PaymentDAO {
     }
 
     public boolean editPayment(String paymentId, String paymentStatus) throws SQLException {
-        try (Connection connection = getConnection();
+        try (Connection connection = DatabaseConnection.getConnection();
                 PreparedStatement ps = connection.prepareStatement(EDIT_PAYMENT_SQL)) {
             // Set parameters for the prepared statement
             ps.setString(1, paymentStatus);

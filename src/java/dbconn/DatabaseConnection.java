@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package dbconn;
 
 import java.sql.Connection;
@@ -10,9 +6,9 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DatabaseConnection {
-    private static final String URL = "jdbc:oracle:thin:@localhost:1521:xe"; // Update with your DB details
-    private static final String USER = "CareGiver"; // Replace with your username
-    private static final String PASSWORD = "system"; // Replace with your password
+    private static final String URL = "jdbc:oracle:thin:@localhost:1521:xe"; 
+    private static final String USER = "CareGiver"; 
+    private static final String PASSWORD = "system";
 
     public static Connection getConnection() throws SQLException {
         try {
@@ -27,5 +23,6 @@ public class DatabaseConnection {
     public static Connection initializeDatabase() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+    
 }
 

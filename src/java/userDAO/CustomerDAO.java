@@ -1,8 +1,8 @@
-package user;
+package userDAO;
 
+import userDAO.StaffDAO;
 import static com.sun.xml.ws.security.addressing.impl.policy.Constants.logger;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import user.Customer;
+import dbconn.DatabaseConnection;
 
 /**
  *
@@ -28,37 +30,13 @@ public class CustomerDAO {
 
     public CustomerDAO() {}
 
-    public Connection getConnection() throws SQLException {
-        final String DB_URL = "jdbc:oracle:thin:@//localhost:1521/XE";
-        final String DB_USER = "CareGiver";
-        final String DB_PASSWORD = "system";
-
-        Connection connection = null;
-        try {
-            // Load the Oracle JDBC driver
-            Class.forName("oracle.jdbc.OracleDriver");
-
-            // Establish the connection
-            connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-        } catch (ClassNotFoundException ex) {
-            // Log error if the driver is not found
-            Logger.getLogger(StaffDAO.class.getName()).log(Level.SEVERE, "Oracle JDBC Driver not found", ex);
-            throw new SQLException("Unable to load the Oracle JDBC Driver", ex);
-        } catch (SQLException ex) {
-            // Log error for database connection issues
-            Logger.getLogger(StaffDAO.class.getName()).log(Level.SEVERE, "Database connection failed", ex);
-            throw ex; // Re-throw exception for caller to handle
-        }
-        return connection;
-    }
-
     public int insertCustomer(Customer customer) throws SQLException {
         Connection connection = null;
         PreparedStatement statement = null;
         int rowsInserted = 0;
 
         try {
-            connection = getConnection();
+            connection = DatabaseConnection.getConnection();
             statement = connection.prepareStatement(INSERT_CUST_SQL);
 
             statement.setString(1, customer.getCustUsername());
@@ -94,7 +72,7 @@ public class CustomerDAO {
 
     public List<Customer> getAllCustomer() {
         List<Customer> customerList = new ArrayList<>();
-        try (Connection connection = getConnection();
+        try (Connection connection = DatabaseConnection.getConnection();
                 PreparedStatement ps = connection.prepareStatement(SELECT_ALL_CUST)) {
             ResultSet rs = ps.executeQuery();
 
@@ -122,7 +100,7 @@ public class CustomerDAO {
     public boolean disableCust(int custId) {
         boolean isDisable = false;
 
-        try (Connection connection = getConnection();
+        try (Connection connection = DatabaseConnection.getConnection();
                 PreparedStatement ps = connection.prepareStatement(DISABLE_CUST_SQL)) {
             ps.setInt(1, custId);
             int rowsUpdated = ps.executeUpdate();
@@ -136,7 +114,7 @@ public class CustomerDAO {
     public boolean enableCust(int custId) {
         boolean isEnabled = false;
 
-        try (Connection connection = getConnection();
+        try (Connection connection = DatabaseConnection.getConnection();
                 PreparedStatement ps = connection.prepareStatement(ENABLE_CUST_SQL)) {
             ps.setInt(1, custId);
             int rowsUpdated = ps.executeUpdate();
@@ -148,7 +126,7 @@ public class CustomerDAO {
     }
 
     public boolean updateCust(Customer customer) {
-        try (Connection connection = getConnection();
+        try (Connection connection = DatabaseConnection.getConnection();
                 PreparedStatement ps = connection.prepareStatement(UPDATE_CUST_SQL)) {
 
             ps.setString(1, customer.getCustUsername());
@@ -171,7 +149,7 @@ public class CustomerDAO {
 
     public boolean editCust(int custId, Timestamp banDate, int statusId) {
         boolean isUpdated = false;
-        try (Connection connection = getConnection();
+        try (Connection connection = DatabaseConnection.getConnection();
                 PreparedStatement ps = connection.prepareStatement(EDIT_CUST_SQL)) {
 
             ps.setTimestamp(1, banDate);
@@ -188,7 +166,7 @@ public class CustomerDAO {
 
     public Customer getCustInfo(int custId) throws SQLException {
         Customer cust = null;
-        try (Connection connection = getConnection();
+        try (Connection connection = DatabaseConnection.getConnection();
                 PreparedStatement ps = connection.prepareStatement(GET_CUST_INFO)) {
             ps.setInt(1, custId);
 

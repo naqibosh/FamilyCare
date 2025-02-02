@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import utils.SessionUtils;
-import user.StaffDAO;
+import userDAO.StaffDAO;
 
 public class StaffLoginServlet extends HttpServlet {
 
