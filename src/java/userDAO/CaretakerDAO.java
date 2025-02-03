@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.logging.Level;
 import user.Caretaker;
 import dbconn.DatabaseConnection;
+import java.io.InputStream;
 
 /**
  *
@@ -23,9 +24,9 @@ public class CaretakerDAO {
     private static final String DISABLE_CARETAKER_SQL = "UPDATE caretaker SET is_active = 'N' WHERE caretaker_id = ?";
     private static final String ENABLE_CARETAKER_SQL = "UPDATE caretaker SET is_active = 'Y' WHERE caretaker_id = ?";
     private static final String UPDATE_CARETAKER_SQL = "#";
-    private static final String SELECT_ALL_CARETAKER = "SELECT c.caretaker_id, c.caretaker_name, c.caretaker_phone, c.availability_status, c.caretaker_ic_number, c.staff_id, c.status_id, c.ban_date, c.is_active, s.reason AS status FROM caretaker c JOIN Status s ON c.status_id = s.status_id";
+    private static final String SELECT_ALL_CARETAKER = "SELECT c.caretaker_id, c.caretaker_name, c.caretaker_phone, c.availability_status, c.caretaker_ic_number, st.staff_name, c.status_id, c.ban_date, c.is_active, s.reason AS status, CASE WHEN b.caretaker_id IS NOT NULL THEN 'Babysitter' WHEN e.caretaker_id IS NOT NULL THEN 'Eldercaretaker' ELSE 'Unknown' END AS caretaker_type, COALESCE(b.babysitter_experience_years, e.eldercare_experience_years) AS experience_years, b.babysitter_rating AS rating, COALESCE(b.babysitter_hourly_rate, e.eldercare_hourly_rate) AS hourly_rate, e.eldercare_certification AS certification FROM caretaker c JOIN Status s ON c.status_id = s.status_id JOIN staff st ON c.staff_id = st.staff_id LEFT JOIN babysitter b ON c.caretaker_id = b.caretaker_id LEFT JOIN eldercaretaker e ON c.caretaker_id = e.caretaker_id";
     private static final String GET_CARETAKER_INFO = "#";
-    private static final String EDIT_CARETAKER_SQL = "UPDATE caretaker SET staff_id = ? ,ban_date = ?, status_id = ? WHERE caretaker_id = ?";
+    private static final String EDIT_CARETAKER_SQL = "UPDATE caretaker SET ban_date = ?, status_id = ? WHERE caretaker_id = ?";
 
     public boolean insertCaretaker(Caretaker caretaker) throws Exception {
         try (Connection connection = DatabaseConnection.getConnection();
@@ -125,11 +126,19 @@ public class CaretakerDAO {
                 caretaker.setPhone(rs.getString("caretaker_phone"));
                 caretaker.setAvailabilityStatus(rs.getString("availability_status"));
                 caretaker.setIC(rs.getString("caretaker_ic_number"));
-                caretaker.setStaffId(rs.getInt("staff_id"));
+                caretaker.setStaffName(rs.getString("staff_name"));
                 caretaker.setStatusId(rs.getInt("status_id"));
                 caretaker.setBanDate(rs.getString("ban_date"));
                 caretaker.setStatus(rs.getString("status"));
                 caretaker.setIs_active(rs.getString("is_active"));
+                caretaker.setType(rs.getString("caretaker_type"));
+                caretaker.setExperienceYear(rs.getInt("experience_years"));
+                caretaker.setRating(rs.getDouble("rating"));
+                caretaker.setHourlyRate(rs.getDouble("hourly_rate"));
+
+                // Retrieve BLOB as InputStream
+                InputStream certificationStream = rs.getBinaryStream("certification");
+                caretaker.setCertification(certificationStream);
 
                 caretakers.add(caretaker);
             }
@@ -137,6 +146,22 @@ public class CaretakerDAO {
             e.printStackTrace();
         }
         return caretakers;
+    }
+
+    public static InputStream getCertificationById(int caretakerId) {
+        String sql = "SELECT eldercare_certification FROM eldercaretaker WHERE caretaker_id = ?";
+        try (Connection connection = DatabaseConnection.getConnection();
+                PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, caretakerId);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                return rs.getBinaryStream("eldercare_certification");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public Caretaker getCaretakerInfo(int caretakerId) {
@@ -163,15 +188,14 @@ public class CaretakerDAO {
         return caretaker;
     }
 
-    public Boolean editCaretaker(int staffId, int caretakerId, Timestamp banDate, int statusId) {
+    public Boolean editCaretaker(int caretakerId, Timestamp banDate, int statusId) {
         boolean isUpdated = false;
         try (Connection connection = DatabaseConnection.getConnection();
                 PreparedStatement ps = connection.prepareStatement(EDIT_CARETAKER_SQL)) {
 
-            ps.setInt(1, staffId);
-            ps.setTimestamp(2, banDate);
-            ps.setInt(3, statusId);
-            ps.setInt(4, caretakerId);
+            ps.setTimestamp(1, banDate);
+            ps.setInt(2, statusId);
+            ps.setInt(3, caretakerId);
 
             int rowsUpdated = ps.executeUpdate();
             isUpdated = rowsUpdated > 0;

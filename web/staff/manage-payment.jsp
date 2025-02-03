@@ -325,9 +325,9 @@
                                                 <th>Amount</th>
                                                 <th>Date</th>
                                                 <th>Status</th>
-                                                <th>Customer</th>
-                                                <th>Staff</th>
-                                                <th>Action</th>
+                                                <th>Customer Name</th>
+                                                <th>Review By</th>
+                                                <th> </th>
                                             </tr>
                                         </thead>
                                         <tfoot>
@@ -337,9 +337,9 @@
                                                 <th>Amount</th>
                                                 <th>Date</th>
                                                 <th>Status</th>
-                                                <th>Customer</th>
-                                                <th>Staff</th>
-                                                <th>Action</th>
+                                                <th>Customer Name</th>
+                                                <th>Review By</th>
+                                                <th> </th>
                                             </tr>
                                         </tfoot>
                                         <tbody>

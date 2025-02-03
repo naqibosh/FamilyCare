@@ -1,6 +1,8 @@
 
 package user;
 
+import java.io.InputStream;
+
 /**
  *
  * @author hazik
@@ -19,6 +21,12 @@ public class Caretaker {
     private String is_active;
     private int staffId;
     private int statusId;
+    private String staffName;
+    private String type;
+    private int experienceYear;
+    private double hourlyRate;
+    private double rating;
+    private InputStream certification;
     
     //constructors
     public Caretaker() {}
@@ -33,18 +41,26 @@ public class Caretaker {
     }
 
     //for list
-    public Caretaker(int caretakerId, String name, String phone, String availabilityStatus, String IC, String banDate, String status, int staffId, int statusId, String is_active) {
+    public Caretaker(int caretakerId, String name, String phone, String availabilityStatus, String profileDescription, String IC, String banDate, String status, String is_active, int staffId, int statusId, String staffName, String type, int experienceYear, double hourlyRate, double rating, InputStream certification) {
         this.caretakerId = caretakerId;
         this.name = name;
         this.phone = phone;
         this.availabilityStatus = availabilityStatus;
+        this.profileDescription = profileDescription;
         this.IC = IC;
         this.banDate = banDate;
         this.status = status;
+        this.is_active = is_active;
         this.staffId = staffId;
         this.statusId = statusId;
-        this.is_active = is_active;
+        this.staffName = staffName;
+        this.type = type;
+        this.experienceYear = experienceYear;
+        this.hourlyRate = hourlyRate;
+        this.rating = rating;
+        this.certification = certification;
     }
+
     
     //for update caretaker
     public Caretaker(int caretakerId, String name, String phone, String password, String availabilityStatus, String profileDescription, String IC, String status) {
@@ -107,6 +123,30 @@ public class Caretaker {
     public void setIs_active(String is_active) {
         this.is_active = is_active;
     }
+
+    public void setStaffName(String staffName) {
+        this.staffName = staffName;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public void setExperienceYear(int experienceYear) {
+        this.experienceYear = experienceYear;
+    }
+
+    public void setHourlyRate(double hourlyRate) {
+        this.hourlyRate = hourlyRate;
+    }
+
+    public void setRating(double rating) {
+        this.rating = rating;
+    }
+
+    public void setCertification(InputStream certification) {
+        this.certification = certification;
+    }
     
     //getter
     public int getCaretakerId() {
@@ -155,6 +195,30 @@ public class Caretaker {
 
     public String getIs_active() {
         return is_active;
+    }
+
+    public String getStaffName() {
+        return staffName;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public int getExperienceYear() {
+        return experienceYear;
+    }
+
+    public double getHourlyRate() {
+        return hourlyRate;
+    }
+
+    public double getRating() {
+        return rating;
+    }
+
+    public InputStream getCertification() {
+        return certification;
     }
     
     //additional method

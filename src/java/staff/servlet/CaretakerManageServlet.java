@@ -220,7 +220,6 @@ public class CaretakerManageServlet extends HttpServlet {
         try {
             int caretakerId = parseCaretakerId(request);
             int statusId = Integer.parseInt(request.getParameter("statusId"));
-            int staffId = Integer.parseInt(request.getParameter("staffId"));
 
             Timestamp banDate = null;
             if (statusId != 1) { // If status is not "Active"  
@@ -228,7 +227,7 @@ public class CaretakerManageServlet extends HttpServlet {
             }
 
             // Call the editCaretaker method with the appropriate parameters  
-            if (caretakerDAO.editCaretaker(staffId, caretakerId, banDate, statusId)) {
+            if (caretakerDAO.editCaretaker(caretakerId, banDate, statusId)) {
                 response.sendRedirect("caretaker_manageProcess.jsp?action=caretakerList&success=true");
             } else {
                 sendError(response, HttpServletResponse.SC_BAD_REQUEST, "Failed to update caretaker status for ID " + caretakerId);

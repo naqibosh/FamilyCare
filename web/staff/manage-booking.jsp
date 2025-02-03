@@ -326,9 +326,9 @@
                                                 <th>Booking Time</th>
                                                 <th>Duration</th>
                                                 <th>Price</th>
-                                                <th>Customer</th>
-                                                <th>Staff</th>
-                                                <th>Caretaker</th>
+                                                <th>Customer Name</th>
+                                                <th>Caretaker Name</th>
+                                                <th>Review By</th>
                                                 <th> </th>
                                             </tr>
                                         </thead>
@@ -340,9 +340,9 @@
                                                 <th>Booking Time</th>
                                                 <th>Duration</th>
                                                 <th>Price</th>
-                                                <th>Customer</th>
-                                                <th>Staff</th>
-                                                <th>Caretaker</th>
+                                                <th>Customer Name</th>
+                                                <th>Caretaker Name</th>
+                                                <th>Review By</th>
                                                 <th> </th>
                                             </tr>
                                         </tfoot>
@@ -356,8 +356,8 @@
                                                     <td>${book.bookingDuration}</td>
                                                     <td>RM ${book.bookingPrice}</td>
                                                     <td>${book.custName}</td>
-                                                    <td>${book.staffName}</td> 
                                                     <td>${book.caretakerName}</td> 
+                                                    <td>${book.staffName}</td> 
                                                     <td class="text-center align-middle">  
                                                         <div >  
                                                             <!-- Edit Button with margin-right -->  
@@ -385,7 +385,7 @@
                                                         <div class="modal-body">
                                                             <!-- Form for editing book -->
                                                             <form action="booking_manageProcess.jsp?action=editBooking&bookingId=${book.bookingId}" method="post"> 
-                                                        
+
                                                                 <div class="form-group">
                                                                     <label for="staff">Assign New Staff ID</label>
                                                                     <input type="number" class="form-control" id="supervisor" name="staffId" value="${book.staffId}" placeholder="Enter Staff ID">

@@ -4,9 +4,7 @@ $(document).ready(function () {
     $('#dataTable').DataTable();
 });
 
-function openEditModal(staffId, caretakerId, statusId) {
-    // Set the values of the fields in the modal
-    document.getElementById('staffId').value = staffId;
+function openEditModal(caretakerId, statusId) {
     document.getElementById('caretakerId').value = caretakerId;
     document.getElementById('statusId').value = statusId;
 }

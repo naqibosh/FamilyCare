@@ -34,14 +34,14 @@
                         <div class="col-lg-7">
                             <div class="p-5">
                                 <div class="text-center">
-                                    <h1 class="h4 text-gray-900 mb-4">Create an Account!</h1>
+                                    <h1 class="h4 text-gray-900 mb-4">Create Staff Account</h1>
                                 </div>
                                 <div id="errorMessages"></div> 
-                                <form class="user" id="registerForm" action="staff_registerProcess.jsp" method="post">
+                                <form class="user" id="registerForm" action="staff_registerProcess.jsp" method="post" autocomplete="off">
                                     <div class="form-group row">
                                         <div class="col-sm-6 mb-3 mb-sm-0">
                                             <input type="text" class="form-control form-control-user" id="name" name="name"
-                                                   placeholder="Staff Name" autocomplete="off">
+                                                   placeholder="Staff Name" required>
                                         </div>
                                         <div class="col-sm-6">
                                             <select id="role" name="role" class="form-control form-control-lg">
@@ -56,21 +56,21 @@
                                     <div class="form-group row">
                                         <div class="col-sm-6 mb-3 mb-sm-0">
                                             <input type="email" class="form-control form-control-user" name="email" id="email"
-                                                   placeholder="Email Address" autocomplete="off">
+                                                   placeholder="Email Address" required oninput="appendEmailDomain()">
                                         </div>
                                         <div class="col-sm-6">
-                                            <input type="tel" pattern="[0-9]{10,11}" name="phoneNumber" id="phoneNumber"
-                                                   class="form-control form-control-user" placeholder="Mobile Phone" required title="Mobile number must be 10-11 digits" autocomplete="off">
-                                        </div>
+                                            <input type="tel" pattern="\+60-\d{8,11}" name="phoneNumber" id="phoneNumber"
+                                                   class="form-control form-control-user" placeholder="Mobile Phone" required title="Format: +60-XXXXXXXXX">
+                                        </div> 
                                     </div>
                                     <div class="form-group row">
                                         <div class="col-sm-6 mb-3 mb-sm-0">
                                             <input type="password" class="form-control form-control-user"
-                                                   name="password" id="password" placeholder="Password" autocomplete="off">
+                                                   name="password" id="password" placeholder="Password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!]).{8,}" title="Must be at least 8 characters, including upper/lowercase, number, and a special symbol" required>
                                         </div>
                                         <div class="col-sm-6">
                                             <input type="password" class="form-control form-control-user"
-                                                   name="RepeatPassword" id="repeatPassword" placeholder="Repeat Password" autocomplete="off">
+                                                   name="RepeatPassword" id="repeatPassword" placeholder="Repeat Password" required>
                                         </div>
                                         <span id="passwordError"></span> <br> 
                                     </div>
@@ -155,6 +155,17 @@
                 }
             });
             </script>
+            
+            <script>
+    function appendEmailDomain() {
+        let emailInput = document.getElementById("email");
+        let domain = "@familycare.my";
+        
+        if (!emailInput.value.includes(domain)) {
+            emailInput.value = emailInput.value.replace(domain, "") + domain;
+        }
+    }
+</script>
 
             <!-- Bootstrap core JavaScript-->
             <script src="vendor/jquery/jquery.min.js"></script>
