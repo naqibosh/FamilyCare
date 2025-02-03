@@ -317,32 +317,38 @@
                             </div>
                             <div class="card-body">
                                 <div class="table-responsive">
-                                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                    <table class="table table-bordered text-center allign-middle" id="dataTable" width="130%" cellspacing="0">
                                         <thead>
                                             <tr>
                                                 <th>No.</th>
-                                                <th>ID</th>
-                                                <th>Name</th>
+                                                <th>Caretaker Name</th>
                                                 <th>Phone</th>
                                                 <th>Availability</th>
                                                 <th>IC Number</th>
+                                                <th>Type</th>
+                                                <th>Expr Years</th>
+                                                <th>Hourly Rate (RM)</th>
+                                                <th>Certification</th>
                                                 <th>Ban Date</th>
                                                 <th>Status</th>
-                                                <th>CREATE BY</th>
+                                                <th>Created By</th>
                                                 <th> </th>
                                             </tr>
                                         </thead>
                                         <tfoot>
                                             <tr>
                                                 <th>No.</th>
-                                                <th>ID</th>
-                                                <th>Name</th>
+                                                <th>Caretaker Name</th>
                                                 <th>Phone</th>
                                                 <th>Availability</th>
                                                 <th>IC Number</th>
+                                                <th>Type</th>
+                                                <th>Expr Years</th>
+                                                <th>Hourly Rate (RM)</th>
+                                                <th>Certification</th>
                                                 <th>Ban Date</th>
                                                 <th>Status</th>
-                                                <th>CREATE BY</th>
+                                                <th>Created By</th>
                                                 <th> </th>
                                             </tr>
                                         </tfoot>
@@ -350,149 +356,170 @@
                                             <c:set var="i" value="1"/> <!-- Initialize counter variable -->  
                                             <c:forEach items="${caretakerList}" var="caretaker">  
                                                 <tr>  
-                                                    <td>${i}</td>   
-                                                    <td>${caretaker.caretakerId}</td>  
-                                                    <td>${caretaker.name}</td>  
-                                                    <td>${caretaker.phone}</td>  
-                                                    <td>${caretaker.availabilityStatus}</td>  
-                                                    <td>${caretaker.IC}</td>  
-                                                    <td>${caretaker.banDate}</td>  
-                                                    <td>${caretaker.status}</td>   
-                                                    <td>${caretaker.staffId}</td> 
-                                                    <td class="text-center align-middle">  
-                                                        <div>  
-                                                            <!-- Edit Button with margin-right -->  
-                                                            <button class="btn btn-success btn-sm me-2" data-toggle="modal" data-target="#editModal-${caretaker.caretakerId}"   
-                                                                    onclick="openEditModal('${caretaker.staffId}', '${caretaker.caretakerId}', '${caretaker.statusId}')">  
-                                                                Edit  
-                                                            </button>  
+                                                    <td>${i}</td>
+                                                    <td>${caretaker.name}</td>
+                                                    <td>${caretaker.phone}</td>
+                                                    <td>
+                                                        <span class="badge ${caretaker.availabilityStatus == 'Available' ? 'bg-success text-white' : 'bg-white text-dark'}">
+                                                            ${caretaker.availabilityStatus}
+                                                        </span>
+                                                    </td>
+                                                    <td>${caretaker.IC}</td>
+                                                    <td>${caretaker.type}</td>
+                                                    <td>${caretaker.experienceYear}</td>
+                                                    <td>${caretaker.hourlyRate}</td>
+                                                    <td>
+                                                        <c:choose>
+                                                            <c:when test="${not empty caretaker.certification}">
+                                                                <form action="PreviewCertificationServlet" method="post" target="_blank">
+                                                                    <input type="hidden" name="caretakerId" value="${caretaker.caretakerId}">
+                                                                    <button type="submit" class="btn btn-info btn-sm">Preview</button>
+                                                                </form>
+                                                            </c:when>
+                                                            <c:otherwise> </c:otherwise>
+                                                        </c:choose>
+                                                    </td>
+                                                    <td>${caretaker.banDate}</td>
+                                                    <td>
+                                                        <span class="badge 
+                                                              ${caretaker.status == 'Good' ? 'bg-success text-white' : 
+                                                                caretaker.status == 'Banned' ? 'bg-danger text-white' : 
+                                                                caretaker.status == 'Suspended' ? 'bg-warning text-dark' : 'bg-white text-dark'}">
+                                                                  ${caretaker.status}
+                                                              </span>
+                                                        </td>
+                                                        <td>${caretaker.staffName}</td>
 
-                                                            <!-- Enable/Disable Button -->  
-                                                            <c:choose>  
-                                                                <c:when test="${caretaker.is_active == 'Y'}">  
-                                                                    <button type="button" class="btn btn-warning btn-sm" onclick="disableCaretaker('${caretaker.caretakerId}')">  
-                                                                        Disable  
-                                                                    </button>  
-                                                                </c:when>  
-                                                                <c:otherwise>  
-                                                                    <button type="button" class="btn btn-primary btn-sm" onclick="enableCaretaker('${caretaker.caretakerId}')">  
-                                                                        Enable  
-                                                                    </button>  
-                                                                </c:otherwise>  
-                                                            </c:choose>  
-                                                        </div>  
-                                                    </td>  
-                                                </tr>  
-                                                <c:set var="i" value="${i + 1}"/>  
+                                                        <td class="text-center align-middle">  
+                                                            <div>  
+                                                                <!-- Edit Button with margin-right -->  
+                                                                <button class="btn btn-success btn-sm me-2" data-toggle="modal" data-target="#editModal-${caretaker.caretakerId}"   
+                                                                        onclick="openEditModal('${caretaker.caretakerId}', '${caretaker.statusId}')">  
+                                                                    Edit  
+                                                                </button>  
 
-                                                <!-- Edit Modal -->  
-                                            <div class="modal fade" id="editModal-${caretaker.caretakerId}" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">  
-                                                <div class="modal-dialog" role="document">  
-                                                    <div class="modal-content">  
-                                                        <div class="modal-header">  
-                                                            <h5 class="modal-title" id="editModalLabel">Edit Caretaker Info</h5>  
-                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">  
-                                                                <span aria-hidden="true">&times;</span>  
-                                                            </button>  
-                                                        </div>  
-                                                        <div class="modal-body">  
-                                                            <!-- Form for editing caretaker -->  
-                                                            <form action="caretaker_manageProcess.jsp?action=editCaretaker&caretakerId=${caretaker.caretakerId}" method="post">   
-                                                                <div class="form-group">
-                                                                    <label for="staff">Staff ID</label>
-                                                                    <input type="text" class="form-control" id="staff" name="staffId" value="${caretaker.staffId}" placeholder="Enter Staff ID">
-                                                                </div>
-                                                                <div class="form-group">  
-                                                                    <label for="role">Status ID</label>  
-                                                                    <select class="form-control" id="statusId" name="statusId">  
-                                                                        <option value="1" ${caretaker.statusId == 1 ? 'selected' : ''}>Good</option>  
-                                                                        <option value="2" ${caretaker.statusId == 2 ? 'selected' : ''}>Banned</option>  
-                                                                        <option value="3" ${caretaker.statusId == 3 ? 'selected' : ''}>Suspended</option>  
-                                                                    </select>  
-                                                                </div>       
-                                                                <div class="form-group">  
-                                                                    <button type="submit" class="btn btn-success">Confirm</button>  
-                                                                </div>  
-                                                            </form>  
+                                                                <!-- Enable/Disable Button -->  
+                                                                <c:choose>  
+                                                                    <c:when test="${caretaker.is_active == 'Y'}">  
+                                                                        <button type="button" class="btn btn-warning btn-sm" onclick="disableCaretaker('${caretaker.caretakerId}')">  
+                                                                            Disable  
+                                                                        </button>  
+                                                                    </c:when>  
+                                                                    <c:otherwise>  
+                                                                        <button type="button" class="btn btn-primary btn-sm" onclick="enableCaretaker('${caretaker.caretakerId}')">  
+                                                                            Enable  
+                                                                        </button>  
+                                                                    </c:otherwise>  
+                                                                </c:choose>  
+                                                            </div>  
+                                                        </td>  
+                                                    </tr>  
+                                                    <c:set var="i" value="${i + 1}"/>  
+
+                                                    <!-- Edit Modal -->  
+                                                <div class="modal fade" id="editModal-${caretaker.caretakerId}" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">  
+                                                    <div class="modal-dialog" role="document">  
+                                                        <div class="modal-content">  
+                                                            <div class="modal-header">  
+                                                                <h5 class="modal-title" id="editModalLabel">Edit Caretaker Info</h5>  
+                                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">  
+                                                                    <span aria-hidden="true">&times;</span>  
+                                                                </button>  
+                                                            </div>  
+                                                            <div class="modal-body">  
+                                                                <!-- Form for editing caretaker -->  
+                                                                <form action="caretaker_manageProcess.jsp?action=editCaretaker&caretakerId=${caretaker.caretakerId}" method="post">   
+                                                                    <div class="form-group">  
+                                                                        <label for="role">Status ID</label>  
+                                                                        <select class="form-control" id="statusId" name="statusId">  
+                                                                            <option value="1" ${caretaker.statusId == 1 ? 'selected' : ''}>Good</option>  
+                                                                            <option value="2" ${caretaker.statusId == 2 ? 'selected' : ''}>Banned</option>  
+                                                                            <option value="3" ${caretaker.statusId == 3 ? 'selected' : ''}>Suspended</option>  
+                                                                        </select>  
+                                                                    </div>       
+                                                                    <div class="form-group">  
+                                                                        <button type="submit" class="btn btn-success">Confirm</button>  
+                                                                    </div>  
+                                                                </form>  
+                                                            </div>  
                                                         </div>  
                                                     </div>  
                                                 </div>  
-                                            </div>  
-                                        </c:forEach>  
-                                        </tbody>
-                                    </table>
+                                            </c:forEach>  
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
+
                         </div>
+                        <!-- /.container-fluid -->
 
                     </div>
-                    <!-- /.container-fluid -->
+                    <!-- End of Main Content -->
+
+                    <!-- Footer -->
+                    <footer class="sticky-footer bg-white">
+                        <div class="container my-auto">
+                            <div class="copyright text-center my-auto">
+                                <span>Copyright &copy; Family Care 2025</span>
+                            </div>
+                        </div>
+                    </footer>
+                    <!-- End of Footer -->
 
                 </div>
-                <!-- End of Main Content -->
-
-                <!-- Footer -->
-                <footer class="sticky-footer bg-white">
-                    <div class="container my-auto">
-                        <div class="copyright text-center my-auto">
-                            <span>Copyright &copy; Family Care 2025</span>
-                        </div>
-                    </div>
-                </footer>
-                <!-- End of Footer -->
+                <!-- End of Content Wrapper -->
 
             </div>
-            <!-- End of Content Wrapper -->
+            <!-- End of Page Wrapper -->
 
-        </div>
-        <!-- End of Page Wrapper -->
+            <!-- Scroll to Top Button-->
+            <a class="scroll-to-top rounded" href="#page-top">
+                <i class="fas fa-angle-up"></i>
+            </a>
 
-        <!-- Scroll to Top Button-->
-        <a class="scroll-to-top rounded" href="#page-top">
-            <i class="fas fa-angle-up"></i>
-        </a>
-
-        <!-- Logout Modal-->
-        <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-             aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
-                        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">×</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
-                    <div class="modal-footer">
-                        <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                        <a class="btn btn-primary" href="login.html">Logout</a>
+            <!-- Logout Modal-->
+            <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+                            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">×</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                            <a class="btn btn-primary" href="login.html">Logout</a>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Bootstrap core JavaScript-->
-        <script src="vendor/jquery/jquery.min.js"></script>
-        <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+            <!-- Bootstrap core JavaScript-->
+            <script src="vendor/jquery/jquery.min.js"></script>
+            <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
-        <!-- SweetAlert2 CDN -->
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+            <!-- SweetAlert2 CDN -->
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-        <!-- Core plugin JavaScript-->
-        <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+            <!-- Core plugin JavaScript-->
+            <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
 
-        <!-- Custom scripts for all pages-->
-        <script src="js/sb-admin-2.min.js"></script>
+            <!-- Custom scripts for all pages-->
+            <script src="js/sb-admin-2.min.js"></script>
 
-        <!-- Page level plugins -->
-        <script src="vendor/datatables/jquery.dataTables.min.js"></script>
-        <script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
+            <!-- Page level plugins -->
+            <script src="vendor/datatables/jquery.dataTables.min.js"></script>
+            <script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
 
-        <!-- Page level custom scripts -->
-        <script src="js/demo/datatables-demo.js"></script>
+            <!-- Page level custom scripts -->
+            <script src="js/demo/datatables-demo.js"></script>
 
-    </body>
+        </body>
 
-</html>
+    </html>
 

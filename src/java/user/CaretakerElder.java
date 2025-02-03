@@ -44,10 +44,6 @@ public class CaretakerElder extends Caretaker{
         return experienceYears;
     }
 
-    public String getCertification() {
-        return certification;
-    }
-
     public double getHourlyRate() {
         return hourlyRate;
     }   
