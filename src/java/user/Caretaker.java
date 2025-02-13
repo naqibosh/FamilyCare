@@ -73,6 +73,10 @@ public class Caretaker {
         this.IC = IC;
         this.status = status;
     }
+
+    public Caretaker(InputStream certification) {
+        this.certification = certification;
+    }
     
     
     //setter

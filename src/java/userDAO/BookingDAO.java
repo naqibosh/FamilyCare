@@ -19,13 +19,60 @@ import dbconn.DatabaseConnection;
 public class BookingDAO {
 
     private static final String INSERT_BOOKING_SQL = "#";
-    private static final String DELETE_BOOKING_SQL = "DELETE booking WHERE booking_id = ?";
-    private static final String DELETE_PAYMENT_SQL = "DELETE payment WHERE booking_id = ?";
-    private static final String DELETE_REVIEW_SQL = "DELETE review WHERE booking_id = ?";
+
+    private static final String DELETE_BOOKING_SQL
+            = "DELETE FROM booking "
+            + "WHERE booking_id = ?";
+
+    private static final String DELETE_PAYMENT_SQL
+            = "DELETE FROM payment "
+            + "WHERE booking_id = ?";
+
+    private static final String DELETE_REVIEW_SQL
+            = "DELETE FROM review "
+            + "WHERE booking_id = ?";
+
     private static final String UPDATE_BOOKING_SQL = "#";
-    private static final String SELECT_ALL_BOOKING = "SELECT b.booking_id, b.booking_type, b.booking_time, b.booking_duration, b.booking_price, b.cust_id, b.staff_id, b.caretaker_id, c.cust_username, s.staff_name, k.caretaker_name FROM booking b LEFT JOIN customer c ON b.cust_id = c.cust_id LEFT JOIN staff s ON b.staff_id = s.staff_id LEFT JOIN caretaker k ON b.caretaker_id = k.caretaker_id";
+
+    private static final String SELECT_ALL_BOOKING
+            = "SELECT b.booking_id, "
+            + "       b.booking_type, "
+            + "       TO_CHAR(b.booking_time, 'YYYY-MM-DD HH24:MI:SS') AS booking_time, "
+            + "       TRIM(BOTH ' ' FROM "
+            + "           (CASE WHEN EXTRACT(DAY FROM b.booking_duration) > 0 THEN "
+            + "               TO_CHAR(EXTRACT(DAY FROM b.booking_duration), 'FM9999') || ' days ' "
+            + "            ELSE '' END || "
+            + "            CASE WHEN EXTRACT(HOUR FROM b.booking_duration) > 0 THEN "
+            + "               TO_CHAR(EXTRACT(HOUR FROM b.booking_duration), 'FM00') || ' hours ' "
+            + "            ELSE '' END || "
+            + "            CASE WHEN EXTRACT(MINUTE FROM b.booking_duration) > 0 THEN "
+            + "               TO_CHAR(EXTRACT(MINUTE FROM b.booking_duration), 'FM00') || ' minutes ' "
+            + "            ELSE '' END || "
+            + "            CASE WHEN EXTRACT(SECOND FROM b.booking_duration) > 0 THEN "
+            + "               TO_CHAR(EXTRACT(SECOND FROM b.booking_duration), 'FM00') || ' seconds' "
+            + "            ELSE '' END "
+            + "           )"
+            + "       ) AS booking_duration, "
+            + "       b.booking_price, "
+            + "       b.cust_id, "
+            + "       b.staff_id, "
+            + "       b.caretaker_id, "
+            + "       c.cust_username, "
+            + "       s.staff_name, "
+            + "       k.caretaker_name, "
+            + "       p.payment_status AS booking_status "
+            + "FROM booking b "
+            + "LEFT JOIN customer c ON b.cust_id = c.cust_id "
+            + "LEFT JOIN staff s ON b.staff_id = s.staff_id "
+            + "LEFT JOIN caretaker k ON b.caretaker_id = k.caretaker_id "
+            + "LEFT JOIN payment p ON b.booking_id = p.booking_id"; 
+
     private static final String GET_BOOKING_INFO = "#";
-    private static final String EDIT_BOOKING_SQL = "UPDATE booking SET staff_id = ? WHERE booking_id = ?";
+
+    private static final String EDIT_BOOKING_SQL
+            = "UPDATE booking "
+            + "SET staff_id = ? "
+            + "WHERE booking_id = ?";
 
     public void deleteBooking(int bookingId) throws SQLException {
         Connection connection = null;
@@ -134,6 +181,7 @@ public class BookingDAO {
                 Booking book = new Booking();
                 book.setBookingId(rs.getInt("booking_id"));
                 book.setBookingType(rs.getString("booking_type"));
+                book.setBookingStatus(rs.getString("booking_status"));
                 book.setBookingTime(rs.getString("booking_time"));
                 book.setBookingDuration(rs.getString("booking_duration"));
                 book.setBookingPrice(rs.getDouble("booking_price"));
@@ -156,6 +204,7 @@ public class BookingDAO {
 
             ps.setInt(1, staffId); // Set the new staff ID
             ps.setInt(2, bookingId); // Specify which booking to update
+            
 
             int rowsUpdated = ps.executeUpdate();
             return rowsUpdated > 0; // Return true if the update was successful

@@ -11,7 +11,9 @@ import java.util.List;
 import java.util.logging.Level;
 import user.Caretaker;
 import dbconn.DatabaseConnection;
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.sql.Blob;
 
 /**
  *
@@ -19,14 +21,53 @@ import java.io.InputStream;
  */
 public class CaretakerDAO {
 
-    private static final String INSERT_CARETAKER_SQL = "INSERT INTO CARETAKER (STAFF_ID, CARETAKER_NAME, CARETAKER_PHONE, CARETAKER_IC_NUMBER, PROFILE_DESCRIPTION, CARETAKER_PASSWORD) VALUES (?, ?, ?, ?, ?, ?)";
-    private static final String GET_LATEST_ID_SQL = "SELECT caretaker_id FROM (SELECT caretaker_id FROM caretaker ORDER BY caretaker_id DESC ) WHERE ROWNUM = 1";
-    private static final String DISABLE_CARETAKER_SQL = "UPDATE caretaker SET is_active = 'N' WHERE caretaker_id = ?";
-    private static final String ENABLE_CARETAKER_SQL = "UPDATE caretaker SET is_active = 'Y' WHERE caretaker_id = ?";
-    private static final String UPDATE_CARETAKER_SQL = "#";
-    private static final String SELECT_ALL_CARETAKER = "SELECT c.caretaker_id, c.caretaker_name, c.caretaker_phone, c.availability_status, c.caretaker_ic_number, st.staff_name, c.status_id, c.ban_date, c.is_active, s.reason AS status, CASE WHEN b.caretaker_id IS NOT NULL THEN 'Babysitter' WHEN e.caretaker_id IS NOT NULL THEN 'Eldercaretaker' ELSE 'Unknown' END AS caretaker_type, COALESCE(b.babysitter_experience_years, e.eldercare_experience_years) AS experience_years, b.babysitter_rating AS rating, COALESCE(b.babysitter_hourly_rate, e.eldercare_hourly_rate) AS hourly_rate, e.eldercare_certification AS certification FROM caretaker c JOIN Status s ON c.status_id = s.status_id JOIN staff st ON c.staff_id = st.staff_id LEFT JOIN babysitter b ON c.caretaker_id = b.caretaker_id LEFT JOIN eldercaretaker e ON c.caretaker_id = e.caretaker_id";
+    private static final String INSERT_CARETAKER_SQL
+            = "INSERT INTO CARETAKER (STAFF_ID, CARETAKER_NAME, CARETAKER_PHONE, CARETAKER_IC_NUMBER, PROFILE_DESCRIPTION, CARETAKER_PASSWORD) "
+            + "VALUES (?, ?, ?, ?, ?, ?)";
+
+    private static final String GET_LATEST_ID_SQL
+            = "SELECT caretaker_id "
+            + "FROM (SELECT caretaker_id FROM caretaker ORDER BY caretaker_id DESC) "
+            + "WHERE ROWNUM = 1";
+
+    private static final String DISABLE_CARETAKER_SQL
+            = "UPDATE caretaker "
+            + "SET is_active = 'N' "
+            + "WHERE caretaker_id = ?";
+
+    private static final String ENABLE_CARETAKER_SQL
+            = "UPDATE caretaker "
+            + "SET is_active = 'Y' "
+            + "WHERE caretaker_id = ?";
+
+    private static final String UPDATE_CARETAKER_SQL = "#";  
+
+    private static final String SELECT_ALL_CARETAKER
+            = "SELECT c.caretaker_id, c.caretaker_name, c.caretaker_phone, c.availability_status, "
+            + "       c.caretaker_ic_number, st.staff_name, c.status_id, TO_CHAR(c.ban_date, 'YYYY-MM-DD HH24:MI:SS') AS ban_date, c.is_active, "
+            + "       s.reason AS status, "
+            + "       CASE WHEN b.caretaker_id IS NOT NULL THEN 'Babysitter' "
+            + "            WHEN e.caretaker_id IS NOT NULL THEN 'Eldercaretaker' "
+            + "            ELSE 'Unknown' END AS caretaker_type, "
+            + "       COALESCE(b.babysitter_experience_years, e.eldercare_experience_years) AS experience_years, "
+            + "       b.babysitter_rating AS rating, "
+            + "       COALESCE(b.babysitter_hourly_rate, e.eldercare_hourly_rate) AS hourly_rate, "
+            + "       e.eldercare_certification AS certification "
+            + "FROM caretaker c "
+            + "JOIN Status s ON c.status_id = s.status_id "
+            + "JOIN staff st ON c.staff_id = st.staff_id "
+            + "LEFT JOIN babysitter b ON c.caretaker_id = b.caretaker_id "
+            + "LEFT JOIN eldercaretaker e ON c.caretaker_id = e.caretaker_id";
+
+    private static final String GET_ELDER_CERT
+            = "SELECT eldercare_certification FROM eldercaretaker WHERE caretaker_id = ?";
+
     private static final String GET_CARETAKER_INFO = "#";
-    private static final String EDIT_CARETAKER_SQL = "UPDATE caretaker SET ban_date = ?, status_id = ? WHERE caretaker_id = ?";
+
+    private static final String EDIT_CARETAKER_SQL
+            = "UPDATE caretaker "
+            + "SET ban_date = ?, status_id = ? "
+            + "WHERE caretaker_id = ?";
 
     public boolean insertCaretaker(Caretaker caretaker) throws Exception {
         try (Connection connection = DatabaseConnection.getConnection();
@@ -149,14 +190,19 @@ public class CaretakerDAO {
     }
 
     public static InputStream getCertificationById(int caretakerId) {
-        String sql = "SELECT eldercare_certification FROM eldercaretaker WHERE caretaker_id = ?";
+        String sql = GET_ELDER_CERT;
+
         try (Connection connection = DatabaseConnection.getConnection();
                 PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, caretakerId);
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
-                return rs.getBinaryStream("eldercare_certification");
+                Blob blob = rs.getBlob("eldercare_certification");
+                if (blob != null) {
+                    byte[] bytes = blob.getBytes(1, (int) blob.length()); 
+                    return new ByteArrayInputStream(bytes); 
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();

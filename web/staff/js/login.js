@@ -1,64 +1,49 @@
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-document.addEventListener('DOMContentLoaded', (event) => {
-
+document.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
-    const code = urlParams.get('error');
-    const success = urlParams.get('success');
+    const errorCode = urlParams.get('error');
 
-    // Check if there is an error code  
-    if (code === '1') {
-        displayError('Please enter both email and password.');
-    } else if (code === '2') {
-        displayError('Database connection failed. Please try again later.');
-    } else if (code === '3') {
-        displayError('Invalid email or password. Please try again.');
-    } 
+    if (errorCode) {
+        handleError(errorCode);
+    }
 
+    /**
+     * Function to handle error popups
+     */
+    function handleError(code) {
+        let errorMessage = '';
 
-    if (success === 'true') {
-        let countdown = 3;
+        switch (code) {
+            case '1':
+                errorMessage = 'Please enter both email and password.';
+                break;  
+            case '2':
+                errorMessage = 'Database connection failed. Please try again later.';
+                break;
+            case '3':
+                errorMessage = 'Invalid email or password. Please try again.';
+                break;
+            case 'invalidSession':
+                errorMessage = 'Your session has expired. Please log in again.';
+                break;
+            default:
+                errorMessage = 'An unknown error occurred. Please try again.';
+        }
+
         Swal.fire({
-            title: 'Success!',
-            text: 'Logout successfully!',
-            icon: 'success',
-            showConfirmButton: false,
-            timer: countdown * 1000,
-            timerProgressBar: true,
-            willClose: () => {
-                console.log('The alert was closed after 3 seconds');
-            }
+            title: 'Login Error',
+            text: errorMessage,
+            icon: 'error',
+            confirmButtonText: 'OK'
+        }).then(() => {
+            clearUrlParams();
         });
-
-        let interval = setInterval(() => {
-            if (countdown > 0) {
-                Swal.getContent().innerHTML = `<p>Closing in ${countdown} seconds...</p>`;
-                countdown--;
-            } else {
-                clearInterval(interval);
-                clearUrlParams();
-            }
-        }, 1000);
     }
 
-    // Function to display error messages  
-    function displayError(message) {
-        const errorMessage = document.createElement('p');
-        errorMessage.textContent = message;
-        errorMessage.style.color = 'red';
-        errorMessage.classList.add('error-message');
-
-        // Insert the error message before the form  
-        const form = document.querySelector('form');
-        form.parentNode.insertBefore(errorMessage, form);
-    }
-
+    /**
+     * Function to remove error parameters from the URL
+     */
     function clearUrlParams() {
-        urlParams.searchParams.delete('success'); 
-        urlParams.searchParams.delete('error'); 
-        window.history.replaceState({}, document.title, urlParams); // Update browser history without reloading  
+        const newUrl = window.location.origin + window.location.pathname;
+        window.history.replaceState({}, document.title, newUrl);
     }
 });

@@ -7,6 +7,8 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page import="user.Booking" %> 
+<%@ page import="java.sql.*" %>
+<%@ page import="utils.SessionUtils" %>
 
 <!DOCTYPE html>
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
@@ -25,6 +27,7 @@
         <title>Family Care</title>
 
         <!-- Custom fonts for this template -->
+        <link rel="icon" href="../image/item/logo.png" type="image/x-icon" />
         <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
         <link
             href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
@@ -38,6 +41,42 @@
         <script src="js/manage-booking.js"></script>
 
     </head>
+
+    <%
+        Integer staffId = SessionUtils.getUserIdFromSession(request);
+        if (staffId == null) {
+            response.sendRedirect("login.html?error=invalidSession");
+            return;
+        }
+        
+        String url = "jdbc:oracle:thin:@//localhost:1521/XE"; 
+        String username = "CareGiver"; 
+        String password = "system"; 
+        String staffName = null;
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        try {
+            Class.forName("oracle.jdbc.driver.OracleDriver");
+            conn = DriverManager.getConnection(url, username, password);
+            pstmt = conn.prepareStatement("SELECT staff_name FROM staff WHERE staff_id = ?");
+            pstmt.setInt(1, staffId);  // Prevents SQL injection
+
+            rs = pstmt.executeQuery();
+            if (rs.next()) {
+                staffName = rs.getString("staff_name");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (rs != null) try { rs.close(); } catch (SQLException e) { e.printStackTrace(); }
+            if (pstmt != null) try { pstmt.close(); } catch (SQLException e) { e.printStackTrace(); }
+            if (conn != null) try { conn.close(); } catch (SQLException e) { e.printStackTrace(); }
+        }
+    %>
+
+
 
     <body id="page-top">
 
@@ -272,7 +311,7 @@
                             <li class="nav-item dropdown no-arrow">
                                 <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <span class="mr-2 d-none d-lg-inline text-gray-600 small">${staffLoginInfo.name}</span>
+                                    <span class="mr-2 d-none d-lg-inline text-gray-600 small"><%= staffName %></span>
                                     <img class="img-profile rounded-circle"
                                          src="img/undraw_profile.svg">
                                 </a>
@@ -329,6 +368,7 @@
                                                 <th>Customer Name</th>
                                                 <th>Caretaker Name</th>
                                                 <th>Review By</th>
+                                                <th>Status</th>
                                                 <th> </th>
                                             </tr>
                                         </thead>
@@ -343,6 +383,7 @@
                                                 <th>Customer Name</th>
                                                 <th>Caretaker Name</th>
                                                 <th>Review By</th>
+                                                <th>Status</th>
                                                 <th> </th>
                                             </tr>
                                         </tfoot>
@@ -358,9 +399,16 @@
                                                     <td>${book.custName}</td>
                                                     <td>${book.caretakerName}</td> 
                                                     <td>${book.staffName}</td> 
+                                                    <td>
+                                                        <span class="badge 
+                                                              ${book.bookingStatus == 'Completed' ? 'bg-success text-white' : 
+                                                                book.bookingStatus == 'Cancelled' ? 'bg-danger text-white' : 
+                                                                book.bookingStatus == 'Pending' ? 'bg-warning text-dark' : 'bg-white text-dark'}"> ${book.bookingStatus}
+                                                        </span>
+                                                    </td>
                                                     <td class="text-center align-middle">  
                                                         <div >  
-                                                            <!-- Edit Button with margin-right -->  
+                                                            <!-- Edit Button with margin-right   -->
                                                             <button class="btn btn-success btn-sm me-2" data-toggle="modal" data-target="#editModal-${book.bookingId}"   
                                                                     onclick="openEditModal('${book.bookingId}', '${book.staffId}')">  
                                                                 Edit  
@@ -387,7 +435,7 @@
                                                             <form action="booking_manageProcess.jsp?action=editBooking&bookingId=${book.bookingId}" method="post"> 
 
                                                                 <div class="form-group">
-                                                                    <label for="staff">Assign New Staff ID</label>
+                                                                    <label for="staff">Assign Staff</label>
                                                                     <input type="number" class="form-control" id="supervisor" name="staffId" value="${book.staffId}" placeholder="Enter Staff ID">
                                                                 </div>
                                                                 <div class="form-group">
