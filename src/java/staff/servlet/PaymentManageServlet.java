@@ -6,6 +6,8 @@
 package staff.servlet;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Level;
@@ -62,6 +64,9 @@ public class PaymentManageServlet extends HttpServlet {
                     break;
                 case "editPayment":
                     handleEditPayment(request, response, paymentDAO);
+                    break;
+                case "previewPayment":
+                    handlePreviewPayment(request, response, paymentDAO);
                     break;
                 default:
                     sendError(response, HttpServletResponse.SC_BAD_REQUEST, "Invalid action: " + action);
@@ -161,6 +166,61 @@ public class PaymentManageServlet extends HttpServlet {
         } catch (SQLException ex) {
             handleException(response, ex);
         }
+    }
+    
+        protected void handlePreviewPayment(HttpServletRequest request, HttpServletResponse response, PaymentDAO paymentDAO)
+            throws ServletException, IOException {
+        int paymentId = Integer.parseInt(request.getParameter("paymentId"));
+
+        InputStream inputStream = paymentDAO.getReceiptById(paymentId);
+        if (inputStream != null) {
+            // Detect file type (assuming it's stored with correct format)
+            String contentType = "application/octet-stream";
+            String fileName = "receipt_" + paymentId;
+
+            byte[] fileHeader = new byte[4];
+            inputStream.read(fileHeader, 0, 4);
+
+            String headerHex = bytesToHex(fileHeader);
+
+            if (headerHex.startsWith("25504446")) {
+                contentType = "application/pdf";
+                fileName += ".pdf";
+            } else if (headerHex.startsWith("89504E47")) {
+                contentType = "image/png";
+                fileName += ".png";
+            } else if (headerHex.startsWith("FFD8FF")) {
+                contentType = "image/jpeg";
+                fileName += ".jpg";
+            }
+
+            response.setContentType(contentType);
+            response.setHeader("Content-Disposition", "inline; filename=" + fileName);
+
+            // Reset input stream to ensure all content is read
+            inputStream = PaymentDAO.getReceiptById(paymentId);
+
+            try (OutputStream output = response.getOutputStream()) {
+                byte[] buffer = new byte[4096];
+                int bytesRead;
+                while ((bytesRead = inputStream.read(buffer)) != -1) {
+                    output.write(buffer, 0, bytesRead);
+                }
+            } finally {
+                inputStream.close(); // Close the stream after writing to response
+            }
+        } else {
+            response.setContentType("text/html");
+            response.getWriter().write("<h3>No certification found for this caretaker.</h3>");
+        }
+    }
+
+    private String bytesToHex(byte[] bytes) {
+        StringBuilder hexString = new StringBuilder();
+        for (byte b : bytes) {
+            hexString.append(String.format("%02X", b));
+        }
+        return hexString.toString();
     }
 
     private int parsePaymentId(HttpServletRequest request) {

@@ -34,163 +34,172 @@
         <link href="css/sb-admin-2.min.css" rel="stylesheet">
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <script src="js/staff_dashboard.js"> </script>
+        <script src="js/staff_dashboard.js"></script>
 
     </head>
 
-<%      
-    Integer staffId = SessionUtils.getUserIdFromSession(request);
-    if (staffId == null) {
-        response.sendRedirect("login.html?error=invalidSession");
-        return;
-    }
+    <%      
+        Integer staffId = SessionUtils.getUserIdFromSession(request);
+        if (staffId == null) {
+            response.sendRedirect("login.html?error=invalidSession");
+            return;
+        }
     
-    String url = "jdbc:oracle:thin:@//localhost:1521/XE"; 
-    String username = "CareGiver"; 
-    String password = "system"; 
-    Connection conn = null;
-    Statement stmt = null;
-    ResultSet rs = null;
+        String url = "jdbc:oracle:thin:@//localhost:1521/XE"; 
+        String username = "CareGiver"; 
+        String password = "system"; 
+        Connection conn = null;
+        Statement stmt = null;
+        ResultSet rs = null;
     
-    String staffName = null;
-    int totalC = 0;
-    int totalB = 0;
-    int noAvailableB = 0;
-    int totalE = 0;
-    int noAvailableE = 0;
-    int pendingBooking = 0;
-    int percentBooking = 0;
-    double monthlyE = 0;
-    double annualE = 0;
-    double[] monthlyEarnings = new double[12];
-    int babysitterCount = 0;
-    int eldercareCount = 0;
+        String staffName = null;
+        int totalC = 0;
+        int totalB = 0;
+        int noAvailableB = 0;
+        int totalE = 0;
+        int noAvailableE = 0;
+        int pendingBooking = 0;
+        int percentBooking = 0;
+        double monthlyE = 0;
+        double annualE = 0;
+        double[] monthlyEarnings = new double[12];
+        int babysitterCount = 0;
+        int eldercareCount = 0;
 
-    try {
-        Class.forName("oracle.jdbc.driver.OracleDriver");
-        conn = DriverManager.getConnection(url, username, password);
-        stmt = conn.createStatement();
+        try {
+            Class.forName("oracle.jdbc.driver.OracleDriver");
+            conn = DriverManager.getConnection(url, username, password);
+            stmt = conn.createStatement();
 
-        // Fetch staff details 
-        rs = stmt.executeQuery("SELECT staff_name FROM staff WHERE staff_id = " + staffId);
-        if (rs.next()) {
-            staffName = rs.getString("staff_name");
-        } 
+            // Fetch staff details 
+            rs = stmt.executeQuery("SELECT staff_name FROM staff WHERE staff_id = " + staffId);
+            if (rs.next()) {
+                staffName = rs.getString("staff_name");
+            } 
        
-        //Fetch earning value
-        rs = stmt.executeQuery(
-            "SELECT NVL(SUM(CASE WHEN TRUNC(PAYMENT_DATE, 'MM') = TRUNC(SYSDATE, 'MM') THEN PAYMENT_AMOUNT END), 0) AS Monthly_Earnings, " +
-            "NVL(SUM(CASE WHEN TRUNC(PAYMENT_DATE, 'YYYY') = TRUNC(SYSDATE, 'YYYY') THEN PAYMENT_AMOUNT END), 0) AS Annual_Earnings " +
-            "FROM PAYMENT WHERE PAYMENT_STATUS = 'Completed'"
-        );
-        if (rs.next()) {
-            monthlyE = rs.getInt("Monthly_Earnings");
-            annualE = rs.getInt("Annual_Earnings");
-        if (rs.wasNull()) {
-                monthlyE = 0.00;
-                annualE = 0.00;
-        }}
+            //Fetch earning value
+            rs = stmt.executeQuery(
+                "SELECT NVL(SUM(CASE WHEN TRUNC(PAYMENT_DATE, 'MM') = TRUNC(SYSDATE, 'MM') THEN PAYMENT_AMOUNT END), 0) AS Monthly_Earnings, " +
+                "NVL(SUM(CASE WHEN TRUNC(PAYMENT_DATE, 'YYYY') = TRUNC(SYSDATE, 'YYYY') THEN PAYMENT_AMOUNT END), 0) AS Annual_Earnings " +
+                "FROM PAYMENT WHERE PAYMENT_STATUS = 'Completed'"
+            );
+            if (rs.next()) {
+                monthlyE = rs.getInt("Monthly_Earnings");
+                annualE = rs.getInt("Annual_Earnings");
+            if (rs.wasNull()) {
+                    monthlyE = 0.00;
+                    annualE = 0.00;
+            }}
 
-        // Fetch total customer
-        rs = stmt.executeQuery("SELECT COUNT(*) AS totalCustomer FROM customer");
-        if (rs.next()) {
-            totalC = rs.getInt("totalCustomer");
-        if (rs.wasNull()) {
-                totalC = 0;
-        }}
+            // Fetch total customer
+            rs = stmt.executeQuery("SELECT COUNT(*) AS totalCustomer FROM customer");
+            if (rs.next()) {
+                totalC = rs.getInt("totalCustomer");
+            if (rs.wasNull()) {
+                    totalC = 0;
+            }}
 
-        // Fetch total babysitter
-        rs = stmt.executeQuery("SELECT COUNT(*) AS totalBabysitter, SUM(CASE WHEN AVAILABILITY_STATUS = 'Available' THEN 1 ELSE 0 END) AS availableBabysitter " +
-                                "FROM CARETAKER WHERE CARETAKER_ID IN (SELECT CARETAKER_ID FROM BABYSITTER)");
-        if (rs.next()) {
-            totalB = rs.getInt("totalBabysitter");
-            noAvailableB = rs.getInt("availableBabysitter");
-        if (rs.wasNull()) {
-                totalB = 0; 
-                noAvailableB = 0;
-        }}
+            // Fetch total babysitter
+            rs = stmt.executeQuery("SELECT COUNT(*) AS totalBabysitter, SUM(CASE WHEN AVAILABILITY_STATUS = 'Available' THEN 1 ELSE 0 END) AS availableBabysitter " +
+                                    "FROM CARETAKER WHERE CARETAKER_ID IN (SELECT CARETAKER_ID FROM BABYSITTER)");
+            if (rs.next()) {
+                totalB = rs.getInt("totalBabysitter");
+                noAvailableB = rs.getInt("availableBabysitter");
+            if (rs.wasNull()) {
+                    totalB = 0; 
+                    noAvailableB = 0;
+            }}
 
-        // Fetch total eldercaretaker
-        rs = stmt.executeQuery("SELECT COUNT(*) AS totalEldercaretaker, SUM(CASE WHEN AVAILABILITY_STATUS = 'Available' THEN 1 ELSE 0 END) AS availableEldercaretaker " +
-                                "FROM CARETAKER WHERE CARETAKER_ID IN (SELECT CARETAKER_ID FROM ELDERCARETAKER)");
-        if (rs.next()) {
-            totalE = rs.getInt("totalEldercaretaker");
-            noAvailableE = rs.getInt("availableEldercaretaker");
-        if (rs.wasNull()) {
-                totalE = 0; 
-                noAvailableE = 0;
-        }}
+            // Fetch total eldercaretaker
+            rs = stmt.executeQuery("SELECT COUNT(*) AS totalEldercaretaker, SUM(CASE WHEN AVAILABILITY_STATUS = 'Available' THEN 1 ELSE 0 END) AS availableEldercaretaker " +
+                                    "FROM CARETAKER WHERE CARETAKER_ID IN (SELECT CARETAKER_ID FROM ELDERCARETAKER)");
+            if (rs.next()) {
+                totalE = rs.getInt("totalEldercaretaker");
+                noAvailableE = rs.getInt("availableEldercaretaker");
+            if (rs.wasNull()) {
+                    totalE = 0; 
+                    noAvailableE = 0;
+            }}
 
-        // Fetch pending bookings
-        rs = stmt.executeQuery("SELECT COUNT(*) AS pendingBooking FROM booking WHERE booking_id IN (SELECT BOOKING_ID FROM PAYMENT WHERE PAYMENT_STATUS = 'Pending')");
-        if (rs.next()) {
-            pendingBooking = rs.getInt("pendingBooking");
-        if (rs.wasNull()) {
-            pendingBooking = 0;
-        }}
+            // Fetch pending bookings
+            rs = stmt.executeQuery("SELECT COUNT(*) AS pendingBooking FROM booking WHERE booking_id IN (SELECT BOOKING_ID FROM PAYMENT WHERE PAYMENT_STATUS = 'Pending')");
+            if (rs.next()) {
+                pendingBooking = rs.getInt("pendingBooking");
+            if (rs.wasNull()) {
+                pendingBooking = 0;
+            }}
 
-        // Fetch completed over total bookings
-        rs = stmt.executeQuery(
-            "SELECT ROUND((COUNT(CASE WHEN PAYMENT_STATUS = 'Completed' AND TRUNC(PAYMENT_DATE, 'MM') = TRUNC(SYSDATE, 'MM') THEN 1 END) / " +
-            "NULLIF(COUNT(CASE WHEN PAYMENT_STATUS IN ('Completed', 'Pending') AND TRUNC(PAYMENT_DATE, 'MM') = TRUNC(SYSDATE, 'MM') THEN 1 END), 0)) * 100, 0) AS Completed_Percentage " +
-            "FROM PAYMENT " +
-            "WHERE TRUNC(PAYMENT_DATE, 'MM') = TRUNC(SYSDATE, 'MM') " +
-            "AND BOOKING_ID IN (SELECT BOOKING_ID FROM PAYMENT WHERE PAYMENT_STATUS IN ('Completed', 'Pending'))"
-        );
-        if (rs.next()) {
-            percentBooking = rs.getInt("Completed_Percentage");
-        if (rs.wasNull()) {
-            percentBooking = 0;
-        }}
+            // Fetch completed over total bookings
+            rs = stmt.executeQuery(
+                "SELECT ROUND((COUNT(CASE WHEN PAYMENT_STATUS = 'Completed' AND TRUNC(PAYMENT_DATE, 'MM') = TRUNC(SYSDATE, 'MM') THEN 1 END) / " +
+                "NULLIF(COUNT(CASE WHEN PAYMENT_STATUS IN ('Completed', 'Pending') AND TRUNC(PAYMENT_DATE, 'MM') = TRUNC(SYSDATE, 'MM') THEN 1 END), 0)) * 100, 0) AS Completed_Percentage " +
+                "FROM PAYMENT " +
+                "WHERE TRUNC(PAYMENT_DATE, 'MM') = TRUNC(SYSDATE, 'MM') " +
+                "AND BOOKING_ID IN (SELECT BOOKING_ID FROM PAYMENT WHERE PAYMENT_STATUS IN ('Completed', 'Pending'))"
+            );
+            if (rs.next()) {
+                percentBooking = rs.getInt("Completed_Percentage");
+            if (rs.wasNull()) {
+                percentBooking = 0;
+            }}
         
-        // Fetch monthly earnings for completed payments
-        rs = stmt.executeQuery(
-            "SELECT TO_CHAR(PAYMENT_DATE, 'MM') AS MONTH, SUM(PAYMENT_AMOUNT) AS EARNINGS " +
-            "FROM PAYMENT WHERE PAYMENT_STATUS = 'Completed' " +
-            "GROUP BY TO_CHAR(PAYMENT_DATE, 'MM')"
-        );
-        while (rs.next()) {
-            int monthIndex = Integer.parseInt(rs.getString("MONTH")) - 1; // Convert month to array index
-            monthlyEarnings[monthIndex] = rs.getDouble("EARNINGS");
-        }
+            // Fetch monthly earnings for completed payments
+            rs = stmt.executeQuery(
+                "SELECT TO_CHAR(PAYMENT_DATE, 'MM') AS MONTH, SUM(PAYMENT_AMOUNT) AS EARNINGS " +
+                "FROM PAYMENT WHERE PAYMENT_STATUS = 'Completed' " +
+                "GROUP BY TO_CHAR(PAYMENT_DATE, 'MM')"
+            );
+            while (rs.next()) {
+                int monthIndex = Integer.parseInt(rs.getString("MONTH")) - 1; // Convert month to array index
+                monthlyEarnings[monthIndex] = rs.getDouble("EARNINGS");
+            }
 
-        // SQL Query to get count of Babysitter and Eldercare
-        rs = stmt.executeQuery(
-            "SELECT " +
-            "COUNT(CASE WHEN booking_type = 'Babysitter' THEN 1 END) AS babysitter_count, " +
-            "COUNT(CASE WHEN booking_type = 'Eldercaretaker' THEN 1 END) AS eldercare_count " +
-            "FROM booking b " +
-            "JOIN payment p ON b.booking_id = p.booking_id " +
-            "WHERE p.payment_status = 'Completed'"
-        );
-        if (rs.next()) {
-            babysitterCount = rs.getInt("babysitter_count");
-            eldercareCount = rs.getInt("eldercare_count");
-        }
+            // SQL Query to get count of Babysitter and Eldercare
+            rs = stmt.executeQuery(
+                "SELECT " +
+                "b.booking_type, " +
+                "COUNT(*) AS count " +
+                "FROM booking b " +
+                "JOIN payment p ON b.booking_id = p.booking_id " +
+                "WHERE p.payment_status = 'Completed' " +
+                "GROUP BY b.booking_type"
+            );
+
+            // Process each row
+            while (rs.next()) {
+                String bookingType = rs.getString("booking_type");
+                int count = rs.getInt("count");
+
+                if (bookingType.equalsIgnoreCase("Babycaretaker")) {
+                    babysitterCount = count;
+                } else if (bookingType.equalsIgnoreCase("Eldercaretaker")) {
+                    eldercareCount = count;
+                }
+            }
         
-    } catch (Exception e) {
-        e.printStackTrace();
-    } finally {
-        try {
-            if (rs != null) {
-                rs.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+            } catch (SQLException e) {
             }
-        } catch (SQLException e) {
-        }
-        try {
-            if (stmt != null) {
-                stmt.close();
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+            } catch (SQLException e) {
             }
-        } catch (SQLException e) {
-        }
-        try {
-            if (conn != null) {
-                conn.close();
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException e) {
             }
-        } catch (SQLException e) {
         }
-    }
-%>
+    %>
 
     <body id="page-top">
 
@@ -495,11 +504,11 @@
                     <div class="container-fluid">
 
                         <!-- Page Heading -->
-<!--                        <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                            <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
-                            <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
-                                    class="fas fa-download fa-sm text-white-50"></i> Generate Report</a>
-                        </div>-->
+                        <!--                        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                                                    <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
+                                                    <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
+                                                            class="fas fa-download fa-sm text-white-50"></i> Generate Report</a>
+                                                </div>-->
 
                         <!-- Content Row -->
                         <div class="row">
@@ -586,7 +595,7 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <!-- Available Staff -->
                             <div class="col-xl-3 col-md-6 mb-4">
                                 <div class="card border-left-light shadow h-100 py-2">
@@ -604,7 +613,7 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <!-- Available Staff -->
                             <div class="col-xl-3 col-md-6 mb-4">
                                 <div class="card border-left-secondary shadow h-100 py-2">
@@ -622,7 +631,7 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <!-- Available Staff -->
                             <div class="col-xl-3 col-md-6 mb-4">
                                 <div class="card border-left-dark shadow h-100 py-2">
@@ -640,7 +649,7 @@
                                     </div>
                                 </div>
                             </div>
-                                            
+
                             <!-- Show Time -->
                             <div class="col-xl-3 col-md-6 mb-4">
                                 <div class="card border-left-danger shadow h-100 py-2">
@@ -658,7 +667,7 @@
                                     </div>
                                 </div>
                             </div>                                            
-                            
+
                         </div>
 
                         <!-- Content Row -->
@@ -771,7 +780,7 @@
         <!-- Page level custom scripts -->
         <script src="js/graphChart.js"></script>
         <script src="js/pieChart.js"></script>
-        
+
     </body>
 
 </html>
