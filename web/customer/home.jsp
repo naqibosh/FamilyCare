@@ -1,226 +1,195 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%
-    // Check if the session exists and retrieve customerId
-    Integer customerId = (Integer) session.getAttribute("customerId");
-
-    if (customerId == null) {
-        // Redirect to the login page if not logged in
-        response.sendRedirect("login.jsp?error=Please log in to access the home page.");
-        return;
-    }
-
-    // Retrieve customerName from the session
-    String customerName = (String) session.getAttribute("customerName");
-%>
-
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Care Giver - Customer Page</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    <style>
-        /* General Styles */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Care Giver - Customer Page</title>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+        <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+        <style>
+            /* General Styles */
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+                font-family: 'Poppins', sans-serif;
+            }
 
-        body {
-            background: linear-gradient(to bottom right, #6a11cb, #2575fc);
-            color: #f4f4f4;
-            overflow-x: hidden;
-            display: flex;
-            flex-direction: column;
-        }
+            body {
+                background-color: #fff;
+                color: #000;
+                overflow-x: hidden;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
 
-        header {
-            background-color: #2c3e50;
-            padding: 1rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-        }
+            header {
+                background-color: #0a1f44;
+                padding: 1rem 2rem;
+                width: 100%;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                box-shadow: 0 2px 10px rgba(255, 255, 255, 0.1);
+            }
 
-        header .logo {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #fff;
-        }
+            .logo-container {
+                display: flex;
+                align-items: center;
+                text-decoration: none; /* Remove default link styling */
+            }
 
-        header nav {
-            display: flex;
-            gap: 1rem;
-        }
+            .logo-container img {
+                width: 70px;
+                height: 70px;
+                margin-right: 10px;
+            }
 
-        header nav a {
-            text-decoration: none;
-            color: #fff;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
-            transition: background 0.3s ease-in-out;
-        }
+            .logo-container .logo {
+                font-size: 1.8rem;
+                font-weight: bold;
+                color: #ffffff;
+            }
 
-        header nav a:hover {
-            background-color: #34495e;
-        }
+            header nav {
+                display: flex;
+                gap: 1rem;
+            }
 
-        main {
-            padding: 2rem;
-            margin-top: 2rem;
-            text-align: center;
-        }
+            header nav a {
+                text-decoration: none;
+                color: #FFFFFF;
+                font-size: 1.1rem;
+                padding: 0.5rem 1rem;
+                border-radius: 5px;
+                transition: background 0.3s ease-in-out;
+            }
 
-        main h1 {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-            text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.5);
-        }
+            header nav a:hover {
+                background-color: #1F4068;
+            }
+            /* Icon Styles */
+            
 
-        .service-section {
-            margin: 2rem auto;
-            max-width: 900px;
-        }
+            main {
+                padding: 2rem;
+                margin-top: 2rem;
+                text-align: center;
+                max-width: 900px;
+            }
 
-        .service-card {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 2rem;
-            margin: 1rem 0;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            text-align: left;
-        }
+            main h1 {
+                font-size: 2.5rem;
+                margin-bottom: 1rem;
+            }
 
-        .service-card h3 {
-            font-size: 1.5rem;
-            color: #fff;
-            margin-bottom: 10px;
-        }
+            .service-section {
+                width: 100%;
+                margin: 2rem 0;
+            }
 
-        .service-card ul {
-            margin-top: 10px;
-            padding-left: 20px;
-            color: #ddd;
-        }
+            .service-card {
+                background: #1b376b;
+                padding: 2rem;
+                margin: 1rem 0;
+                border-radius: 10px;
+                box-shadow: 0 4px 10px rgba(255, 255, 255, 0.1);
+                text-align: left;
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+            }
 
-        .service-card ul li {
-            margin-bottom: 5px;
-        }
+            .service-card:hover {
+                transform: scale(1.05);
+                box-shadow: 0 8px 20px rgba(255, 255, 255, 0.2);
+            }
 
-        .price {
-            font-size: 1.2rem;
-            color: #00bcd4;
-            margin-top: 15px;
-            font-weight: bold;
-        }
+            .service-card h3 {
+                font-size: 1.5rem;
+                color: #ffffff;
+                margin-bottom: 10px;
+            }
 
-        .contact-section {
-            background: #2c3e50;
-            color: #fff;
-            padding: 2rem;
-            margin-top: 3rem;
-            border-radius: 10px;
-            text-align: center;
-        }
+            .service-card ul {
+                margin-top: 10px;
+                padding-left: 20px;
+                color: #e0e0e0;
+            }
 
-        .contact-section h3 {
-            font-size: 1.8rem;
-            margin-bottom: 1rem;
-        }
+            .booking-btn {
+                margin-top: 20px;
+                padding: 0.75rem 1.5rem;
+                background-color: #007bff;
+                border: none;
+                border-radius: 5px;
+                color: white;
+                font-size: 1rem;
+                cursor: pointer;
+                transition: 0.3s;
+            }
 
-        .contact-section p {
-            margin-bottom: 1rem;
-        }
+            .booking-btn:hover {
+                background-color: #0056b3;
+            }
 
-        footer {
-            background-color: #2c3e50;
-            color: #fff;
-            text-align: center;
-            padding: 1rem;
-            margin-top: 2rem;
-        }
+            footer {
+                background-color: #112a5a;
+                color: #fff;
+                text-align: center;
+                padding: 1rem;
+                margin-top: 2rem;
+                width: 100%;
+            }
+        </style>
+    </head>
+    <body>
 
-        .booking-btn {
-            margin-top: 20px;
-            padding: 0.75rem 1.5rem;
-            background-color: #00bcd4;
-            border: none;
-            border-radius: 5px;
-            color: white;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: 0.3s;
-        }
+        <header>
+            <a href="index.jsp" class="logo-container">
+                <img src="../image/item/carelogo.png" alt="Care Giver Logo">
+                <div class="logo">Care Giver</div>
+            </a>
+            <nav>
+                <a href="home.jsp">Home</a>
+                <a href="bookingDetails.jsp">My Booking</a>
+                <a href="profile.jsp">View Profile</a>
+                <a href="http://localhost:8081/Family_Care/index.html">Logout</a>
+            </nav>
+        </header>
 
-        .booking-btn:hover {
-            background-color: #0097a7;
-        }
-    </style>
-</head>
-<body>
+        <main>
+            <h1>Welcome Back, <%= session.getAttribute("customerName") != null ? session.getAttribute("customerName") : "Guest"%></h1>
+            <p>We are here to assist you with premium caregiving services tailored to your needs.</p>
+            <button class="booking-btn" onclick="window.location.href = 'booking.jsp'">Start Booking</button>
 
-    <!-- Header -->
-    <header>
-        <div class="logo">Care Giver</div>
-        <nav>
-            <a href="#">🏠 Home</a>
-            <a href="about.jsp">ℹ️ About Us</a>
-            <a href="profile.jsp">👤 View Profile</a>  <!-- Added View Profile link -->
-            <a href="logout.jsp">🚪 Logout</a>
-        </nav>
-    </header>
+            <section class="service-section">
+                <div class="service-card">
+                    <h3>Baby Home Care Package</h3>
+                    <ul>
+                        <li>Eating assistance</li>
+                        <li>Diapering</li>
+                        <li>Sleeping supervision</li>
+                        <li>Bonding activities</li>
+                    </ul>
+                </div>
 
-    <!-- Main Content -->
-    <main>
-        <h1>Welcome Back, <%= session.getAttribute("customerName") != null ? session.getAttribute("customerName") : "Guest" %></h1>
-        <p>We are here to assist you with premium caregiving services tailored to your needs.</p>
+                <div class="service-card">
+                    <h3>Elder Home Care Package</h3>
+                    <ul>
+                        <li>Dispensing Medications</li>
+                        <li>Feeding/Prepare Meal</li>
+                        <li>Light Physiotherapy</li>
+                        <li>Companionship</li>
+                        <li>Outdoor Exercise/Activity</li>
+                        <li>Mind Wellness Activities</li>
+                    </ul>
+                </div>
+            </section>
+        </main>
 
-        <!-- Start Booking Button -->
-        <button class="booking-btn" onclick="window.location.href='booking.jsp'">Start Booking</button>
+        <footer>
+            <p>&copy; 2024 Care Giver. All rights reserved.</p>
+        </footer>
 
-        <!-- Services Section -->
-        <section class="service-section">
-            <div class="service-card">
-                <h3>Baby Home Care Package</h3>
-                <ul>
-                    <li>Eating assistance</li>
-                    <li>Diapering</li>
-                    <li>Sleeping supervision</li>
-                    <li>Bonding activities</li>
-                </ul>
-<!--                <p class="price">RM 10 per hour</p>-->
-            </div>
-
-            <div class="service-card">
-                <h3>Elder Home Care Package</h3>
-                <ul>
-                    <li>Dispensing Medications</li>
-                    <li>Feeding/Prepare Meal</li>
-                    <li>Light Physiotherapy</li>
-                    <li>Companionship</li>
-                    <li>Outdoor Exercise/Activity</li>
-                    <li>Mind Wellness Activities</li>
-                </ul>
-<!--                <p class="price">RM 12 per hour</p>-->
-            </div>
-        </section>
-
-        <!-- Contact Section -->
-        <section class="contact-section">
-            <h3>Contact Us</h3>
-            <p>If you have any questions, feel free to contact our support team.</p>
-            <p>Email: support@caregiver.com | Phone: +60 123 456 789</p>
-        </section>
-    </main>
-
-    <!-- Footer -->
-    <footer>
-        <p>&copy; 2024 Care Giver. All rights reserved.</p>
-    </footer>
-
-</body>
+    </body>
 </html>

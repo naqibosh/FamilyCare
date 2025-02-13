@@ -54,8 +54,10 @@
         <servlet-name>CaretakerManageServlet</servlet-name>
         <servlet-class>staff.servlet.CaretakerManageServlet</servlet-class>
         <multipart-config>
-            <max-file-size>10485760</max-file-size> <!-- 10 MB -->
-            <max-request-size>20971520</max-request-size> <!-- 20 MB -->
+            <max-file-size>10485760</max-file-size>
+            <!-- 10 MB -->
+            <max-request-size>20971520</max-request-size>
+            <!-- 20 MB -->
             <file-size-threshold>0</file-size-threshold>
         </multipart-config>
     </servlet>
@@ -74,6 +76,10 @@
     <servlet>
         <servlet-name>UpdateBookingStatusServlet</servlet-name>
         <servlet-class>caretaker.servlet.UpdateBookingStatusServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>PaymentServlet</servlet-name>
+        <servlet-class>BookingServlet.PaymentServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>RegisterServlet</servlet-name>
@@ -147,6 +153,10 @@
         <servlet-name>UpdateBookingStatusServlet</servlet-name>
         <url-pattern>/UpdateBookingStatusServlet</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>PaymentServlet</servlet-name>
+        <url-pattern>/PaymentServlet</url-pattern>
+    </servlet-mapping>
     <welcome-file-list>
         <welcome-file>index.html</welcome-file>
     </welcome-file-list>
@@ -215,5 +225,4 @@
         <exception-type>java.lang.Exception</exception-type>
         <location>/404.html</location>
     </error-page>
-
 </web-app>
