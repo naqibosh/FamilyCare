@@ -52,10 +52,13 @@
                 margin-top: 20px;
             }
             #services {
-                /*background: linear-gradient(to bottom, #0d6efd, #6610f2);*/
+                background: rgba(255, 255, 255, 0.1); /* Slight transparency */
+                backdrop-filter: blur(10px); /* Glassmorphism effect */
                 color: white;
                 padding: 50px 0;
+                border-radius: 10px;
             }
+
             #services h2 {
                 font-weight: 600;
             }
@@ -128,14 +131,14 @@
                         <div class="service-card">
                             <h3>Baby Home Care Package</h3>
                             <p>Specialized care for babies at home.</p>
-                            <button class="btn" onclick="window.location.href='customer/login.html'">Take a Look</button>
+                            <button class="btn" onclick="window.location.href = 'customer/login.html'">Take a Look</button>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="service-card">
                             <h3>Elder Home Care Package</h3>
                             <p>Comprehensive assistance for elders.</p>
-                            <button class="btn" onclick="window.location.href='customer/login.html'">Take a Look</button>
+                            <button class="btn" onclick="window.location.href = 'customer/login.html'">Take a Look</button>
                         </div>
                     </div>
                 </div>
