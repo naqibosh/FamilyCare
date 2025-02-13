@@ -288,7 +288,7 @@
                     <!-- Example format: 2025-01-17T05:23 -->  
 
                     <label for="duration">Duration (hours)</label>  
-                    <input type="number" id="duration" name="duration" min="1" max="12" placeholder="Enter duration" required><br>  
+                    <input type="number" id="duration" name="duration" min="1" placeholder="Enter duration" required><br>  
 
                     <button type="submit">Book Now</button>  
                 </form>  
