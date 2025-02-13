@@ -51,7 +51,6 @@
         <title>Edit Profile - Care Giver</title>
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
         <style>
-            /* General Styles */
             * {
                 margin: 0;
                 padding: 0;
@@ -59,17 +58,19 @@
                 font-family: 'Poppins', sans-serif;
             }
 
-            body {
-                background: linear-gradient(to bottom right, #6a11cb, #2575fc);
-                color: #f4f4f4;
+            html, body {
+                width: 100%;
+                height: 100%;
+                background-color: #FFFFFF;
+                color: white;
                 display: flex;
                 flex-direction: column;
                 align-items: center;
-                padding: 20px;
             }
 
+            /* Header */
             header {
-                background-color: #2c3e50;
+                background-color: #162447;
                 width: 100%;
                 padding: 1rem 2rem;
                 display: flex;
@@ -79,9 +80,17 @@
             }
 
             header .logo {
-                font-size: 1.5rem;
+                display: flex;
+                align-items: center;
+                font-size: 1.8rem;
                 font-weight: bold;
-                color: #fff;
+                color: #FFFFFF;
+            }
+
+            header .logo img {
+                width: 50px;
+                height: 50px;
+                margin-right: 10px;
             }
 
             header nav {
@@ -91,20 +100,22 @@
 
             header nav a {
                 text-decoration: none;
-                color: #fff;
+                color: #FFFFFF;
+                font-size: 1.1rem;
                 padding: 0.5rem 1rem;
                 border-radius: 5px;
                 transition: background 0.3s ease-in-out;
             }
 
             header nav a:hover {
-                background-color: #34495e;
+                background-color: #1F4068;
             }
 
+            /* Main Section */
             main {
                 width: 100%;
                 max-width: 800px;
-                background: rgba(255, 255, 255, 0.1);
+                background: #162447;
                 padding: 2rem;
                 border-radius: 10px;
                 box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
@@ -126,7 +137,7 @@
 
             label {
                 font-size: 1.1rem;
-                color: #fff;
+                color: white;
             }
 
             input {
@@ -134,8 +145,8 @@
                 font-size: 1rem;
                 border: 1px solid #ddd;
                 border-radius: 5px;
-                background-color: rgba(255, 255, 255, 0.2);
-                color: #fff;
+                background-color: white;
+                color: black;
             }
 
             .save-btn {
@@ -179,12 +190,15 @@
         </script>
         <!-- Header -->
         <header>
-            <div class="logo">Care Giver</div>
+            <div class="logo">
+                <img src="../image/item/carelogo.png" alt="Care Giver Logo" style="width: 50px; height: 50px; margin-right: 10px;">
+                <span>Care Giver</span>
+            </div>
             <nav>
                 <a href="home.jsp">🏠 Home</a>
-                <a href="about.jsp">ℹ️ About Us</a>
+                <a href="bookingDetails.jsp">ℹ️ My Booking</a>
                 <a href="profile.jsp">👤 View Profile</a>
-                <a href="logout.jsp">🚪 Logout</a>
+                <a href="http://localhost:8081/Family_Care/index.html">🚪 Logout</a>
             </nav>
         </header>
 

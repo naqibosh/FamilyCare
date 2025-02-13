@@ -57,17 +57,19 @@
                 font-family: 'Poppins', sans-serif;
             }
 
-            body {
-                background: linear-gradient(to bottom right, #6a11cb, #2575fc);
-                color: #f4f4f4;
+            html, body {
+                width: 100%;
+                height: 100%;
+                background-color: #FFFFFF;
+                color: #0A1931;
                 display: flex;
                 flex-direction: column;
                 align-items: center;
-                padding: 20px;
             }
 
+            /* Header */
             header {
-                background-color: #2c3e50;
+                background-color: #162447;
                 width: 100%;
                 padding: 1rem 2rem;
                 display: flex;
@@ -77,9 +79,17 @@
             }
 
             header .logo {
-                font-size: 1.5rem;
+                display: flex;
+                align-items: center;
+                font-size: 1.8rem;
                 font-weight: bold;
-                color: #fff;
+                color: #FFFFFF;
+            }
+
+            header .logo img {
+                width: 50px;
+                height: 50px;
+                margin-right: 10px;
             }
 
             header nav {
@@ -89,20 +99,22 @@
 
             header nav a {
                 text-decoration: none;
-                color: #fff;
+                color: #FFFFFF;
+                font-size: 1.1rem;
                 padding: 0.5rem 1rem;
                 border-radius: 5px;
                 transition: background 0.3s ease-in-out;
             }
 
             header nav a:hover {
-                background-color: #34495e;
+                background-color: #1F4068;
             }
 
+            /* Main Section */
             main {
                 width: 100%;
                 max-width: 800px;
-                background: rgba(255, 255, 255, 0.1);
+                background: #162447;
                 padding: 2rem;
                 border-radius: 10px;
                 box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
@@ -110,85 +122,118 @@
                 text-align: center;
             }
 
-            h1 {
-                font-size: 2.5rem;
-                margin-bottom: 1rem;
-                text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.5);
-            }
-
+            /* Profile Card */
             .profile-card {
                 margin-bottom: 2rem;
                 text-align: left;
             }
 
             .profile-card h3 {
-                font-size: 1.8rem;
+                font-size: 1.6rem;
                 margin-bottom: 1rem;
+                color: #FFFFFF;
             }
 
             .profile-card p {
-                color: #ddd;
                 font-size: 1.1rem;
                 margin-bottom: 10px;
+                color: #EAEAEA;
             }
 
             .edit-btn {
-                padding: 0.75rem 1.5rem;
-                background-color: #00bcd4;
+                padding: 0.8rem 1.5rem;
+                background-color: #00A8E8;
                 border: none;
                 border-radius: 5px;
                 color: white;
-                font-size: 1rem;
+                font-size: 1.1rem;
                 cursor: pointer;
                 transition: 0.3s;
                 margin-top: 20px;
             }
 
             .edit-btn:hover {
-                background-color: #0097a7;
+                background-color: #0077B6;
             }
 
+            /* Footer */
             footer {
-                background-color: #2c3e50;
-                color: #fff;
+                background-color: #162447;
+                color: #FFFFFF;
                 text-align: center;
                 padding: 1rem;
                 width: 100%;
-                margin-top: 3rem;
+                margin-top: auto;
             }
+            /* Profile Card */
+            .profile-card {
+                margin-bottom: 2rem;
+                text-align: left;
+                background-color: #1F4068; /* Slightly lighter blue */
+                padding: 1.5rem;
+                border-radius: 10px;
+                transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+            }
+
+            .profile-card:hover {
+                transform: scale(1.03);
+                box-shadow: 0 8px 20px rgba(255, 255, 255, 0.2);
+            }
+
+            /* Responsive Design */
+            @media (max-width: 768px) {
+                header {
+                    flex-direction: column;
+                    align-items: center;
+                    text-align: center;
+                }
+
+                header nav {
+                    flex-wrap: wrap;
+                    justify-content: center;
+                }
+
+                main {
+                    padding: 1.5rem;
+                }
+            }
+
         </style>
     </head>
     <body>
         <%-- Placeholder for dynamic username --%>
-        <p>Welcome, <%= request.getAttribute("username") != null ? request.getAttribute("username") : "Guest"%>!</p>
 
         <!-- Header -->
         <header>
-            <div class="logo">Care Giver</div>
+            <div class="logo">
+                <img src="../image/item/carelogo.png" alt="Care Giver Logo" style="width: 50px; height: 50px; margin-right: 10px;">
+                <span>Care Giver</span>
+            </div>
             <nav>
                 <a href="home.jsp">🏠 Home</a>
-                <a href="about.jsp">ℹ️ About Us</a>
+                <a href="bookingDetails.jsp">ℹ️ My Booking</a>
                 <a href="profile.jsp">👤 View Profile</a>
-                <a href="logout.jsp">🚪 Logout</a>
+                <a href="http://localhost:8081/Family_Care/index.html">🚪 Logout</a>
             </nav>
         </header>
 
-        <!-- Main Content -->
-       <main>
-        <h1>Your Profile</h1>
-        <div class="profile-card">
-            <h3>Customer Information</h3>
-            <p><strong>Name:</strong> <%= firstName + " " + lastName %></p>
-            <p><strong>Username:</strong> <%= username %></p>
-            <p><strong>Email:</strong> <%= email %></p>
-            <p><strong>Phone Number:</strong> <%= phone %></p>
-            <button class="edit-btn" onclick="window.location.href = 'edit_profile.jsp'">Edit Profile</button>
-        </div>
-    </main>
+        <h1 style="margin-top: 20px; margin-bottom: -10px; font-weight: bold;">Welcome, <%= username%></h1>
 
-    <!-- Footer -->
-    <footer>
-        <p>© 2024 Care Giver. All rights reserved.</p>
-    </footer>
-</body>
+        <!-- Main Content -->
+        <main> 
+            <div class="profile-card">
+                <h3>Customer Information</h3><br>
+                <p><strong>Name:</strong> <%= firstName + " " + lastName%></p>
+                <p><strong>Username:</strong> <%= username%></p>
+                <p><strong>Email:</strong> <%= email%></p>
+                <p><strong>Phone Number:</strong> <%= phone%></p>
+                <button class="edit-btn" onclick="window.location.href = 'edit_profile.jsp'">Edit Profile</button>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer>
+            <p>© 2024 Care Giver. All rights reserved.</p>
+        </footer>
+    </body>
 </html>
