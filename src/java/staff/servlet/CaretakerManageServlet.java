@@ -2,11 +2,13 @@ package staff.servlet;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -24,8 +26,8 @@ import utils.SessionUtils;
  *
  * @author hazik
  */
-
 public class CaretakerManageServlet extends HttpServlet {
+
     private static final String LOGIN_PAGE = "login.html?error=invalidSession";
     private static final String CARETAKER_LIST_PAGE = "/staff/manage-caretaker.jsp";
     private static final String CARETAKER_DETAILS_PAGE = "/staff/caretaker-details.jsp";
@@ -66,6 +68,10 @@ public class CaretakerManageServlet extends HttpServlet {
                     break;
                 case "insertCaretaker":
                     handleInsertCaretaker(request, response, caretakerDAO);
+                    break;
+                case "previewCaretaker":
+                    handlePreviewCaretaker(request, response, caretakerDAO);
+                    break;
                 default:
                     sendError(response, HttpServletResponse.SC_BAD_REQUEST, "Invalid action: " + action);
             }
@@ -239,6 +245,61 @@ public class CaretakerManageServlet extends HttpServlet {
         }
     }
 
+    protected void handlePreviewCaretaker(HttpServletRequest request, HttpServletResponse response, CaretakerDAO caretakerDAO)
+            throws ServletException, IOException {
+        int caretakerId = Integer.parseInt(request.getParameter("caretakerId"));
+
+        InputStream inputStream = caretakerDAO.getCertificationById(caretakerId);
+        if (inputStream != null) {
+            // Detect file type (assuming it's stored with correct format)
+            String contentType = "application/octet-stream";
+            String fileName = "certification_" + caretakerId;
+
+            byte[] fileHeader = new byte[4];
+            inputStream.read(fileHeader, 0, 4);
+
+            String headerHex = bytesToHex(fileHeader);
+
+            if (headerHex.startsWith("25504446")) {
+                contentType = "application/pdf";
+                fileName += ".pdf";
+            } else if (headerHex.startsWith("89504E47")) {
+                contentType = "image/png";
+                fileName += ".png";
+            } else if (headerHex.startsWith("FFD8FF")) {
+                contentType = "image/jpeg";
+                fileName += ".jpg";
+            }
+
+            response.setContentType(contentType);
+            response.setHeader("Content-Disposition", "inline; filename=" + fileName);
+
+            // Reset input stream to ensure all content is read
+            inputStream = caretakerDAO.getCertificationById(caretakerId);
+
+            try (OutputStream output = response.getOutputStream()) {
+                byte[] buffer = new byte[4096];
+                int bytesRead;
+                while ((bytesRead = inputStream.read(buffer)) != -1) {
+                    output.write(buffer, 0, bytesRead);
+                }
+            } finally {
+                inputStream.close(); // Close the stream after writing to response
+            }
+        } else {
+            response.setContentType("text/html");
+            response.getWriter().write("<h3>No certification found for this caretaker.</h3>");
+        }
+    }
+
+    private String bytesToHex(byte[] bytes) {
+        StringBuilder hexString = new StringBuilder();
+        for (byte b : bytes) {
+            hexString.append(String.format("%02X", b));
+        }
+        return hexString.toString();
+    }
+
     private int parseCaretakerId(HttpServletRequest request) {
         try {
             return Integer.parseInt(request.getParameter("caretakerId"));
@@ -257,7 +318,7 @@ public class CaretakerManageServlet extends HttpServlet {
         caretaker.setIC(request.getParameter("ic"));
         caretaker.setStaffId(Integer.parseInt(request.getParameter("staffId")));
         caretaker.setStatusId(Integer.parseInt(request.getParameter("statusId")));
-        
+
         return caretaker;
     }
 

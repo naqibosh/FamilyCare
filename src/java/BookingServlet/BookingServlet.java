@@ -9,7 +9,6 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -41,7 +40,8 @@ public class BookingServlet extends HttpServlet {
         String formattedBookingTime = dbDateFormat.format(bookingDate);
 
         // Convert duration to INTERVAL format
-        String formattedDuration = String.format("+00 %02d:00:00.000000", duration);
+//        String formattedDuration = String.format("+00 %02d:00:00.000000", duration);
+        String formattedDuration = String.format("INTERVAL '%d' HOUR", duration);
 
         // Get hourly rate from caretaker type
         double hourlyRate = 0;
@@ -66,15 +66,14 @@ public class BookingServlet extends HttpServlet {
 
             // Insert booking into the booking table
             String insertBookingQuery = "INSERT INTO booking (BOOKING_TYPE, BOOKING_TIME, BOOKING_DURATION, BOOKING_PRICE, CARETAKER_ID, CUST_ID, STAFF_ID) "
-                    + "VALUES (?, TO_TIMESTAMP(?, 'DD-MON-YY HH.MI.SS.FF AM'), ?, ?, ?, ?, NULL)";
+                    + "VALUES (?, TO_TIMESTAMP(?, 'DD-MON-YY HH.MI.SS.FF AM'), INTERVAL '" + duration + "' HOUR, ?, ?, ?, NULL)";
 
             try (PreparedStatement stmt = conn.prepareStatement(insertBookingQuery)) {
                 stmt.setString(1, type);
                 stmt.setString(2, formattedBookingTime);
-                stmt.setString(3, formattedDuration);
-                stmt.setDouble(4, bookingPrice);
-                stmt.setInt(5, caretakerId);
-                stmt.setInt(6, customerId);
+                stmt.setDouble(3, bookingPrice);  // Now at index 3 instead of 4
+                stmt.setInt(4, caretakerId);
+                stmt.setInt(5, customerId);
 
                 int rowsAffected = stmt.executeUpdate();
                 if (rowsAffected > 0) {

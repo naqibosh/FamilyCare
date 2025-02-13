@@ -30,6 +30,9 @@
         } else if ("editCaretaker".equals(action)) {
             RequestDispatcher dispatcher = request.getRequestDispatcher(targetServlet + "?action=editCaretaker");
             dispatcher.forward(request, response); 
+        } else if ("previewCaretaker".equals(action)) {
+            RequestDispatcher dispatcher = request.getRequestDispatcher(targetServlet + "?action=previewCaretaker");
+            dispatcher.forward(request, response); 
         } else {
             out.println("Invalid action specified.");
         }

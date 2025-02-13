@@ -18,61 +18,64 @@
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
         <style>
             * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
 
-    body {
-        font-family: 'Poppins', sans-serif;
-        line-height: 1.6;
-        background-color: #FFFFFF;
-        color: white;
-    }
+            body {
+                font-family: 'Poppins', sans-serif;
+                line-height: 1.6;
+                background-color: #FFFFFF;
+                color: white;
+            }
 
-    .sidebar {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 200px;
-        height: 100%;
-        background: #1F4068;
-        color: #fff;
-        padding: 1rem;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 1rem;
-        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
-    }
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 200px;
+                height: 100%;
+                background: #1F4068;
+                color: #fff;
+                padding: 1rem;
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start; /* Aligns content to the left */
+                gap: 1rem;
+                box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+            }
 
-    .sidebar img {
-        width: 150px;
-        height: 150px;
-        object-fit: contain;
-    }
+            .sidebar img {
+                width: 150px;
+                height: 150px;
+                object-fit: contain;
+                align-self: center; /* Keeps the image centered */
+            }
 
-    .sidebar h2 {
-        text-align: center;
-        font-size: 1.2rem;
-        margin-top: 1rem;
-    }
+            .sidebar h2 {
+                text-align: left; /* Aligns the menu text to the left */
+                font-size: 1.2rem;
+                margin-top: 1rem;
+                width: 100%;
+            }
 
-    .sidebar a {
-        color: #fff;
-        text-decoration: none;
-        font-size: 1rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.5rem 1rem;
-        border-radius: 5px;
-        transition: background 0.3s;
-    }
+            .sidebar a {
+                color: #fff;
+                text-decoration: none;
+                font-size: 1rem;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                padding: 0.5rem 1rem;
+                border-radius: 5px;
+                transition: background 0.3s;
+                width: 100%; /* Ensures links take full width for proper alignment */
+            }
 
-    .sidebar a:hover {
-        background: #6a11cb;
-    }
+            .sidebar a:hover {
+                background: #6a11cb;
+            }
 
             .content-wrapper {
                 margin-left: 220px;
@@ -80,33 +83,33 @@
             }
 
             .hero {
-        background: #1F4068;
-        color: #fff;
-        text-align: center;
-        padding: 2rem 1rem;
-    }
+                background: #1F4068;
+                color: #fff;
+                text-align: center;
+                padding: 2rem 1rem;
+            }
 
-    .hero h1, .hero p {
-        color: white;
-    }
+            .hero h1, .hero p {
+                color: white;
+            }
 
-    .hero button {
-        background: linear-gradient(to right, #3498db, #6a11cb);
-        color: white;
-        border: none;
-        padding: 12px 24px;
-        font-size: 1rem;
-        border-radius: 25px;
-        cursor: pointer;
-        transition: 0.3s;
-        margin-top: 1rem;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    }
+            .hero button {
+                background: linear-gradient(to right, #3498db, #6a11cb);
+                color: white;
+                border: none;
+                padding: 12px 24px;
+                font-size: 1rem;
+                border-radius: 25px;
+                cursor: pointer;
+                transition: 0.3s;
+                margin-top: 1rem;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            }
 
-    .hero button:hover {
-        background: linear-gradient(to right, #6a11cb, #3498db);
-        transform: scale(1.05);
-    }
+            .hero button:hover {
+                background: linear-gradient(to right, #6a11cb, #3498db);
+                transform: scale(1.05);
+            }
             .packages {
                 display: flex;
                 justify-content: center;
@@ -125,6 +128,78 @@
                 text-align: center;
                 color: white;
                 transition: transform 0.3s ease, box-shadow 0.3s ease;
+            }
+
+            .baby-care-package {
+                position: relative;
+                background: url('../image/item/babycare.jpg') no-repeat center center;
+                background-size: cover;
+                color: white;
+                padding: 2rem;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                width: 300px;
+                text-align: center;
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+                overflow: hidden;
+            }
+
+            /* Dark overlay to reduce brightness */
+            .baby-care-package::before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.5); /* Adjust transparency (0.5 is 50% dark) */
+                border-radius: 8px;
+            }
+
+            /* Ensure content stays above the overlay */
+            .baby-care-package h2, 
+            .baby-care-package ul {
+                position: relative;
+                z-index: 1;
+                background: rgba(0, 0, 0, 0.5); /* Additional text background for better readability */
+                padding: 1rem;
+                border-radius: 5px;
+            }
+
+            .elder-care-package {
+                position: relative;
+                background: url('../image/item/eldercare.jpg') no-repeat center center;
+                background-size: cover;
+                color: white;
+                padding: 2rem;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                width: 300px;
+                text-align: center;
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+                overflow: hidden;
+            }
+
+            /* Dark overlay to reduce brightness */
+            .elder-care-package::before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.5); /* Adjust transparency (0.5 = 50% darkness) */
+                border-radius: 8px;
+            }
+
+            /* Ensure content stays above the overlay */
+            .elder-care-package h2, 
+            .elder-care-package ul {
+                position: relative;
+                z-index: 1;
+                background: rgba(0, 0, 0, 0.5); /* Extra contrast for text */
+                padding: 1rem;
+                border-radius: 5px;
             }
 
             .package ul {
@@ -216,81 +291,86 @@
     </head>
     <body>
         <!-- Sidebar Navbar -->
-    <div class="sidebar">
-        <img src="../image/item/carelogo.png" alt="Care Giver Logo">
-        <h2>Menu</h2>
-        <a href="home.jsp"><span>🏠</span> Home</a>
-        <a href="#packages"><span>📦</span> Packages</a>
-        <a href="#booking"><span>📅</span> Booking</a>
-        <a href="bookingDetails.jsp"><span>📖</span> My Booking</a>
-    </div>
+        <div class="sidebar">
+            <img src="../image/item/carelogo.png" alt="Care Giver Logo">
+            <a><h2>Menu</h2><a>
+                    <a href="home.jsp"><span>🏠</span> Home</a>
+                    <a href="#packages"><span>📦</span> Packages</a>
+                    <a href="#booking"><span>📅</span> Booking</a>
+                    <a href="bookingDetails.jsp"><span>📖</span> My Booking</a>
+                    </div>
 
-        <!-- Content Wrapper -->
-        <div class="content-wrapper">
-            <!-- Hero Section -->
-            <div class="hero" id="home">
-                <h1>Find the Perfect Caretaker</h1><br>
-                <p>Choose the best caretaker for your needs. Scroll down to explore packages and start booking!</p>
-                <button onclick="document.getElementById('booking').scrollIntoView({behavior: 'smooth'})">
-                    Let's Start Booking
-                </button>
-            </div>
+                    <!-- Content Wrapper -->
+                    <div class="content-wrapper">
+                        <!-- Hero Section -->
+                        <div class="hero" id="home">
+                            <h1>Find the Perfect Caretaker</h1><br>
+                            <p>Choose the best caretaker for your needs. Scroll down to explore packages and start booking!</p>
+                            <button onclick="document.getElementById('booking').scrollIntoView({behavior: 'smooth'})">
+                                Let's Start Booking
+                            </button>
+                        </div>
 
-            <!-- Packages Section -->
-            <section class="packages" id="packages">
-                <div class="package">
-                    <h2>Baby Home Care Package</h2><br>
-                    <ul>
-                        <li>Eating assistance</li>
-                        <li>Diapering</li>
-                        <li>Sleeping supervision</li>
-                        <li>Bonding activities</li>
-                    </ul>
-<!--                    <p class="price">RM 10 per hour</p>-->
-                </div>
-                <div class="package">
-                    <h2>Elder Home Care Package</h2><br>
-                    <ul>
-                        <li>Dispensing Medications</li>
-                        <li>Feeding/Prepare Meal</li>
-                        <li>Light Physiotherapy</li>
-                        <li>Companionship</li>
-                        <li>Outdoor Exercise/Activity</li>
-                        <li>Mind Wellness Activities</li>
-                    </ul>
-<!--                    <p class="price">RM 12 per hour</p>-->
-                </div>
-            </section>
+                        <!-- Packages Section -->
+                        <section class="packages" id="packages">
+                            <div class="package baby-care-package">
+                                <h2>Baby Home Care Package</h2><br>
+                                <ul>
+                                    <li>Eating assistance</li>
+                                    <li>Diapering</li>
+                                    <li>Sleeping supervision</li>
+                                    <li>Bonding activities</li>
+                                </ul>
+                            </div>
+                            <div class="package elder-care-package">
+                                <h2>Elder Home Care Package</h2><br>
+                                <ul>
+                                    <li>Dispensing Medications</li>
+                                    <li>Feeding/Prepare Meal</li>
+                                    <li>Light Physiotherapy</li>
+                                    <li>Companionship</li>
+                                    <li>Outdoor Exercise/Activity</li>
+                                    <li>Mind Wellness Activities</li>
+                                </ul>
+                            </div>
+                        </section>
 
-            <!-- Booking Section -->
-            <div class="booking-container" id="booking">  
-                <h2>Book a Caretaker</h2> <br> 
-                <form action="../BookingServlet" method="post">  
-                    <input type="hidden" name="cust_id" value="<%= customerId%>"/> <!-- Hidden field for customerId -->  
+                        <!-- Booking Section -->
+                        <div class="booking-container" id="booking">  
+                            <h2>Book a Caretaker</h2> <br> 
+                            <form action="../BookingServlet" method="post">  
+                                <input type="hidden" name="cust_id" value="<%= customerId%>"/> <!-- Hidden field for customerId -->  
 
-                    <label for="type">Booking Type</label>  
-                    <select id="type" name="type" required onchange="fetchCaretakers()">  
-                        <option value="" disabled selected>Select Caretaker Type</option>  
-                        <option value="Babycaretaker">Baby Home Care Package</option>  
-                        <option value="Eldercaretaker">Elder Home Care Package</option>  
-                    </select>  
+                                <label for="type">Booking Type</label>  
+                                <select id="type" name="type" required onchange="fetchCaretakers()">  
+                                    <option value="" disabled selected>Select Caretaker Type</option>  
+                                    <option value="Babycaretaker">Baby Home Care Package</option>  
+                                    <option value="Eldercaretaker">Elder Home Care Package</option>  
+                                </select>  
 
-                    <label for="caretaker">Caretaker Name</label>  
-                    <select id="caretaker" name="caretaker" required>  
-                        <option value="" selected>Select a Caretaker</option>  
-                    </select>  
+                                <label for="caretaker">Caretaker Name</label>  
+                                <select id="caretaker" name="caretaker" required>  
+                                    <option value="" selected>Select a Caretaker</option>  
+                                </select>  
 
-                    <label for="time">Booking Time</label>  
-                    <!-- Combine Date and Time Input -->  
-                    <input type="datetime-local" id="time" name="time" required   
-                           pattern="\d{4}-\d{2}-\d{2}T\d{2}:\d{2}"   
-                           title="Format: YYYY-MM-DDTHH:MM">  
-                    <!-- Example format: 2025-01-17T05:23 -->  
+                                <label for="time">Booking Time</label>  
+                                <input type="datetime-local" id="time" name="time" required>  
 
-                    <label for="duration">Duration (hours)</label>  
-                    <input type="number" id="duration" name="duration" min="1" placeholder="Enter duration" required><br>  
+                                <script>
+                                    document.addEventListener("DOMContentLoaded", function () {
+                                        var now = new Date();
+                                        now.setMinutes(now.getMinutes() - now.getTimezoneOffset()); // Adjust for timezone
 
-                    <button type="submit">Book Now</button>  
-                </form>  
-            </div> 
-    </body>
+                                        var minDateTime = now.toISOString().slice(0, 16); // Format as "YYYY-MM-DDTHH:MM"
+                                        document.getElementById("time").min = minDateTime;
+                                    });
+                                </script>
+
+                                <label for="duration">Duration (hours)</label>  
+                                <input type="number" id="duration" name="duration" min="1" placeholder="Enter duration" required><br>  
+
+                                <button type="submit">Book Now</button>  
+                            </form>  
+                        </div> 
+                        </body>
+                        </html>

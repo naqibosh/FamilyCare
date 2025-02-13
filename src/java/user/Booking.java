@@ -17,11 +17,12 @@ public class Booking {
     private String custName;
     private String staffName;
     private String caretakerName;
+    private String bookingStatus;
     
     //constructors
     public Booking() {}
 
-    public Booking(int bookingId, String bookingType, String bookingTime, String bookingDuration, double bookingPrice, int caretakerId, int custId, int staffId, String custName, String staffName, String caretakerName) {
+    public Booking(int bookingId, String bookingType, String bookingTime, String bookingDuration, double bookingPrice, int caretakerId, int custId, int staffId, String custName, String staffName, String caretakerName, String bookingStatus) {
         this.bookingId = bookingId;
         this.bookingType = bookingType;
         this.bookingTime = bookingTime;
@@ -33,6 +34,7 @@ public class Booking {
         this.custName = custName;
         this.staffName = staffName;
         this.caretakerName = caretakerName;
+        this.bookingStatus = bookingStatus;
     }
     
     //setter
@@ -79,6 +81,10 @@ public class Booking {
     public void setCaretakerName(String caretakerName) {
         this.caretakerName = caretakerName;
     }
+
+    public void setBookingStatus(String bookingStatus) {
+        this.bookingStatus = bookingStatus;
+    }
     
     //getter
     public int getBookingId() {
@@ -87,6 +93,10 @@ public class Booking {
 
     public String getBookingType() {
         return bookingType;
+    }
+
+    public String getBookingStatus() {
+        return bookingStatus;
     }
 
     public String getBookingTime() {

@@ -24,7 +24,7 @@ public class CustomerDAO {
     private static final String DISABLE_CUST_SQL = "UPDATE customer SET is_active = 'N' WHERE cust_id = ?";
     private static final String ENABLE_CUST_SQL = "UPDATE customer SET is_active = 'Y' WHERE cust_id = ?";
     private static final String UPDATE_CUST_SQL = "UPDATE Customer SET cust_username=?, cust_password=?, cust_first_name=?, cust_last_name=?, cust_phone_number=?, cust_email=?, cust_identification_number=? WHERE cust_id = ?";
-    private static final String SELECT_ALL_CUST = "SELECT c.cust_id, c.cust_username, c.cust_first_name, c.cust_last_name, c.cust_phone_number, c.cust_email, c.cust_identification_number, c.ban_date, c.status_id, s.reason AS status, c.is_active FROM Customer c JOIN Status s ON c.status_id = s.status_id";
+    private static final String SELECT_ALL_CUST = "SELECT c.cust_id, c.cust_username, c.cust_first_name, c.cust_last_name, c.cust_phone_number, c.cust_email, c.cust_identification_number, TO_CHAR(c.ban_date, 'YYYY-MM-DD HH24:MI:SS') AS ban_date, c.status_id, s.reason AS status, c.is_active FROM Customer c JOIN Status s ON c.status_id = s.status_id";
     private static final String GET_CUST_INFO = "SELECT cust_username, cust_password, cust_first_name, cust_last_name, cust_phone_number, cust_email, cust_identification_number FROM Customer WHERE cust_id = ?";
     private static final String EDIT_CUST_SQL = "UPDATE Customer SET ban_date = ?, status_id = ? WHERE cust_id = ?";
 
