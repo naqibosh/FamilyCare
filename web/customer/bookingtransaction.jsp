@@ -103,7 +103,7 @@
                 <select name="paymentMethod" id="paymentMethod" onchange="showQRCode()">
                     <option value="">-- Select Payment Method --</option>
                     <option value="QR Code">QR Code</option>
-                    
+
                 </select>
             </div>
 
@@ -111,6 +111,13 @@
             <div class="qr-code" id="qrCode">
                 <p><strong>Scan this QR Code to Pay:</strong></p>
                 <img src="image/item/duitnow.png" alt="DuitNow QR Code">
+
+                <!-- File Upload Section for Payment Proof -->
+                <div class="file-upload">
+                    <label for="paymentProof"><strong>Upload Payment Proof (Image Only):</strong></label>
+                    <input type="file" id="paymentProof" name="paymentProof" accept="image/png, image/jpeg, image/jpg" required>
+                    <p id="fileName"></p>
+                </div>
             </div>
 
             <!-- Confirm Booking Button -->
@@ -118,6 +125,18 @@
         </div>
 
         <script>
+            // Show selected file name
+            document.getElementById("paymentProof").addEventListener("change", function () {
+                var fileInput = this;
+                var fileNameDisplay = document.getElementById("fileName");
+
+                if (fileInput.files.length > 0) {
+                    fileNameDisplay.textContent = "Selected File: " + fileInput.files[0].name;
+                } else {
+                    fileNameDisplay.textContent = "";
+                }
+            });
+
             function showQRCode() {
                 var paymentMethod = document.getElementById("paymentMethod").value;
                 var qrCodeDiv = document.getElementById("qrCode");
@@ -132,9 +151,16 @@
             function confirmBooking() {
                 var paymentMethod = document.getElementById("paymentMethod").value;
                 var bookingFee = "<%= bookingFee%>"; // Retrieve booking fee from JSP
+                var fileInput = document.getElementById("paymentProof");
 
                 if (paymentMethod === "") {
                     alert("Please select a payment method before confirming your booking.");
+                    return;
+                }
+
+                // Check if payment proof is uploaded (only required for QR Code payment)
+                if (paymentMethod === "QR Code" && fileInput.files.length === 0) {
+                    alert("Please upload your payment proof before confirming your booking.");
                     return;
                 }
 
@@ -145,6 +171,7 @@
                 var form = document.createElement("form");
                 form.method = "POST";
                 form.action = "PaymentServlet";
+                form.enctype = "multipart/form-data"; // Allow file upload
 
                 var paymentMethodInput = document.createElement("input");
                 paymentMethodInput.type = "hidden";
@@ -163,6 +190,12 @@
                 paymentAmountInput.name = "paymentAmount";
                 paymentAmountInput.value = bookingFee.replace("RM ", ""); // Remove "RM" and send only the numeric value
                 form.appendChild(paymentAmountInput);
+
+                // Append file input
+                if (fileInput.files.length > 0) {
+                    var fileClone = fileInput.cloneNode(true);
+                    form.appendChild(fileClone);
+                }
 
                 document.body.appendChild(form);
                 form.submit();
