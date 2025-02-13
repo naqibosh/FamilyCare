@@ -38,7 +38,7 @@
                 padding: 1rem;
                 display: flex;
                 flex-direction: column;
-                align-items: center;
+                align-items: flex-start; /* Aligns content to the left */
                 gap: 1rem;
                 box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
             }
@@ -47,12 +47,14 @@
                 width: 150px;
                 height: 150px;
                 object-fit: contain;
+                align-self: center; /* Keeps the image centered */
             }
 
             .sidebar h2 {
-                text-align: center;
+                text-align: left; /* Aligns the menu text to the left */
                 font-size: 1.2rem;
                 margin-top: 1rem;
+                width: 100%;
             }
 
             .sidebar a {
@@ -65,6 +67,7 @@
                 padding: 0.5rem 1rem;
                 border-radius: 5px;
                 transition: background 0.3s;
+                width: 100%; /* Ensures links take full width for proper alignment */
             }
 
             .sidebar a:hover {
@@ -148,7 +151,7 @@
     <body>
         <div class="sidebar">
             <img src="../image/item/carelogo.png" alt="Care Giver Logo">
-            <h2>Menu</h2>
+            <a><h2>Menu</h2><a>
             <a href="home.jsp"><span>🏠</span> Home</a>
             <a href="booking.jsp"><span>📦</span> Packages</a>
             <a href="booking.jsp"><span>📅</span> Booking</a>
