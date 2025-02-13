@@ -361,6 +361,7 @@
                                                 <th>Amount</th>
                                                 <th>Date</th>
                                                 <th>Customer Name</th>
+                                                <th>Receipt</th>
                                                 <th>Review By</th>
                                                 <th>Status</th>
                                                 <th> </th>
@@ -373,6 +374,7 @@
                                                 <th>Amount</th>
                                                 <th>Date</th>
                                                 <th>Customer Name</th>
+                                                <th>Receipt</th>
                                                 <th>Review By</th>
                                                 <th>Status</th>
                                                 <th> </th>
@@ -387,6 +389,17 @@
                                                     <td>RM ${payment.amount}</td>
                                                     <td>${payment.date}</td>
                                                     <td>${payment.custName}</td>
+                                                    <td>
+                                                        <c:choose>
+                                                            <c:when test="${not empty payment.receipt}">
+                                                                <form action="payment_manageProcess.jsp?action=previewPayment" method="post" target="_blank">
+                                                                    <input type="hidden" name="paymentId" value="${payment.paymentId}">
+                                                                    <button type="submit" class="btn btn-info btn-sm">Preview</button>
+                                                                </form>
+                                                            </c:when>
+                                                            <c:otherwise> </c:otherwise>
+                                                        </c:choose>
+                                                    </td>
                                                     <td>${payment.staffName}</td>
                                                     <td>
                                                         <span class="badge 

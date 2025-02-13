@@ -30,6 +30,9 @@
         } else if ("editPayment".equals(action)) {
             RequestDispatcher dispatcher = request.getRequestDispatcher(targetServlet + "?action=editPayment");
             dispatcher.forward(request, response);
+        } else if ("previewPayment".equals(action)) {
+            RequestDispatcher dispatcher = request.getRequestDispatcher(targetServlet + "?action=previewPayment");
+            dispatcher.forward(request, response);
         }else {
             out.println("Invalid action specified.");
         }

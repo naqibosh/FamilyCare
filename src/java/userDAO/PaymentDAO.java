@@ -14,6 +14,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import user.Payment;
 import dbconn.DatabaseConnection;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 
 /**
  *
@@ -27,6 +29,7 @@ public class PaymentDAO {
     private static final String SELECT_ALL_PAYMENTS_SQL = "SELECT p.*, c.cust_username, b.booking_type, s.staff_name FROM payment p LEFT JOIN customer c ON p.cust_id = c.cust_id LEFT JOIN booking b ON p.booking_id = b.booking_id LEFT JOIN staff s ON p.staff_id = s.staff_id";
     private static final String SELECT_PAYMENT_BY_ID_SQL = "SELECT p.*, c.cust_username, b.booking_type, s.staff_name FROM payment p LEFT JOIN customer c ON p.cust_id = c.cust_id LEFT JOIN booking b ON p.booking_id = b.booking_id LEFT JOIN staff s ON p.staff_id = s.staff_id WHERE p.payment_id = ?";
     private static final String EDIT_PAYMENT_SQL = "UPDATE payment SET payment_status = ? WHERE payment_id = ?";
+    private static final String GET_PAYMENT_RECEIPT = "SELECT payment_receipt FROM payment WHERE payment_id = ?";
 
 
     public void insertPayment(Payment payment) throws SQLException {
@@ -177,6 +180,27 @@ public class PaymentDAO {
             int rowsUpdated = ps.executeUpdate();
             return rowsUpdated > 0; // Return true if the update was successful
         }
+    }
+    
+        public static InputStream getReceiptById(int paymentId) {
+        String sql = GET_PAYMENT_RECEIPT;
+
+        try (Connection connection = DatabaseConnection.getConnection();
+                PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, paymentId);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                Blob blob = rs.getBlob("PAYMENT_RECEIPT");
+                if (blob != null) {
+                    byte[] bytes = blob.getBytes(1, (int) blob.length()); 
+                    return new ByteArrayInputStream(bytes); 
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }
