@@ -9,7 +9,7 @@
             /* Global styles */
             body {
                 font-family: 'Roboto', Arial, sans-serif;
-                background-color: #f5f5f5; /* Soft neutral color */
+                background-color: #f5f5f5;
                 margin: 0;
                 padding: 0;
                 display: flex;
@@ -67,11 +67,10 @@
                 box-shadow: 0 0 5px rgba(135, 206, 250, 0.5);
             }
 
-            /* Submit button */
-            .form-group button {
+            /* Buttons */
+            .form-group button, .back-button {
                 width: 100%;
                 padding: 12px;
-                background-color: #87cefa;
                 border: none;
                 border-radius: 5px;
                 color: #fff;
@@ -79,10 +78,27 @@
                 font-weight: bold;
                 cursor: pointer;
                 transition: background-color 0.3s ease;
+                display: block;
+                text-align: center;
+                text-decoration: none;
+                margin-top: 10px;
+            }
+
+            .form-group button {
+                background-color: #87cefa;
             }
 
             .form-group button:hover {
                 background-color: #4682b4;
+            }
+
+            .back-button {
+                background-color: #d3d3d3;
+                color: #333;
+            }
+
+            .back-button:hover {
+                background-color: #a9a9a9;
             }
 
             /* Error message */
@@ -90,22 +106,6 @@
                 color: #e63946;
                 margin-bottom: 15px;
                 font-size: 14px;
-            }
-
-            /* Footer */
-            .login-container .footer {
-                margin-top: 20px;
-                font-size: 12px;
-                color: #999;
-            }
-
-            .login-container .footer a {
-                color: #87cefa;
-                text-decoration: none;
-            }
-
-            .login-container .footer a:hover {
-                text-decoration: underline;
             }
         </style>
     </head>
@@ -142,6 +142,7 @@
                     <button type="submit">Login</button>
                 </div>
             </form>
+            <a href="../index.html" class="back-button">Back to Main Page</a>
         </div>
     </body>
 </html>
