@@ -22,12 +22,11 @@
         <title>Caretaker Dashboard</title>
         <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
         <style>
-            /* Global Styles */
             body {
                 font-family: 'Roboto', sans-serif;
                 margin: 0;
                 padding: 0;
-                background-color: #f0f4f8;
+                background-color: #eef2f7;
                 color: #333;
             }
 
@@ -46,31 +45,31 @@
                 text-decoration: none;
                 margin-left: 20px;
                 font-weight: 500;
-                font-size: 16px;
+                transition: color 0.3s ease-in-out;
             }
             .navbar a:hover {
-                text-decoration: underline;
+                color: #ffdd57;
             }
 
-            /* Welcome Header */
+            /* Welcome Section */
             .welcome-header {
                 text-align: center;
                 padding: 50px 20px;
-                background-color: #ffffff;
+                background: linear-gradient(135deg, #4682b4, #5a9bd3);
+                color: white;
                 box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
                 margin-bottom: 20px;
+                animation: fadeIn 1s ease-in-out;
             }
             .welcome-header h1 {
-                font-size: 32px;
-                color: #444;
+                font-size: 36px;
                 margin-bottom: 10px;
             }
             .welcome-header p {
-                font-size: 16px;
-                color: #666;
+                font-size: 18px;
             }
 
-            /* Dashboard Cards */
+            /* Dashboard */
             .dashboard {
                 display: flex;
                 flex-wrap: wrap;
@@ -81,19 +80,19 @@
             .card {
                 background: white;
                 border-radius: 12px;
-                padding: 20px;
-                width: 300px;
+                padding: 25px;
+                width: 320px;
                 text-align: center;
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-                transition: transform 0.2s, box-shadow 0.2s;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+                animation: fadeInUp 0.8s ease-in-out;
             }
             .card:hover {
-                transform: translateY(-5px);
-                box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+                transform: translateY(-8px);
+                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
             }
             .card h3 {
-                margin: 15px 0;
-                font-size: 20px;
+                font-size: 22px;
                 color: #4682b4;
             }
             .card p {
@@ -104,21 +103,22 @@
             .card a {
                 text-decoration: none;
                 color: white;
-                background-color: #4682b4;
-                padding: 10px 20px;
-                border-radius: 5px;
+                background: #4682b4;
+                padding: 12px 24px;
+                border-radius: 6px;
                 font-weight: 500;
-                transition: background-color 0.2s;
+                transition: background 0.3s ease-in-out;
             }
             .card a:hover {
-                background-color: #5a9bd3;
+                background: #ffdd57;
+                color: #333;
             }
 
             /* Footer */
             .footer {
                 text-align: center;
-                padding: 15px 20px;
-                background-color: #f8f9fa;
+                padding: 15px;
+                background: #f8f9fa;
                 border-top: 1px solid #ddd;
                 font-size: 14px;
                 color: #777;
@@ -131,10 +131,19 @@
             .footer a:hover {
                 text-decoration: underline;
             }
+
+            /* Animations */
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(-10px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            @keyframes fadeInUp {
+                from { opacity: 0; transform: translateY(20px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
         </style>
     </head>
     <body>
-        <!-- Navigation Bar -->
         <div class="navbar">
             <span>FamilyCare Dashboard</span>
             <div>
@@ -143,35 +152,26 @@
             </div>
         </div>
 
-        <!-- Welcome Header -->
         <div class="welcome-header">
             <h1>Welcome, <%= caretakerName%>!</h1>
-            <p>Your dashboard to manage your profile, schedule, and bookings.</p>
+            <p>Your dashboard to manage your profile and bookings.</p>
         </div>
 
-        <!-- Dashboard Cards -->
         <div class="dashboard">
             <div class="card">
                 <h3>Incoming Job</h3>
-                <p>View your upcoming job .</p>
-                <a href="../JobListServlet" class="btn btn-primary">View Jobs</a>
+                <p>View your upcoming job assignments.</p>
+                <a href="../JobListServlet">View Jobs</a>
             </div>
             <div class="card">
                 <h3>Your Status</h3>
-                <p>Change your current status here.</p>
+                <p>Change your current availability status.</p>
                 <a href="reviewStatus.jsp">Review Status</a>
             </div>
-            <div class="card">
-                <h3>Schedule</h3>
-                <p>View and manage your upcoming schedule.</p>
-                <a href="schedule.jsp">Go to Schedule</a>
-            </div>
-
         </div>
 
-        <!-- Footer -->
         <div class="footer">
-            <p>&copy; 2025 FamilyCare. All Rights Reserved. | <a href="contact.jsp">Contact Us</a></p>
+            <p>&copy; 2025 FamilyCare. All Rights Reserved.</a></p>
         </div>
     </body>
 </html>

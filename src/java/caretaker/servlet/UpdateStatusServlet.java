@@ -3,7 +3,6 @@ package caretaker.servlet;
 import dbconn.DatabaseConnection;
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import javax.servlet.ServletException;
@@ -12,6 +11,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
 
 public class UpdateStatusServlet extends HttpServlet {
 
@@ -35,19 +35,14 @@ public class UpdateStatusServlet extends HttpServlet {
             return;
         }
 
-        // Ensure valid availability status values (e.g., AVAILABLE, NOT_AVAILABLE)
-        if (!availabilityStatus.equalsIgnoreCase("available") && !availabilityStatus.equalsIgnoreCase("not available")) {
+        // Ensure valid availability status values
+        if (!availabilityStatus.equalsIgnoreCase("Available") && !availabilityStatus.equalsIgnoreCase("Not Available")) {
             response.sendRedirect("caretaker/reviewStatus.jsp?errorMessage=Invalid status value. Please choose a valid option.");
             return;
         }
 
-        // Convert availabilityStatus to uppercase to match the expected value in the database
-
-
-        // Database connection
-
+        // Database connection and update
         try (Connection connection = DatabaseConnection.getConnection()) {
-            // Update query for the CARETAKER table
             String updateQuery = "UPDATE CARETAKER SET AVAILABILITY_STATUS = ? WHERE CARETAKER_ID = ?";
             try (PreparedStatement stmt = connection.prepareStatement(updateQuery)) {
                 stmt.setString(1, availabilityStatus);
@@ -55,11 +50,10 @@ public class UpdateStatusServlet extends HttpServlet {
 
                 int rowsUpdated = stmt.executeUpdate();
                 if (rowsUpdated > 0) {
-                    // Success: Update session and redirect
-                    session.setAttribute("currentStatus", availabilityStatus);
+                    // Update session with the new status
+                    session.setAttribute("caretakerStatus", availabilityStatus);
                     response.sendRedirect("caretaker/reviewStatus.jsp?successMessage=Status updated successfully.");
                 } else {
-                    // Failure: Redirect with error message
                     response.sendRedirect("caretaker/reviewStatus.jsp?errorMessage=Failed to update status.");
                 }
             }
