@@ -86,4 +86,3 @@ If something fails:
 - Make sure the server has the `jdbc/__TimerPool` resource.
 - Check server logs in NetBeans output window for errors.
 
-
