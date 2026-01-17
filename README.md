@@ -86,9 +86,3 @@ If something fails:
 - Make sure the server has the `jdbc/__TimerPool` resource.
 - Check server logs in NetBeans output window for errors.
 
-If you want, I can also:
-- Add a short setup script to create a test database.
-- Show exact steps to add `ojdbc8.jar` in NetBeans.
-
-Thank you. If you want changes, tell me what to add or simplify.
-
