@@ -86,3 +86,15 @@ If something fails:
 - Make sure the server has the `jdbc/__TimerPool` resource.
 - Check server logs in NetBeans output window for errors.
 
+Packaging recommendation
+------------------------
+- Do not keep large `vendor` files in the repository. They make the repo big.
+- Use CDN links for FontAwesome and jQuery in your pages instead of local copies.
+- Or use `npm` to manage frontend packages and add `node_modules/` to `.gitignore`.
+- I added `web/staff/vendor/` to `.gitignore` so those files are not tracked going forward.
+
+If you want, I can remove the vendor files from the repository history to shrink the repository size. That rewrites git history and requires force-push. Tell me if you want me to do that and I will guide or run it.
+
+Thank you. If you want further changes, tell me what to add or simplify.
+
+
