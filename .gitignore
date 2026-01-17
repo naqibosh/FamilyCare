@@ -1,3 +1,13 @@
 /nbproject/private/
 /dist/
 /build/
+
+# Ignore vendor libraries that are large and can be loaded via CDN
+/web/staff/vendor/
+
+# Ignore local JDBC driver jars (do not commit database drivers)
+/web/WEB-INF/lib/*.jar
+
+# Ignore OS files
+.DS_Store
+Thumbs.db
